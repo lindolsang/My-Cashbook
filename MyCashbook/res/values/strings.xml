@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">MyCashbook</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="string_date">08-24, 2004</string>
+    <string name="string_total">0</string>
+    <string name="string_of_add_cash_button">입력</string>
+
+</resources>
