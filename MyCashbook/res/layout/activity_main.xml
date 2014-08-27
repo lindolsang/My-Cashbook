@@ -19,35 +19,11 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp" >
 
-        <TextView
+        <ListView
+            android:id="@+id/log_list"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/string_total" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/string_total" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/string_total" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/string_total" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/string_total" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/string_total" />
+            android:layout_height="wrap_content" >
+        </ListView>
     </LinearLayout>
 
     <Button
