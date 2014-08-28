@@ -10,10 +10,25 @@
         android:layout_height="wrap_content"
         android:text="@string/string_date" />
 
-    <LinearLayout
+    <Button
+        android:id="@+id/button_add_cash_log"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="@string/string_of_add_cash_button" />
+
+    <TextView
+        android:id="@+id/sum_of_cash"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_above="@id/button_add_cash_log"
+        android:text="@string/default_sum_value" />
+     
+    <LinearLayout 
         android:id="@+id/cash_log"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@id/sum_of_cash"
         android:layout_below="@id/today"
         android:orientation="vertical"
         android:paddingLeft="16dp"
@@ -26,11 +41,6 @@
         </ListView>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/button_add_cash_log"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:text="@string/string_of_add_cash_button" />
+    
 
 </RelativeLayout>
