@@ -1,5 +1,6 @@
 package kr.lindol.mycashbook;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -22,7 +23,8 @@ public class CustomList extends ArrayAdapter<CashLogItem> {
 
 	private Activity context;
 	private ArrayList<CashLogItem> cashLogList = null;
-
+	private DecimalFormat df = new DecimalFormat("#,##0");
+	
 	public CustomList(Activity context, ArrayList<CashLogItem> cashLogList) {
 		super(context, R.layout.list_single, cashLogList);
 		this.context = context;
@@ -39,7 +41,8 @@ public class CustomList extends ArrayAdapter<CashLogItem> {
 		textTag.setText(cashLogList.get(position).getTag());
 
 		TextView textPrice = (TextView) rowView.findViewById(R.id.price);
-		textPrice.setText(String.valueOf(cashLogList.get(position).getPrice()));
+		
+		textPrice.setText(df.format(cashLogList.get(position).getPrice()));
 
 		return rowView;
 	}
