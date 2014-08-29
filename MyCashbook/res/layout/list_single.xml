@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:weightSum="10" >
 
-    <TableRow>
+    <TextView
+        android:id="@+id/tag"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_weight="7" >
+    </TextView>
 
-        <TextView
-            android:id="@+id/tag"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp" >
-        </TextView>
+    <TextView
+        android:id="@+id/price"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_weight="3"
+        android:gravity="end">
+    </TextView>
 
-        <TextView
-            android:id="@+id/price"
-            android:layout_width="100dp"
-            android:layout_height="50dp" >
-        </TextView>
-    </TableRow>
-
-</TableLayout>
+</LinearLayout>
