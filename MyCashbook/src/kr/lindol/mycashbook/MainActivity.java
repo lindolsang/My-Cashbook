@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.method.DateTimeKeyListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -71,6 +71,10 @@ public class MainActivity extends Activity {
 				
 				// update sum of cash
 				computeSumOfCash();
+				
+				// open addCashlogActivity
+				Intent intent = new Intent(MainActivity.this, AddCashLogActivity.class);
+				startActivity(intent);
 			}
 		});
 	}

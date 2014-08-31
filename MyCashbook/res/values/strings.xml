@@ -7,5 +7,9 @@
     <string name="string_total">0</string>
     <string name="string_of_add_cash_button">입력</string>
     <string name="default_sum_value">0</string>
+    <string name="string_item_tag">항목</string>
+    <string name="string_value_price">금액</string>
+    <string name="button_close">닫기</string>
+    <string name="button_add">입력</string>
 
 </resources>
