@@ -3,7 +3,7 @@
 
     <string name="app_name">MyCashbook</string>
     <string name="hello_world">Hello world!</string>
-    <string name="string_date">08-24, 2004</string>
+    <string name="string_date">2004/08/24</string>
     <string name="string_total">0</string>
     <string name="string_of_add_cash_button">입력</string>
     <string name="default_sum_value">0</string>
@@ -11,5 +11,9 @@
     <string name="string_value_price">금액</string>
     <string name="button_close">닫기</string>
     <string name="button_add">입력</string>
+    <string name="alert_string_added_cashlog_item">AddCashlogActivity is finished, user added %d items</string>
+    <string name="alert_string_empty_tag_text">You should input your subject</string>
+    <string name="alert_string_added_your_item">Your item is added</string>
+    <string name="alert_string_empty_age">Your item is added</string>
 
 </resources>
