@@ -3,6 +3,8 @@ package kr.lindol.mycashbook;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Currency;
 import java.util.Date;
 
 import kr.lindol.mycashbook.db.CashLogContract.CashLogEntry;
@@ -14,6 +16,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.provider.SyncStateContract.Columns;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -45,6 +48,8 @@ public class MainActivity extends Activity {
 
 	private CashLogDbHelper cashLogDbHelper = null;
 
+	private Calendar currentDate = Calendar.getInstance();
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -53,14 +58,82 @@ public class MainActivity extends Activity {
 		// creating dbHelper
 		cashLogDbHelper = new CashLogDbHelper(getApplicationContext());
 
+		displaycashLog();
+
+		Button addButton = (Button) findViewById(R.id.button_add_cash_log);
+		addButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+				// open addCashlogActivity
+				Intent intent = new Intent(MainActivity.this,
+						AddCashLogActivity.class);
+				startActivityForResult(intent, ADD_CASHLOG);
+			}
+		});
+		
+		Button yesterdayButton = (Button) findViewById(R.id.button_yesterday);
+		yesterdayButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// go yesterday
+				currentDate.add(Calendar.DAY_OF_YEAR, -1);
+				displaycashLog();
+			}
+		});
+		
+		Button tomorrowButton = (Button)findViewById(R.id.button_tomorrow);
+		tomorrowButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+				// go tomorrow
+				currentDate.add(Calendar.DAY_OF_YEAR, 1);
+				displaycashLog();
+			}
+		});
+		
+		Button todayButton = (Button)findViewById(R.id.button_today);
+		todayButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				currentDate = Calendar.getInstance();
+				displaycashLog();
+			}
+		});
+
+	}
+
+	/**
+	 * This method is 
+	 * display cashlog in listview
+	 * 
+	 * I refer http://tutorials.jenkov.com/java-date-time/java-util-calendar.html
+	 * 
+	 */
+	private void displaycashLog() {
+		
+		// reset
+		cashlogList.clear();
+		
 		// today display to textview
 		TextView todayTextView = (TextView) findViewById(R.id.today);
-		Date today = new Date();
-		todayTextView.setText(String.format("%d-%d, %d", today.getDate(),
-				today.getMonth() + 1, (1900 + today.getYear())));
 
+		// display current date
+		SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd");
+		todayTextView.setText(dateFormater.format(new Date(currentDate.getTimeInMillis())));
+
+		
+		// display cashlog in today
+		SimpleDateFormat todayFormater = new SimpleDateFormat("yyyyMMdd");
+		String today = todayFormater.format(currentDate.getTimeInMillis());
+		
 		// read cashlog in cashLog Db
-		readCashLogInDb();
+		readCashLogInDb(today);
 
 		// do show cashlog
 		adapter = new CustomList(MainActivity.this, cashlogList);
@@ -78,22 +151,8 @@ public class MainActivity extends Activity {
 
 			}
 		});
-
+		
 		computeSumOfCash();
-
-		Button addButton = (Button) findViewById(R.id.button_add_cash_log);
-		addButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-
-				// open addCashlogActivity
-				Intent intent = new Intent(MainActivity.this,
-						AddCashLogActivity.class);
-				startActivityForResult(intent, ADD_CASHLOG);
-			}
-		});
-
 	}
 
 	/**
@@ -102,7 +161,7 @@ public class MainActivity extends Activity {
 	 * I refer http://stackoverflow.com/questions/4920528/iterate-through-rows-from-sqlite-query
 	 *   and http://developer.android.com/training/basics/data-storage/databases.html#DefineContract
 	 */
-	private void readCashLogInDb() {
+	private void readCashLogInDb(String date) {
 		SQLiteDatabase db = cashLogDbHelper.getReadableDatabase();
 
 		// Define a projection that specifies which columns from the database
@@ -114,8 +173,8 @@ public class MainActivity extends Activity {
 		// How you want the results sorted in the resulting Cursor
 		String sortOrder = CashLogEntry.COLUMN_NAME_MONTH_TAG + " DESC";
 
-		String selection = null;
-		String[] selectionArgs = null;
+		String selection = CashLogEntry.COLUMN_NAME_DAY_TAG + "= ?";
+		String[] selectionArgs = new String[]{date};
 
 		Cursor c = db.query(CashLogEntry.TABLE_NAME, // The table to query
 				projection, // The columns to return

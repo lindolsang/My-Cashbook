@@ -15,5 +15,9 @@
     <string name="alert_string_empty_tag_text">You should input your subject</string>
     <string name="alert_string_added_your_item">Your item is added</string>
     <string name="alert_string_empty_age">Your item is added</string>
+    <string name="string_yesterday">yesterday</string>
+    <string name="string_today">today</string>
+    <string name="string_tomorrow">tomorrow</string>
+    <color name="color_sum_of_cash">#0000FF</color>
 
 </resources>

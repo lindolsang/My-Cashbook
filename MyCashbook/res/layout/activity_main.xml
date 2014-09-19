@@ -8,7 +8,8 @@
         android:id="@+id/today"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/string_date" />
+        android:text="@string/string_date"
+        android:textSize="26dp" />
 
     <Button
         android:id="@+id/button_add_cash_log"
@@ -17,13 +18,44 @@
         android:layout_alignParentBottom="true"
         android:text="@string/string_of_add_cash_button" />
 
+    <LinearLayout
+        android:id="@+id/navigate_of_date"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/button_add_cash_log"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp" >
+
+        <Button
+            android:id="@+id/button_yesterday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/string_yesterday" />
+
+        <Button
+            android:id="@+id/button_today"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/string_today" />
+
+        <Button
+            android:id="@+id/button_tomorrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="@string/string_tomorrow" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/sum_of_cash"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
+        android:layout_above="@id/navigate_of_date"
         android:gravity="end"
-        android:layout_above="@id/button_add_cash_log"
-        android:text="@string/default_sum_value" />
+        android:text="@string/default_sum_value"
+        android:textSize="26dp"
+        android:textColor="@color/color_sum_of_cash" />
 
     <LinearLayout
         android:id="@+id/cash_log"
