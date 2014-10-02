@@ -67,6 +67,8 @@ public class AddCashLogActivity extends Activity {
 
 				Toast.makeText(getApplicationContext(), getString(R.string.alert_string_added_your_item),
 						Toast.LENGTH_SHORT).show();
+				
+				clearInputField();
 			}
 		});
 
@@ -83,5 +85,16 @@ public class AddCashLogActivity extends Activity {
 				finish();
 			}
 		});
+	}
+
+	/**
+	 * clear input data field
+	 */
+	protected void clearInputField() {
+		EditText tagText = (EditText)findViewById(R.id.string_of_tag);
+		tagText.setText("");
+		
+		EditText priceText = (EditText)findViewById(R.id.value_of_price);
+		priceText.setText("");
 	}
 }

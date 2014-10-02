@@ -31,7 +31,7 @@ import android.widget.Toast;
  * This class is Main Class in application
  * 
  * I refer http://entireboy.egloos.com/viewer/4152244
- * 
+ *   and http://stackoverflow.com/questions/5134231/android-closing-activity-programatically
  * @author lindol
  * 
  */
@@ -105,7 +105,16 @@ public class MainActivity extends Activity {
 				displaycashLog();
 			}
 		});
-
+		
+		Button closeAppButton = (Button)findViewById(R.id.button_close_app);
+		closeAppButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// finish MainActivity
+				finish();
+			}
+		});
 	}
 
 	/**
@@ -215,6 +224,15 @@ public class MainActivity extends Activity {
 		DecimalFormat df = new DecimalFormat("#,##0");
 
 		sumOfCashView.setText(df.format(sum));
+		
+		// update sum of month
+		
+		TextView sumOfMonth = (TextView) findViewById(R.id.sum_of_month);
+
+		// zero base month of year
+		int thisMonth = currentDate.get(Calendar.MONTH) + 1;
+		sumOfMonth.setText(String.format("%d월 0", thisMonth));
+		
 	}
 
 	@Override

@@ -11,7 +11,7 @@
     <string name="string_value_price">금액</string>
     <string name="button_close">닫기</string>
     <string name="button_add">입력</string>
-    <string name="alert_string_added_cashlog_item">AddCashlogActivity is finished, user added %d items</string>
+    <string name="alert_string_added_cashlog_item">Added your %d items</string>
     <string name="alert_string_empty_tag_text">You should input your subject</string>
     <string name="alert_string_added_your_item">Your item is added</string>
     <string name="alert_string_empty_age">Your item is added</string>
@@ -19,5 +19,8 @@
     <string name="string_today">today</string>
     <string name="string_tomorrow">tomorrow</string>
     <color name="color_sum_of_cash">#0000FF</color>
+    <string name="button_close_app">닫기</string>
+    <color name="color_sum_of_month">#9370DB</color>
+    <string name="default_sum_of_month_value">9월 10,000</string>
 
 </resources>
