@@ -1,3 +1,4 @@
+
 package kr.lindol.mycashbook;
 
 import java.util.ArrayList;
@@ -12,7 +13,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 /**
- * 
  * This class can add cashlog to listview in MainActivity
  * 
  * I refer on website
@@ -21,80 +21,86 @@ import android.widget.Toast;
  *    - how to passing ArrayList or CustomObject to Activity, http://arsviator.blogspot.kr/2010/10/parcelable%EC%9D%84-%EC%82%AC%EC%9A%A9%ED%95%9C-%EC%98%A4%EB%B8%8C%EC%A0%9D%ED%8A%B8-%EC%A0%84%EB%8B%AC-object.html
  *    
  * @author lindol
- * 
  */
 public class AddCashLogActivity extends Activity {
 
-	/**
-	 * adding data
-	 */
-	private ArrayList<CashLogItem> dataList = new ArrayList<CashLogItem>();
+    /**
+     * adding data
+     */
+    private ArrayList<CashLogItem> dataList = new ArrayList<CashLogItem>();
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.add_cashlog);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.add_cashlog);
 
-		Button addButton = (Button) findViewById(R.id.button_item_add);
-		addButton.setOnClickListener(new OnClickListener() {
+        Button addButton = (Button) findViewById(R.id.button_item_add);
+        addButton.setOnClickListener(new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
+            @Override
+            public void onClick(View v) {
 
-				EditText tagText = (EditText) findViewById(R.id.string_of_tag);
-				EditText priceText = (EditText) findViewById(R.id.value_of_price);
+                EditText tagText = (EditText) findViewById(R.id.string_of_tag);
+                EditText priceText = (EditText) findViewById(R.id.value_of_price);
 
-				String tagTextValue = tagText.getText().toString();
+                String tagTextValue = tagText.getText().toString();
 
-				if (tagTextValue.length() == 0) {
-					Toast.makeText(getApplicationContext(),
-							getString(R.string.alert_string_empty_tag_text), Toast.LENGTH_SHORT)
-							.show();
-					return;
-				}
+                if (tagTextValue.length() == 0) {
+                    Toast.makeText(getApplicationContext(),
+                            getString(R.string.alert_string_empty_tag_text), Toast.LENGTH_SHORT)
+                            .show();
+                    return;
+                }
 
-				int inputPrice = 0;
-				try {
-				inputPrice = Integer.valueOf(priceText.getText().toString());
+                int inputPrice = 0;
+                try {
+                    inputPrice = Integer.valueOf(priceText.getText().toString());
 
-				}catch(NumberFormatException ne) {
-					inputPrice = 0;
-					Toast.makeText(getApplicationContext(), getString(R.string.alert_string_empty_tag_text), Toast.LENGTH_SHORT).show();
-					return;
-				}
-				
-				dataList.add(new CashLogItem(tagTextValue, inputPrice));
+                } catch (NumberFormatException ne) {
+                    inputPrice = 0;
+                    Toast.makeText(getApplicationContext(),
+                            getString(R.string.alert_string_empty_tag_text), Toast.LENGTH_SHORT)
+                            .show();
+                    return;
+                }
 
-				Toast.makeText(getApplicationContext(), getString(R.string.alert_string_added_your_item),
-						Toast.LENGTH_SHORT).show();
-				
-				clearInputField();
-			}
-		});
+                dataList.add(new CashLogItem(tagTextValue, inputPrice));
 
-		Button closeButton = (Button) findViewById(R.id.button_close);
-		closeButton.setOnClickListener(new OnClickListener() {
+                Toast.makeText(getApplicationContext(),
+                        getString(R.string.alert_string_added_your_item),
+                        Toast.LENGTH_SHORT).show();
 
-			@Override
-			public void onClick(View v) {
+                clearInputField();
+                
+                // set focus
+                // I refer http://stackoverflow.com/questions/1796671/move-focus-from-one-edit-text-box-to-another
+                tagText.requestFocus();
+            }
+        });
 
-				// set cashlog list
-				Intent passingData = new Intent();
-				passingData.putParcelableArrayListExtra("addingList", dataList);
-				setResult(77, passingData);
-				finish();
-			}
-		});
-	}
+        Button closeButton = (Button) findViewById(R.id.button_close);
+        closeButton.setOnClickListener(new OnClickListener() {
 
-	/**
-	 * clear input data field
-	 */
-	protected void clearInputField() {
-		EditText tagText = (EditText)findViewById(R.id.string_of_tag);
-		tagText.setText("");
-		
-		EditText priceText = (EditText)findViewById(R.id.value_of_price);
-		priceText.setText("");
-	}
+            @Override
+            public void onClick(View v) {
+
+                // set cashlog list
+                Intent passingData = new Intent();
+                passingData.putParcelableArrayListExtra("addingList", dataList);
+                setResult(77, passingData);
+                finish();
+            }
+        });
+    }
+
+    /**
+     * clear input data field
+     */
+    protected void clearInputField() {
+        EditText tagText = (EditText) findViewById(R.id.string_of_tag);
+        tagText.setText("");
+
+        EditText priceText = (EditText) findViewById(R.id.value_of_price);
+        priceText.setText("");
+    }
 }
