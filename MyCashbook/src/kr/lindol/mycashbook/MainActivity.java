@@ -289,7 +289,7 @@ public class MainActivity extends Activity {
                         .getPrice()));
                 insertCashLogIntoDb(
                         new CashLogItem(cashLog.getTag(), cashLog.getPrice()),
-                        new Date());
+                        new Date(currentDate.getTimeInMillis()));
                 /*
                  * add cashLog to sumOfThisMonth value because we do not call
                  * computeSumOfMonthInDb function.
