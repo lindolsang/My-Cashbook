@@ -25,6 +25,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/layout_item_price"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/layout_item_tag"
@@ -34,8 +35,8 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:text="@string/string_value_price"
-            android:layout_weight="4" />
+            android:layout_weight="4"
+            android:text="@string/string_value_price" />
 
         <EditText
             android:id="@+id/value_of_price"
@@ -43,6 +44,26 @@
             android:layout_height="50dp"
             android:layout_weight="6"
             android:inputType="numberDecimal" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layout_item_price"
+        android:orientation="horizontal"
+        android:weightSum="10" >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="4"
+            android:text="@string/string_comment" />
+
+        <EditText
+            android:id="@+id/value_of_comment"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="6" />
     </LinearLayout>
 
     <LinearLayout

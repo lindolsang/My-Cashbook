@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -165,6 +166,23 @@ public class MainActivity extends Activity {
             }
         });
 
+        /**
+         * I refer below link.
+         * - http://stackoverflow.com/questions/8846707/how-to-implement-a-long-click-listener-on-a-listview
+         */
+        list.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+                // TODO I will make to popup window for modify cashlog
+                Toast.makeText(MainActivity.this, "Your item longclick at " + position,
+                        Toast.LENGTH_SHORT).show();
+
+                return true;
+            }
+        });
+        
         computeSumOfCash();
     }
 
