@@ -63,7 +63,10 @@
             android:id="@+id/value_of_comment"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:layout_weight="6" />
+            android:layout_weight="6"
+            android:hint="implement not yet"
+            android:imeOptions="actionDone"
+            android:singleLine="true" />
     </LinearLayout>
 
     <LinearLayout
