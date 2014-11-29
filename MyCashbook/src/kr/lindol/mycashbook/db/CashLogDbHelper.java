@@ -45,8 +45,10 @@ public class CashLogDbHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL(SQL_DELETE_ENTRIES);
-		onCreate(db);
+		if (oldVersion != newVersion) {
+			db.execSQL(SQL_DELETE_ENTRIES);
+			onCreate(db);
+		}
 	}
 
 	@Override
