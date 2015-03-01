@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 /**
@@ -16,15 +17,16 @@ import android.widget.TextView;
  * @see http 
  *      ://www.learn2crack.com/2013/10/android-custom-listview-images-text-example
  *      .html i refer code in
- *      'http://www.learn2crack.com/2013/10/android-custom-listview-images-text-example.h
- *      t m l '
+ *      'http://www.learn2crack.com/2013/10/android-custom-listview-images-text-example.
+ *      h t m l '
  */
 public class CustomList extends ArrayAdapter<CashLogItem> {
 
 	private Activity context;
 	private ArrayList<CashLogItem> cashLogList = null;
 	private DecimalFormat df = new DecimalFormat("#,##0");
-	
+	private boolean isVisibleCashlogCheckBox = false;
+
 	public CustomList(Activity context, ArrayList<CashLogItem> cashLogList) {
 		super(context, R.layout.list_single, cashLogList);
 		this.context = context;
@@ -41,9 +43,39 @@ public class CustomList extends ArrayAdapter<CashLogItem> {
 		textTag.setText(cashLogList.get(position).getTag());
 
 		TextView textPrice = (TextView) rowView.findViewById(R.id.price);
-		
+
 		textPrice.setText(df.format(cashLogList.get(position).getPrice()));
 
+		// For checkbox
+		CheckBox isSelectedBox = (CheckBox) rowView
+				.findViewById(R.id.checked_cash_log);
+		if (isVisibleCashlogCheckBox) {
+			isSelectedBox.setVisibility(View.VISIBLE);
+		} else {
+			isSelectedBox.setVisibility(View.GONE);
+		}
 		return rowView;
+	}
+
+	/**
+	 * This method will return state of visible for cashlog checkbox
+	 * @return
+	 */
+	public boolean isVisibleCashlogCheckBox() {
+		return isVisibleCashlogCheckBox;
+	}
+
+	/**
+	 * This method is setter for state of visible for cashlog checkbox
+	 * if isVisibleCashlogCheckbox is true
+	 *  checkbox will show in listitem
+	 * if isVisibleCashlogCheckboxis false
+	 *  checkbox will disappear in listitem
+	 *   
+	 * @param isVisibleCashlogCheckBox
+	 */
+	public void setVisibleCashlogCheckBox(boolean isVisibleCashlogCheckBox) {
+		this.isVisibleCashlogCheckBox = isVisibleCashlogCheckBox;
+		notifyDataSetChanged();
 	}
 }

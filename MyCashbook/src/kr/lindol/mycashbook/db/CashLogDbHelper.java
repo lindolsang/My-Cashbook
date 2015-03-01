@@ -1,8 +1,5 @@
 package kr.lindol.mycashbook.db;
 
-import java.util.Date;
-
-import kr.lindol.mycashbook.CashLogItem;
 import kr.lindol.mycashbook.db.CashLogContract.CashLogEntry;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
