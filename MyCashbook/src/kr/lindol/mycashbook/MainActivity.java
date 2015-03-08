@@ -51,6 +51,8 @@ public class MainActivity extends Activity {
 
 	private int sumOfThisMonth;
 
+	private int numberOfSelected = 0;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -63,14 +65,25 @@ public class MainActivity extends Activity {
 
 		Button selectButton = (Button) findViewById(R.id.button_select_item);
 		selectButton.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
+
+				// reset to zero value for initial
+				numberOfSelected = 0;
+
 				// change state of visible for checkbox in listitem
-				adapter.setVisibleCashlogCheckBox(!adapter.isVisibleCashlogCheckBox());
+				if (adapter.isVisibleCashlogCheckBox()) {
+					int listCount = adapter.getCount();
+					for( int i = 0; i < listCount; i++) {
+						adapter.getItem(i).setChecked(false);
+					}
+				}
+				adapter.setVisibleCashlogCheckBox(!adapter
+						.isVisibleCashlogCheckBox());
 			}
 		});
-		
+
 		Button addButton = (Button) findViewById(R.id.button_add_cash_log);
 		addButton.setOnClickListener(new OnClickListener() {
 
@@ -169,11 +182,37 @@ public class MainActivity extends Activity {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 
+				if (adapter.isVisibleCashlogCheckBox()) {
+					CashLogItem selectedItem = adapter.getItem(position);
+					selectedItem.setChecked(!selectedItem.isChecked());
+
+					Log.d("MyCashbook", String.valueOf(selectedItem.isChecked()));
+					
+					if (selectedItem.isChecked()) {
+						plusNumberOfSelected();
+					} else {
+						minusNumberOfSelected();
+					}
+					// update state of checkbox in cashloglsit
+					adapter.notifyDataSetChanged();
+					
+					// change state of visible for delete button
+					Button delButton = (Button) findViewById(R.id.button_delete_item);
+
+					Log.d("MyCashbook", String.format("selected: %d", getSelectedItemCount()));
+					if (getSelectedItemCount() > 0) {
+						delButton.setVisibility(View.VISIBLE);
+					} else {
+						delButton.setVisibility(View.GONE);
+					}
+				}
+
 				Toast.makeText(MainActivity.this,
 						"You Clicked at " + cashlogList.get(position).getTag(),
 						Toast.LENGTH_SHORT).show();
 
 			}
+
 		});
 
 		/**
@@ -371,5 +410,28 @@ public class MainActivity extends Activity {
 				CashLogEntry.COLUMN_NAME_NULLABLE, values);
 
 		Log.d("MyCashbook", String.format("newRowId: %d", newRowId));
+	}
+
+	/**
+	 * This method will return count of selected cashlogItem
+	 * 
+	 * @return
+	 */
+	private int getSelectedItemCount() {
+		return numberOfSelected;
+	}
+
+	/**
+	 * This method just plus 1 to value of numberOfSelected
+	 */
+	private void minusNumberOfSelected() {
+		numberOfSelected--;
+	}
+
+	/**
+	 * This method just minus 2 to value of numberOfSelected
+	 */
+	private void plusNumberOfSelected() {
+		numberOfSelected++;
 	}
 }

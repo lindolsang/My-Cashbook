@@ -4,21 +4,22 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- *  This class is value object for listview.
- *   
+ * This class is value object for listview.
+ * 
  * @author lindol
- *
+ * 
  */
 
 public class CashLogItem implements Parcelable {
 	private String tag = null;
 	private int price = 0;
+	private boolean isChecked;
 
 	public CashLogItem(String tag, int price) {
 		this.tag = tag;
 		this.price = price;
 	}
-	
+
 	public CashLogItem(Parcel in) {
 		this.tag = in.readString();
 		this.price = in.readInt();
@@ -63,4 +64,17 @@ public class CashLogItem implements Parcelable {
 			return new CashLogItem[size];
 		}
 	};
+
+	/**
+	 * This method will return value of checkbox in CashLogItem
+	 * 
+	 * @return
+	 */
+	public boolean isChecked() {
+		return isChecked;
+	}
+
+	public void setChecked(boolean checked) {
+		isChecked = checked;
+	}
 }

@@ -46,13 +46,17 @@ public class CustomList extends ArrayAdapter<CashLogItem> {
 
 		textPrice.setText(df.format(cashLogList.get(position).getPrice()));
 
+		CheckBox cashlogSelected = (CheckBox) rowView.findViewById(R.id.checked_cash_log);
+
 		// For checkbox
 		CheckBox isSelectedBox = (CheckBox) rowView
 				.findViewById(R.id.checked_cash_log);
 		if (isVisibleCashlogCheckBox) {
 			isSelectedBox.setVisibility(View.VISIBLE);
+			cashlogSelected.setChecked(cashLogList.get(position).isChecked());
 		} else {
 			isSelectedBox.setVisibility(View.GONE);
+			cashlogSelected.setChecked(false);
 		}
 		return rowView;
 	}
