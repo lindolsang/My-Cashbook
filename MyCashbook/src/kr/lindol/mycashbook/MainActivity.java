@@ -70,7 +70,7 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 
 				// reset to zero value for initial
-				numberOfSelected = 0;
+				resetValueOfselectedItem();
 
 				// change state of visible for checkbox in listitem
 				if (adapter.isVisibleCashlogCheckBox()) {
@@ -84,6 +84,15 @@ public class MainActivity extends Activity {
 			}
 		});
 
+		Button deleteButton = (Button) findViewById(R.id.button_delete_item);
+		deleteButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+			}
+		});
+		
 		Button addButton = (Button) findViewById(R.id.button_add_cash_log);
 		addButton.setOnClickListener(new OnClickListener() {
 
@@ -147,6 +156,11 @@ public class MainActivity extends Activity {
 	 */
 	private void displaycashLog() {
 
+		// reset value of selectedItem
+		resetValueOfselectedItem();
+		// change state of visible for delete button
+		DoInvisibleOrVisibleDeleteButton();
+		
 		// reset
 		cashlogList.clear();
 
@@ -196,15 +210,8 @@ public class MainActivity extends Activity {
 					// update state of checkbox in cashloglsit
 					adapter.notifyDataSetChanged();
 					
-					// change state of visible for delete button
-					Button delButton = (Button) findViewById(R.id.button_delete_item);
-
-					Log.d("MyCashbook", String.format("selected: %d", getSelectedItemCount()));
-					if (getSelectedItemCount() > 0) {
-						delButton.setVisibility(View.VISIBLE);
-					} else {
-						delButton.setVisibility(View.GONE);
-					}
+					// check delete button for show button or does'n show button
+					DoInvisibleOrVisibleDeleteButton();
 				}
 
 				Toast.makeText(MainActivity.this,
@@ -236,6 +243,22 @@ public class MainActivity extends Activity {
 		});
 
 		computeSumOfCash();
+	}
+
+	/**
+	 * This method can do visible and invisible by getSelectedItemCount()
+	 *  if count value is 0, delete button will be invisible.
+	 *  
+	 *  @see getSelectedItemCount()
+	 */
+	private void DoInvisibleOrVisibleDeleteButton() {
+		Button delButton = (Button) findViewById(R.id.button_delete_item);
+
+		if (getSelectedItemCount() > 0) {
+			delButton.setVisibility(View.VISIBLE);
+		} else {
+			delButton.setVisibility(View.GONE);
+		}
 	}
 
 	/**
@@ -433,5 +456,12 @@ public class MainActivity extends Activity {
 	 */
 	private void plusNumberOfSelected() {
 		numberOfSelected++;
+	}
+	
+	/**
+	 * This method can set to number of selectItem value to zero value(0) 
+	 */
+	private void resetValueOfselectedItem() {
+		numberOfSelected = 0;
 	}
 }
