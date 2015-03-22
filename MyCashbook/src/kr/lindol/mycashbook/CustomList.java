@@ -17,8 +17,8 @@ import android.widget.TextView;
  * @see http 
  *      ://www.learn2crack.com/2013/10/android-custom-listview-images-text-example
  *      .html i refer code in
- *      'http://www.learn2crack.com/2013/10/android-custom-listview-images-text-example.
- *      h t m l '
+ *      'http://www.learn2crack.com/2013/10/android-custom-listview-images-text-exam
+ *      p l e . h t m l '
  */
 public class CustomList extends ArrayAdapter<CashLogItem> {
 
@@ -46,7 +46,8 @@ public class CustomList extends ArrayAdapter<CashLogItem> {
 
 		textPrice.setText(df.format(cashLogList.get(position).getPrice()));
 
-		CheckBox cashlogSelected = (CheckBox) rowView.findViewById(R.id.checked_cash_log);
+		CheckBox cashlogSelected = (CheckBox) rowView
+				.findViewById(R.id.checked_cash_log);
 
 		// For checkbox
 		CheckBox isSelectedBox = (CheckBox) rowView
@@ -63,6 +64,7 @@ public class CustomList extends ArrayAdapter<CashLogItem> {
 
 	/**
 	 * This method will return state of visible for cashlog checkbox
+	 * 
 	 * @return
 	 */
 	public boolean isVisibleCashlogCheckBox() {
@@ -70,16 +72,49 @@ public class CustomList extends ArrayAdapter<CashLogItem> {
 	}
 
 	/**
-	 * This method is setter for state of visible for cashlog checkbox
-	 * if isVisibleCashlogCheckbox is true
-	 *  checkbox will show in listitem
-	 * if isVisibleCashlogCheckboxis false
-	 *  checkbox will disappear in listitem
-	 *   
+	 * This method is setter for state of visible for cashlog checkbox if
+	 * isVisibleCashlogCheckbox is true checkbox will show in listitem if
+	 * isVisibleCashlogCheckboxis false checkbox will disappear in listitem
+	 * 
 	 * @param isVisibleCashlogCheckBox
 	 */
 	public void setVisibleCashlogCheckBox(boolean isVisibleCashlogCheckBox) {
 		this.isVisibleCashlogCheckBox = isVisibleCashlogCheckBox;
 		notifyDataSetChanged();
+	}
+
+	/**
+	 * This method will return the counting value that is selected by user
+	 * 
+	 * @return
+	 */
+	public int computeSelectedItemsCount() {
+
+		int returnCount = 0;
+
+		for (CashLogItem logItem : cashLogList) {
+			if (logItem.isChecked()) {
+				returnCount = returnCount + 1;
+			}
+		}
+
+		return returnCount;
+	}
+
+	/**
+	 * This method will get to your selected item object as CashLogItem
+	 * 
+	 * @return
+	 */
+	public ArrayList<CashLogItem> getSelectedItemsToArrayList() {
+
+		ArrayList<CashLogItem> returnList = new ArrayList<CashLogItem>();
+
+		for (CashLogItem logItem : cashLogList) {
+			if (logItem.isChecked()) {
+				returnList.add(logItem);
+			}
+		}
+		return returnList;
 	}
 }

@@ -10,7 +10,9 @@ import kr.lindol.mycashbook.db.CashLogContract.CashLogEntry;
 import kr.lindol.mycashbook.db.CashLogDbHelper;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -53,10 +55,14 @@ public class MainActivity extends Activity {
 
 	private int numberOfSelected = 0;
 
+	private Activity mainActivity = null;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		mainActivity = this;
 
 		// creating dbHelper
 		cashLogDbHelper = new CashLogDbHelper(getApplicationContext());
@@ -75,7 +81,7 @@ public class MainActivity extends Activity {
 				// change state of visible for checkbox in listitem
 				if (adapter.isVisibleCashlogCheckBox()) {
 					int listCount = adapter.getCount();
-					for( int i = 0; i < listCount; i++) {
+					for (int i = 0; i < listCount; i++) {
 						adapter.getItem(i).setChecked(false);
 					}
 				}
@@ -86,13 +92,64 @@ public class MainActivity extends Activity {
 
 		Button deleteButton = (Button) findViewById(R.id.button_delete_item);
 		deleteButton.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				
+
+				// create dialog for confirming delete
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						mainActivity);
+
+				builder.setMessage(
+						String.format(
+								getString(R.string.confirm_delete_message),
+								adapter.computeSelectedItemsCount())).setTitle(
+						getString(R.string.confirm_delete_title));
+
+				// Add the buttons for cancel and doing delete
+
+				builder.setPositiveButton(getString(R.string.button_do_delete),
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+
+								ArrayList<CashLogItem> deletedList = adapter
+										.getSelectedItemsToArrayList();
+
+								int deleted = deleteCashLogFromDB(deletedList);
+
+								Toast.makeText(
+										getApplicationContext(),
+										String.format(
+												getString(R.string.alert_deleted_item_count_message),
+												deleted), Toast.LENGTH_SHORT)
+										.show();
+
+								// If list has been deleted row, Do read
+								// cashloglist from db again.
+								if (deleted > 0) {
+									displaycashLog();
+								}
+							}
+						});
+
+				builder.setNegativeButton(getString(R.string.button_do_cancel),
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+
+							}
+						});
+
+				AlertDialog dialog = builder.create();
+				dialog.show();
 			}
 		});
-		
+
 		Button addButton = (Button) findViewById(R.id.button_add_cash_log);
 		addButton.setOnClickListener(new OnClickListener() {
 
@@ -160,7 +217,7 @@ public class MainActivity extends Activity {
 		resetValueOfselectedItem();
 		// change state of visible for delete button
 		DoInvisibleOrVisibleDeleteButton();
-		
+
 		// reset
 		cashlogList.clear();
 
@@ -200,8 +257,9 @@ public class MainActivity extends Activity {
 					CashLogItem selectedItem = adapter.getItem(position);
 					selectedItem.setChecked(!selectedItem.isChecked());
 
-					Log.d("MyCashbook", String.valueOf(selectedItem.isChecked()));
-					
+					Log.d("MyCashbook",
+							String.valueOf(selectedItem.isChecked()));
+
 					if (selectedItem.isChecked()) {
 						plusNumberOfSelected();
 					} else {
@@ -209,15 +267,16 @@ public class MainActivity extends Activity {
 					}
 					// update state of checkbox in cashloglsit
 					adapter.notifyDataSetChanged();
-					
+
 					// check delete button for show button or does'n show button
 					DoInvisibleOrVisibleDeleteButton();
 				}
 
-				Toast.makeText(MainActivity.this,
-						"You Clicked at " + cashlogList.get(position).getTag(),
-						Toast.LENGTH_SHORT).show();
-
+				/*
+				 * Toast.makeText(MainActivity.this, "You Clicked at " +
+				 * cashlogList.get(position).getTag(),
+				 * Toast.LENGTH_SHORT).show();
+				 */
 			}
 
 		});
@@ -234,9 +293,10 @@ public class MainActivity extends Activity {
 					int position, long id) {
 
 				// TODO I will make to popup window for modify cashlog
-				Toast.makeText(MainActivity.this,
-						"Your item longclick at " + position,
-						Toast.LENGTH_SHORT).show();
+				/*
+				 * Toast.makeText(MainActivity.this, "Your item longclick at " +
+				 * position, Toast.LENGTH_SHORT).show();
+				 */
 
 				return true;
 			}
@@ -246,10 +306,10 @@ public class MainActivity extends Activity {
 	}
 
 	/**
-	 * This method can do visible and invisible by getSelectedItemCount()
-	 *  if count value is 0, delete button will be invisible.
-	 *  
-	 *  @see getSelectedItemCount()
+	 * This method can do visible and invisible by getSelectedItemCount() if
+	 * count value is 0, delete button will be invisible.
+	 * 
+	 * @see getSelectedItemCount()
 	 */
 	private void DoInvisibleOrVisibleDeleteButton() {
 		Button delButton = (Button) findViewById(R.id.button_delete_item);
@@ -328,13 +388,16 @@ public class MainActivity extends Activity {
 
 		c.moveToFirst();
 		for (; c.isAfterLast() == false; c.moveToNext()) {
+
+			long itemRowId = c.getLong(c
+					.getColumnIndexOrThrow(CashLogEntry._ID));
 			String tag = c
 					.getString(c
 							.getColumnIndexOrThrow(CashLogEntry.COLUMN_NAME_ITEM_TITLE));
 			long price = c.getLong(c
 					.getColumnIndexOrThrow(CashLogEntry.COLUMN_NAME_PRICE));
 
-			cashlogList.add(new CashLogItem(tag, (int) price));
+			cashlogList.add(new CashLogItem(itemRowId, tag, (int) price));
 		}
 	};
 
@@ -361,7 +424,8 @@ public class MainActivity extends Activity {
 
 		// zero base month of year
 		int thisMonth = currentDate.get(Calendar.MONTH) + 1;
-		sumOfMonth.setText(String.format("%d월 %s", thisMonth,
+		sumOfMonth.setText(String.format(
+				getString(R.string.display_date_format), thisMonth,
 				df.format(sumOfThisMonth)));
 
 	}
@@ -378,11 +442,12 @@ public class MainActivity extends Activity {
 			itemCount = itemList.size();
 
 			for (CashLogItem cashLog : itemList) {
-				adapter.add(new CashLogItem(cashLog.getTag(), cashLog
-						.getPrice()));
-				insertCashLogIntoDb(
-						new CashLogItem(cashLog.getTag(), cashLog.getPrice()),
-						new Date(currentDate.getTimeInMillis()));
+				CashLogItem insertedItem = insertCashLogIntoDb(
+						cashLog.getTag(), cashLog.getPrice(), new Date(
+								currentDate.getTimeInMillis()));
+
+				adapter.add(insertedItem);
+
 				/*
 				 * add cashLog to sumOfThisMonth value because we do not call
 				 * computeSumOfMonthInDb function.
@@ -409,7 +474,16 @@ public class MainActivity extends Activity {
 	 * @param cashLogItem
 	 * @param date
 	 */
-	private void insertCashLogIntoDb(CashLogItem cashLogItem, Date date) {
+	/**
+	 * Insert new cashlog into Database
+	 * 
+	 * @param tag
+	 * @param price
+	 * @param date
+	 *            when you want to insert to date
+	 * @return
+	 */
+	private CashLogItem insertCashLogIntoDb(String tag, int price, Date date) {
 
 		// Gets the data repository in write mode
 		SQLiteDatabase db = cashLogDbHelper.getWritableDatabase();
@@ -424,8 +498,8 @@ public class MainActivity extends Activity {
 		values.put(CashLogEntry.COLUMN_NAME_MONTH_TAG,
 				monthTagFormat.format(date));
 		values.put(CashLogEntry.COLUMN_NAME_DAY_TAG, dayTagFormat.format(date));
-		values.put(CashLogEntry.COLUMN_NAME_ITEM_TITLE, cashLogItem.getTag());
-		values.put(CashLogEntry.COLUMN_NAME_PRICE, cashLogItem.getPrice());
+		values.put(CashLogEntry.COLUMN_NAME_ITEM_TITLE, tag);
+		values.put(CashLogEntry.COLUMN_NAME_PRICE, price);
 
 		// Insert the new row, returning the primary key value of the new row
 		long newRowId;
@@ -433,6 +507,36 @@ public class MainActivity extends Activity {
 				CashLogEntry.COLUMN_NAME_NULLABLE, values);
 
 		Log.d("MyCashbook", String.format("newRowId: %d", newRowId));
+
+		return new CashLogItem(newRowId, tag, price);
+	}
+
+	/**
+	 * This method will be deleted by rowId I refered this link.
+	 * http://developer.android.com/training/basics/data-storage/databases.html
+	 * 
+	 * @param deletedList
+	 */
+	private int deleteCashLogFromDB(ArrayList<CashLogItem> deletedList) {
+
+		int affectRows = 0;
+
+		// Gets the data repository in write mode
+		SQLiteDatabase db = cashLogDbHelper.getWritableDatabase();
+
+		// Define 'where' part of query
+		String selection = CashLogEntry._ID + " = ? ";
+
+		// doing delete
+		for (CashLogItem deleteItem : deletedList) {
+			String[] selectionArgs = { String.valueOf(deleteItem.getRowId()) };
+			int rows = db.delete(CashLogEntry.TABLE_NAME, selection,
+					selectionArgs);
+			if (rows > 0) {
+				affectRows = affectRows + rows;
+			}
+		}
+		return affectRows;
 	}
 
 	/**
@@ -457,9 +561,9 @@ public class MainActivity extends Activity {
 	private void plusNumberOfSelected() {
 		numberOfSelected++;
 	}
-	
+
 	/**
-	 * This method can set to number of selectItem value to zero value(0) 
+	 * This method can set to number of selectItem value to zero value(0)
 	 */
 	private void resetValueOfselectedItem() {
 		numberOfSelected = 0;

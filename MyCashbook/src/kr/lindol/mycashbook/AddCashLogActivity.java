@@ -25,6 +25,10 @@ import android.widget.Toast;
 public class AddCashLogActivity extends Activity {
 
     /**
+     * this is dummy ROWID for passing CashLogList to parent activity
+     */
+    private static final int DUMMY_ROW_ID = -1;
+	/**
      * adding data
      */
     private ArrayList<CashLogItem> dataList = new ArrayList<CashLogItem>();
@@ -64,7 +68,7 @@ public class AddCashLogActivity extends Activity {
                     return;
                 }
 
-                dataList.add(new CashLogItem(tagTextValue, inputPrice));
+                dataList.add(new CashLogItem(DUMMY_ROW_ID, tagTextValue, inputPrice));
 
                 Toast.makeText(getApplicationContext(),
                         getString(R.string.alert_string_added_your_item),

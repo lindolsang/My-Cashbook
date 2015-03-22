@@ -11,18 +11,29 @@ import android.os.Parcelable;
  */
 
 public class CashLogItem implements Parcelable {
+	private long rowId;
 	private String tag = null;
 	private int price = 0;
 	private boolean isChecked;
 
-	public CashLogItem(String tag, int price) {
+	public CashLogItem(long rowId, String tag, int price) {
+		this.rowId = rowId;
 		this.tag = tag;
 		this.price = price;
 	}
 
 	public CashLogItem(Parcel in) {
+		this.rowId = in.readLong();
 		this.tag = in.readString();
 		this.price = in.readInt();
+	}
+
+	public void setRowId(long rowId) {
+		this.rowId = rowId;
+	}
+
+	public long getRowId() {
+		return rowId;
 	}
 
 	public String getTag() {
@@ -48,6 +59,7 @@ public class CashLogItem implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeLong(rowId);
 		dest.writeString(tag);
 		dest.writeInt(price);
 	}

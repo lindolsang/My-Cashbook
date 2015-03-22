@@ -18,10 +18,20 @@
     <string name="string_yesterday">yesterday</string>
     <string name="string_today">today</string>
     <string name="string_tomorrow">tomorrow</string>
+
     <color name="color_sum_of_cash">#0000FF</color>
+
     <string name="button_close_app">닫기</string>
+
     <color name="color_sum_of_month">#9370DB</color>
+
     <string name="default_sum_of_month_value">9월 10,000</string>
     <string name="string_comment">메모</string>
+    <string name="confirm_delete_message">%d 개 아이템을 삭제 하시겠습니까?</string>
+    <string name="confirm_delete_title">아이템 삭제</string>
+    <string name="alert_deleted_item_count_message">%d 개 아이템이 삭제 되었습니다.</string>
+    <string name="button_do_delete">삭제</string>
+    <string name="button_do_cancel">취소</string>
+    <string name="display_date_format">%1$d월 %2$s</string>
 
 </resources>
