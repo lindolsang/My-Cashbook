@@ -257,8 +257,8 @@ public class MainActivity extends Activity {
 					CashLogItem selectedItem = adapter.getItem(position);
 					selectedItem.setChecked(!selectedItem.isChecked());
 
-					Log.d("MyCashbook",
-							String.valueOf(selectedItem.isChecked()));
+					/*Log.d("MyCashbook",
+							String.valueOf(selectedItem.isChecked()));*/
 
 					if (selectedItem.isChecked()) {
 						plusNumberOfSelected();
@@ -506,7 +506,7 @@ public class MainActivity extends Activity {
 		newRowId = db.insert(CashLogEntry.TABLE_NAME,
 				CashLogEntry.COLUMN_NAME_NULLABLE, values);
 
-		Log.d("MyCashbook", String.format("newRowId: %d", newRowId));
+		//Log.d("MyCashbook", String.format("newRowId: %d", newRowId));
 
 		return new CashLogItem(newRowId, tag, price);
 	}
