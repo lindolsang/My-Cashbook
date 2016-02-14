@@ -225,7 +225,7 @@ public class MainActivity extends Activity {
 		TextView todayTextView = (TextView) findViewById(R.id.today);
 
 		// display current date
-		SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd (E)");
 		todayTextView.setText(dateFormater.format(new Date(currentDate
 				.getTimeInMillis())));
 
