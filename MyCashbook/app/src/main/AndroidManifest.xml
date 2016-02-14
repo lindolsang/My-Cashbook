@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="kr.lindol.mycashbook"
-    android:versionCode="150830"
-    android:versionName="v1.0_150830" >
+    android:versionCode="160214"
+    android:versionName="v1.0_160214" >
 
     <uses-sdk
         android:minSdkVersion="8"
