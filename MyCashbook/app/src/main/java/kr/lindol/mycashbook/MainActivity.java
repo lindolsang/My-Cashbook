@@ -1,571 +1,553 @@
 package kr.lindol.mycashbook;
 
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-
-import kr.lindol.mycashbook.db.CashLogContract.CashLogEntry;
-import kr.lindol.mycashbook.db.CashLogDbHelper;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/**
- * This class is Main Class in application
- * 
- * I refer http://entireboy.egloos.com/viewer/4152244 and
- * http://stackoverflow.com
- * /questions/5134231/android-closing-activity-programatically
- * 
- * @author lindol
- * 
- */
-public class MainActivity extends Activity {
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
-	private static final int ADD_CASHLOG = 77;
+import kr.lindol.mycashbook.db.CashLogContract;
+import kr.lindol.mycashbook.db.CashLogDbHelper;
 
-	ListView list;
+public class MainActivity extends AppCompatActivity {
 
-	ArrayList<CashLogItem> cashlogList = new ArrayList<CashLogItem>();
+    private static final int ADD_CASHLOG = 77;
 
-	private CustomList adapter;
-	private CashLogDbHelper cashLogDbHelper = null;
+    ListView list;
 
-	private Calendar currentDate = Calendar.getInstance();
+    ArrayList<CashLogItem> cashlogList = new ArrayList<CashLogItem>();
 
-	private int sumOfThisMonth;
+    private CustomList adapter;
+    private CashLogDbHelper cashLogDbHelper = null;
 
-	private int numberOfSelected = 0;
+    private Calendar currentDate = Calendar.getInstance();
 
-	private Activity mainActivity = null;
+    private int sumOfThisMonth;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+    private int numberOfSelected = 0;
 
-		mainActivity = this;
+    private Activity mainActivity = null;
 
-		// creating dbHelper
-		cashLogDbHelper = new CashLogDbHelper(getApplicationContext());
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-		displaycashLog();
+        mainActivity = this;
 
-		Button selectButton = (Button) findViewById(R.id.button_select_item);
-		selectButton.setOnClickListener(new OnClickListener() {
+        // creating dbHelper
+        cashLogDbHelper = new CashLogDbHelper(getApplicationContext());
 
-			@Override
-			public void onClick(View v) {
+        displaycashLog();
 
-				// reset to zero value for initial
-				resetValueOfselectedItem();
+        Button selectButton = (Button) findViewById(R.id.button_select_item);
+        selectButton.setOnClickListener(new View.OnClickListener() {
 
-				// change state of visible for checkbox in listitem
-				if (adapter.isVisibleCashlogCheckBox()) {
-					int listCount = adapter.getCount();
-					for (int i = 0; i < listCount; i++) {
-						adapter.getItem(i).setChecked(false);
-					}
-				}
-				adapter.setVisibleCashlogCheckBox(!adapter
-						.isVisibleCashlogCheckBox());
-			}
-		});
+            @Override
+            public void onClick(View v) {
 
-		Button deleteButton = (Button) findViewById(R.id.button_delete_item);
-		deleteButton.setOnClickListener(new OnClickListener() {
+                // reset to zero value for initial
+                resetValueOfselectedItem();
 
-			@Override
-			public void onClick(View v) {
+                // change state of visible for checkbox in listitem
+                if (adapter.isVisibleCashlogCheckBox()) {
+                    int listCount = adapter.getCount();
+                    for (int i = 0; i < listCount; i++) {
+                        adapter.getItem(i).setChecked(false);
+                    }
+                }
+                adapter.setVisibleCashlogCheckBox(!adapter
+                        .isVisibleCashlogCheckBox());
+            }
+        });
 
-				// create dialog for confirming delete
-				AlertDialog.Builder builder = new AlertDialog.Builder(
-						mainActivity);
+        Button deleteButton = (Button) findViewById(R.id.button_delete_item);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
 
-				builder.setMessage(
-						String.format(
-								getString(R.string.confirm_delete_message),
-								adapter.computeSelectedItemsCount())).setTitle(
-						getString(R.string.confirm_delete_title));
+            @Override
+            public void onClick(View v) {
 
-				// Add the buttons for cancel and doing delete
+                // create dialog for confirming delete
+                AlertDialog.Builder builder = new AlertDialog.Builder(
+                        mainActivity);
 
-				builder.setPositiveButton(getString(R.string.button_do_delete),
-						new DialogInterface.OnClickListener() {
+                builder.setMessage(
+                        String.format(
+                                getString(R.string.confirm_delete_message),
+                                adapter.computeSelectedItemsCount())).setTitle(
+                        getString(R.string.confirm_delete_title));
 
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
+                // Add the buttons for cancel and doing delete
 
-								ArrayList<CashLogItem> deletedList = adapter
-										.getSelectedItemsToArrayList();
+                builder.setPositiveButton(getString(R.string.button_do_delete),
+                        new DialogInterface.OnClickListener() {
 
-								int deleted = deleteCashLogFromDB(deletedList);
+                            @Override
+                            public void onClick(DialogInterface dialog,
+                                                int which) {
 
-								Toast.makeText(
-										getApplicationContext(),
-										String.format(
-												getString(R.string.alert_deleted_item_count_message),
-												deleted), Toast.LENGTH_SHORT)
-										.show();
+                                ArrayList<CashLogItem> deletedList = adapter
+                                        .getSelectedItemsToArrayList();
 
-								// If list has been deleted row, Do read
-								// cashloglist from db again.
-								if (deleted > 0) {
-									displaycashLog();
-								}
-							}
-						});
+                                int deleted = deleteCashLogFromDB(deletedList);
 
-				builder.setNegativeButton(getString(R.string.button_do_cancel),
-						new DialogInterface.OnClickListener() {
+                                Toast.makeText(
+                                        getApplicationContext(),
+                                        String.format(
+                                                getString(R.string.alert_deleted_item_count_message),
+                                                deleted), Toast.LENGTH_SHORT)
+                                        .show();
 
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
+                                // If list has been deleted row, Do read
+                                // cashloglist from db again.
+                                if (deleted > 0) {
+                                    displaycashLog();
+                                }
+                            }
+                        });
 
-							}
-						});
+                builder.setNegativeButton(getString(R.string.button_do_cancel),
+                        new DialogInterface.OnClickListener() {
 
-				AlertDialog dialog = builder.create();
-				dialog.show();
-			}
-		});
+                            @Override
+                            public void onClick(DialogInterface dialog,
+                                                int which) {
 
-		Button addButton = (Button) findViewById(R.id.button_add_cash_log);
-		addButton.setOnClickListener(new OnClickListener() {
+                            }
+                        });
 
-			@Override
-			public void onClick(View v) {
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
 
-				// open addCashlogActivity
-				Intent intent = new Intent(MainActivity.this,
-						AddCashLogActivity.class);
-				startActivityForResult(intent, ADD_CASHLOG);
-			}
-		});
+        Button addButton = (Button) findViewById(R.id.button_add_cash_log);
+        addButton.setOnClickListener(new View.OnClickListener() {
 
-		Button yesterdayButton = (Button) findViewById(R.id.button_yesterday);
-		yesterdayButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-			@Override
-			public void onClick(View v) {
-				// go yesterday
-				currentDate.add(Calendar.DAY_OF_YEAR, -1);
-				displaycashLog();
-			}
-		});
+                // open addCashlogActivity
+                Intent intent = new Intent(MainActivity.this,
+                        AddCashLogActivity.class);
+                startActivityForResult(intent, ADD_CASHLOG);
+            }
+        });
 
-		Button tomorrowButton = (Button) findViewById(R.id.button_tomorrow);
-		tomorrowButton.setOnClickListener(new OnClickListener() {
+        Button yesterdayButton = (Button) findViewById(R.id.button_yesterday);
+        yesterdayButton.setOnClickListener(new View.OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
+            @Override
+            public void onClick(View v) {
+                // go yesterday
+                currentDate.add(Calendar.DAY_OF_YEAR, -1);
+                displaycashLog();
+            }
+        });
 
-				// go tomorrow
-				currentDate.add(Calendar.DAY_OF_YEAR, 1);
-				displaycashLog();
-			}
-		});
+        Button tomorrowButton = (Button) findViewById(R.id.button_tomorrow);
+        tomorrowButton.setOnClickListener(new View.OnClickListener() {
 
-		Button todayButton = (Button) findViewById(R.id.button_today);
-		todayButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-			@Override
-			public void onClick(View v) {
-				currentDate = Calendar.getInstance();
-				displaycashLog();
-			}
-		});
+                // go tomorrow
+                currentDate.add(Calendar.DAY_OF_YEAR, 1);
+                displaycashLog();
+            }
+        });
 
-		Button closeAppButton = (Button) findViewById(R.id.button_close_app);
-		closeAppButton.setOnClickListener(new OnClickListener() {
+        Button todayButton = (Button) findViewById(R.id.button_today);
+        todayButton.setOnClickListener(new View.OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				// finish MainActivity
-				finish();
-			}
-		});
-	}
+            @Override
+            public void onClick(View v) {
+                currentDate = Calendar.getInstance();
+                displaycashLog();
+            }
+        });
 
-	/**
-	 * This method is display cashlog in listview I refer
-	 * http://tutorials.jenkov.com/java-date-time/java-util-calendar.html
-	 */
-	private void displaycashLog() {
+        Button closeAppButton = (Button) findViewById(R.id.button_close_app);
+        closeAppButton.setOnClickListener(new View.OnClickListener() {
 
-		// reset value of selectedItem
-		resetValueOfselectedItem();
-		// change state of visible for delete button
-		DoInvisibleOrVisibleDeleteButton();
+            @Override
+            public void onClick(View v) {
+                // finish MainActivity
+                finish();
+            }
+        });
+    }
 
-		// reset
-		cashlogList.clear();
+    /**
+     * This method is display cashlog in listview I refer
+     * http://tutorials.jenkov.com/java-date-time/java-util-calendar.html
+     */
+    private void displaycashLog() {
 
-		// today display to textview
-		TextView todayTextView = (TextView) findViewById(R.id.today);
+        // reset value of selectedItem
+        resetValueOfselectedItem();
+        // change state of visible for delete button
+        DoInvisibleOrVisibleDeleteButton();
 
-		// display current date
-		SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd (E)");
-		todayTextView.setText(dateFormater.format(new Date(currentDate
-				.getTimeInMillis())));
+        // reset
+        cashlogList.clear();
 
-		// display cashlog in today
-		SimpleDateFormat todayFormater = new SimpleDateFormat("yyyyMMdd");
-		String today = todayFormater.format(currentDate.getTimeInMillis());
+        // today display to textview
+        TextView todayTextView = (TextView) findViewById(R.id.today);
 
-		// read cashlog in cashLog Db
-		readCashLogInDb(today);
+        // display current date
+        SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd (E)");
+        todayTextView.setText(dateFormater.format(new Date(currentDate
+                .getTimeInMillis())));
 
-		SimpleDateFormat thisMonthFormatter = new SimpleDateFormat("yyyyMM");
-		String thisMonth = thisMonthFormatter.format(currentDate
-				.getTimeInMillis());
+        // display cashlog in today
+        SimpleDateFormat todayFormater = new SimpleDateFormat("yyyyMMdd");
+        String today = todayFormater.format(currentDate.getTimeInMillis());
 
-		// read sum of month in db (using SUM aggregate function)
-		sumOfThisMonth = computeSumOfMonthInDb(thisMonth);
+        // read cashlog in cashLog Db
+        readCashLogInDb(today);
 
-		// do show cashlog
-		adapter = new CustomList(MainActivity.this, cashlogList);
-		list = (ListView) findViewById(R.id.log_list);
-		list.setAdapter(adapter);
-		list.setOnItemClickListener(new OnItemClickListener() {
+        SimpleDateFormat thisMonthFormatter = new SimpleDateFormat("yyyyMM");
+        String thisMonth = thisMonthFormatter.format(currentDate
+                .getTimeInMillis());
 
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
+        // read sum of month in db (using SUM aggregate function)
+        sumOfThisMonth = computeSumOfMonthInDb(thisMonth);
 
-				if (adapter.isVisibleCashlogCheckBox()) {
-					CashLogItem selectedItem = adapter.getItem(position);
-					selectedItem.setChecked(!selectedItem.isChecked());
+        // do show cashlog
+        adapter = new CustomList(MainActivity.this, cashlogList);
+        list = (ListView) findViewById(R.id.log_list);
+        list.setAdapter(adapter);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                if (adapter.isVisibleCashlogCheckBox()) {
+                    CashLogItem selectedItem = adapter.getItem(position);
+                    selectedItem.setChecked(!selectedItem.isChecked());
 
 					/*Log.d("MyCashbook",
 							String.valueOf(selectedItem.isChecked()));*/
 
-					if (selectedItem.isChecked()) {
-						plusNumberOfSelected();
-					} else {
-						minusNumberOfSelected();
-					}
-					// update state of checkbox in cashloglsit
-					adapter.notifyDataSetChanged();
+                    if (selectedItem.isChecked()) {
+                        plusNumberOfSelected();
+                    } else {
+                        minusNumberOfSelected();
+                    }
+                    // update state of checkbox in cashloglsit
+                    adapter.notifyDataSetChanged();
 
-					// check delete button for show button or does'n show button
-					DoInvisibleOrVisibleDeleteButton();
-				}
+                    // check delete button for show button or does'n show button
+                    DoInvisibleOrVisibleDeleteButton();
+                }
 
-				/*
-				 * Toast.makeText(MainActivity.this, "You Clicked at " +
-				 * cashlogList.get(position).getTag(),
-				 * Toast.LENGTH_SHORT).show();
-				 */
-			}
+                /*
+                 * Toast.makeText(MainActivity.this, "You Clicked at " +
+                 * cashlogList.get(position).getTag(),
+                 * Toast.LENGTH_SHORT).show();
+                 */
+            }
 
-		});
+        });
 
-		/**
-		 * I refer below link. -
-		 * http://stackoverflow.com/questions/8846707/how-to
-		 * -implement-a-long-click-listener-on-a-listview
-		 */
-		list.setOnItemLongClickListener(new OnItemLongClickListener() {
+        /**
+         * I refer below link. -
+         * http://stackoverflow.com/questions/8846707/how-to
+         * -implement-a-long-click-listener-on-a-listview
+         */
+        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
-			@Override
-			public boolean onItemLongClick(AdapterView<?> parent, View view,
-					int position, long id) {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view,
+                                           int position, long id) {
 
-				// TODO I will make to popup window for modify cashlog
-				/*
-				 * Toast.makeText(MainActivity.this, "Your item longclick at " +
-				 * position, Toast.LENGTH_SHORT).show();
-				 */
+                // TODO I will make to popup window for modify cashlog
+                /*
+                 * Toast.makeText(MainActivity.this, "Your item longclick at " +
+                 * position, Toast.LENGTH_SHORT).show();
+                 */
 
-				return true;
-			}
-		});
+                return true;
+            }
+        });
 
-		computeSumOfCash();
-	}
+        computeSumOfCash();
+    }
 
-	/**
-	 * This method can do visible and invisible by getSelectedItemCount() if
-	 * count value is 0, delete button will be invisible.
-	 * 
-	 * @see getSelectedItemCount()
-	 */
-	private void DoInvisibleOrVisibleDeleteButton() {
-		Button delButton = (Button) findViewById(R.id.button_delete_item);
+    private void DoInvisibleOrVisibleDeleteButton() {
+        Button delButton = (Button) findViewById(R.id.button_delete_item);
 
-		if (getSelectedItemCount() > 0) {
-			delButton.setVisibility(View.VISIBLE);
-		} else {
-			delButton.setVisibility(View.GONE);
-		}
-	}
+        if (getSelectedItemCount() > 0) {
+            delButton.setVisibility(View.VISIBLE);
+        } else {
+            delButton.setVisibility(View.GONE);
+        }
+    }
 
-	/**
-	 * 
-	 * get sum of month from Database (Using SUM aggregate function) through
-	 * thisMonth
-	 * 
-	 * @param thisMonth
-	 * @return return sum of month
-	 */
-	private int computeSumOfMonthInDb(String thisMonth) {
+    /**
+     * get sum of month from Database (Using SUM aggregate function) through
+     * thisMonth
+     *
+     * @param thisMonth
+     * @return return sum of month
+     */
+    private int computeSumOfMonthInDb(String thisMonth) {
 
-		int returnSumOfMOnthValue = 0;
+        int returnSumOfMOnthValue = 0;
 
-		SQLiteDatabase db = cashLogDbHelper.getReadableDatabase();
+        SQLiteDatabase db = cashLogDbHelper.getReadableDatabase();
 
-		// Define a projection that specifies which columns from the database
-		// you will actually use after this query.
-		String queryOfSum = String.format(
-				"SELECT SUM(%s) FROM %s WHERE %s = ?",
-				CashLogEntry.COLUMN_NAME_PRICE, CashLogEntry.TABLE_NAME,
-				CashLogEntry.COLUMN_NAME_MONTH_TAG);
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String queryOfSum = String.format(
+                "SELECT SUM(%s) FROM %s WHERE %s = ?",
+                CashLogContract.CashLogEntry.COLUMN_NAME_PRICE, CashLogContract.CashLogEntry.TABLE_NAME,
+                CashLogContract.CashLogEntry.COLUMN_NAME_MONTH_TAG);
 
-		String selectionArgs[] = { thisMonth };
+        String selectionArgs[] = {thisMonth};
 
-		Cursor c = db.rawQuery(queryOfSum, selectionArgs);
-		if (c.moveToFirst()) {
-			// get sum of month value
-			returnSumOfMOnthValue = c.getInt(0);
-		}
-		c.close();
+        Cursor c = db.rawQuery(queryOfSum, selectionArgs);
+        if (c.moveToFirst()) {
+            // get sum of month value
+            returnSumOfMOnthValue = c.getInt(0);
+        }
+        c.close();
 
-		return returnSumOfMOnthValue;
-	}
+        return returnSumOfMOnthValue;
+    }
 
-	/**
-	 * This method is to read cashlog in Db. This method will fill cashLogList
-	 * from cashLog Db. I refer
-	 * http://stackoverflow.com/questions/4920528/iterate
-	 * -through-rows-from-sqlite-query and
-	 * http://developer.android.com/training/
-	 * basics/data-storage/databases.html#DefineContract
-	 */
-	private void readCashLogInDb(String date) {
-		SQLiteDatabase db = cashLogDbHelper.getReadableDatabase();
+    /**
+     * This method is to read cashlog in Db. This method will fill cashLogList
+     * from cashLog Db. I refer
+     * http://stackoverflow.com/questions/4920528/iterate
+     * -through-rows-from-sqlite-query and
+     * http://developer.android.com/training/
+     * basics/data-storage/databases.html#DefineContract
+     */
+    private void readCashLogInDb(String date) {
+        SQLiteDatabase db = cashLogDbHelper.getReadableDatabase();
 
-		// Define a projection that specifies which columns from the database
-		// you will actually use after this query.
-		String[] projection = { CashLogEntry._ID,
-				CashLogEntry.COLUMN_NAME_ITEM_TITLE,
-				CashLogEntry.COLUMN_NAME_PRICE, };
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {CashLogContract.CashLogEntry._ID,
+                CashLogContract.CashLogEntry.COLUMN_NAME_ITEM_TITLE,
+                CashLogContract.CashLogEntry.COLUMN_NAME_PRICE,};
 
-		// How you want the results sorted in the resulting Cursor
-		String sortOrder = CashLogEntry.COLUMN_NAME_MONTH_TAG + " DESC";
+        // How you want the results sorted in the resulting Cursor
+        String sortOrder = CashLogContract.CashLogEntry.COLUMN_NAME_MONTH_TAG + " DESC";
 
-		String selection = CashLogEntry.COLUMN_NAME_DAY_TAG + "= ?";
-		String[] selectionArgs = new String[] { date };
+        String selection = CashLogContract.CashLogEntry.COLUMN_NAME_DAY_TAG + "= ?";
+        String[] selectionArgs = new String[]{date};
 
-		Cursor c = db.query(CashLogEntry.TABLE_NAME, // The table to query
-				projection, // The columns to return
-				selection, // The columns for the WHERE clause
-				selectionArgs, // The values for the WHERE clause
-				null, // don't group the rows
-				null, // don't filter by groups
-				sortOrder // The sort order
-				);
+        Cursor c = db.query(CashLogContract.CashLogEntry.TABLE_NAME, // The table to query
+                projection, // The columns to return
+                selection, // The columns for the WHERE clause
+                selectionArgs, // The values for the WHERE clause
+                null, // don't group the rows
+                null, // don't filter by groups
+                sortOrder // The sort order
+        );
 
-		c.moveToFirst();
-		for (; c.isAfterLast() == false; c.moveToNext()) {
+        c.moveToFirst();
+        for (; c.isAfterLast() == false; c.moveToNext()) {
 
-			long itemRowId = c.getLong(c
-					.getColumnIndexOrThrow(CashLogEntry._ID));
-			String tag = c
-					.getString(c
-							.getColumnIndexOrThrow(CashLogEntry.COLUMN_NAME_ITEM_TITLE));
-			long price = c.getLong(c
-					.getColumnIndexOrThrow(CashLogEntry.COLUMN_NAME_PRICE));
+            long itemRowId = c.getLong(c
+                    .getColumnIndexOrThrow(CashLogContract.CashLogEntry._ID));
+            String tag = c
+                    .getString(c
+                            .getColumnIndexOrThrow(CashLogContract.CashLogEntry.COLUMN_NAME_ITEM_TITLE));
+            long price = c.getLong(c
+                    .getColumnIndexOrThrow(CashLogContract.CashLogEntry.COLUMN_NAME_PRICE));
 
-			cashlogList.add(new CashLogItem(itemRowId, tag, (int) price));
-		}
-	};
+            cashlogList.add(new CashLogItem(itemRowId, tag, (int) price));
+        }
+    }
 
-	/**
-	 * This method is compute Sum of cashlog and this method will update to
-	 * textview for 'sum' and 'sum of month' note: I reference decimal comma
-	 * format code in below website
-	 * http://mwultong.blogspot.com/2006/11/java-3-comma-commify.html
-	 */
-	private void computeSumOfCash() {
-		double sum = 0;
-		for (CashLogItem cashLogItem : cashlogList) {
-			sum = sum + cashLogItem.getPrice();
-		}
+    ;
 
-		TextView sumOfCashView = (TextView) findViewById(R.id.sum_of_cash);
+    /**
+     * This method is compute Sum of cashlog and this method will update to
+     * textview for 'sum' and 'sum of month' note: I reference decimal comma
+     * format code in below website
+     * http://mwultong.blogspot.com/2006/11/java-3-comma-commify.html
+     */
+    private void computeSumOfCash() {
+        double sum = 0;
+        for (CashLogItem cashLogItem : cashlogList) {
+            sum = sum + cashLogItem.getPrice();
+        }
 
-		DecimalFormat df = new DecimalFormat("#,##0");
+        TextView sumOfCashView = (TextView) findViewById(R.id.sum_of_cash);
 
-		sumOfCashView.setText(df.format(sum));
+        DecimalFormat df = new DecimalFormat("#,##0");
 
-		// update sum of month
-		TextView sumOfMonth = (TextView) findViewById(R.id.sum_of_month);
+        sumOfCashView.setText(df.format(sum));
 
-		// zero base month of year
-		int thisMonth = currentDate.get(Calendar.MONTH) + 1;
-		sumOfMonth.setText(String.format(
-				getString(R.string.display_date_format), thisMonth,
-				df.format(sumOfThisMonth)));
+        // update sum of month
+        TextView sumOfMonth = (TextView) findViewById(R.id.sum_of_month);
 
-	}
+        // zero base month of year
+        int thisMonth = currentDate.get(Calendar.MONTH) + 1;
+        sumOfMonth.setText(String.format(
+                getString(R.string.display_date_format), thisMonth,
+                df.format(sumOfThisMonth)));
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
+    }
 
-		if (resultCode == ADD_CASHLOG) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-			int itemCount = 0;
-			ArrayList<CashLogItem> itemList = data
-					.getParcelableArrayListExtra("addingList");
-			itemCount = itemList.size();
+        if (resultCode == ADD_CASHLOG) {
 
-			for (CashLogItem cashLog : itemList) {
-				CashLogItem insertedItem = insertCashLogIntoDb(
-						cashLog.getTag(), cashLog.getPrice(), new Date(
-								currentDate.getTimeInMillis()));
+            int itemCount = 0;
+            ArrayList<CashLogItem> itemList = data
+                    .getParcelableArrayListExtra("addingList");
+            itemCount = itemList.size();
 
-				adapter.add(insertedItem);
+            for (CashLogItem cashLog : itemList) {
+                CashLogItem insertedItem = insertCashLogIntoDb(
+                        cashLog.getTag(), cashLog.getPrice(), new Date(
+                                currentDate.getTimeInMillis()));
 
-				/*
-				 * add cashLog to sumOfThisMonth value because we do not call
-				 * computeSumOfMonthInDb function.
-				 */
-				sumOfThisMonth = sumOfThisMonth + cashLog.getPrice();
+                adapter.add(insertedItem);
 
-			}
+                /*
+                 * add cashLog to sumOfThisMonth value because we do not call
+                 * computeSumOfMonthInDb function.
+                 */
+                sumOfThisMonth = sumOfThisMonth + cashLog.getPrice();
 
-			// compute sum of cash and update sum's textView
-			computeSumOfCash();
+            }
 
-			Toast.makeText(
-					getApplicationContext(),
-					String.format(
-							getString(R.string.alert_string_added_cashlog_item),
-							itemCount), Toast.LENGTH_SHORT).show();
+            // compute sum of cash and update sum's textView
+            computeSumOfCash();
 
-		}
-	}
+            Toast.makeText(
+                    getApplicationContext(),
+                    String.format(
+                            getString(R.string.alert_string_added_cashlog_item),
+                            itemCount), Toast.LENGTH_SHORT).show();
 
-	/**
-	 * insert new row into DB for cashLog
-	 * 
-	 * @param cashLogItem
-	 * @param date
-	 */
-	/**
-	 * Insert new cashlog into Database
-	 * 
-	 * @param tag
-	 * @param price
-	 * @param date
-	 *            when you want to insert to date
-	 * @return
-	 */
-	private CashLogItem insertCashLogIntoDb(String tag, int price, Date date) {
+        }
+    }
 
-		// Gets the data repository in write mode
-		SQLiteDatabase db = cashLogDbHelper.getWritableDatabase();
+    /**
+     * insert new row into DB for cashLog
+     *
+     * @param cashLogItem
+     * @param date
+     */
+    /**
+     * Insert new cashlog into Database
+     *
+     * @param tag
+     * @param price
+     * @param date  when you want to insert to date
+     * @return
+     */
+    private CashLogItem insertCashLogIntoDb(String tag, int price, Date date) {
 
-		SimpleDateFormat monthTagFormat = new SimpleDateFormat("yyyyMM");
-		SimpleDateFormat dayTagFormat = new SimpleDateFormat("yyyyMMdd");
+        // Gets the data repository in write mode
+        SQLiteDatabase db = cashLogDbHelper.getWritableDatabase();
 
-		// Create a new map of values, where column names are the keys
-		ContentValues values = new ContentValues();
-		values.put(CashLogEntry.COLUMN_NAME_EVENT_ID,
-				(int) (Math.random() * 10000));
-		values.put(CashLogEntry.COLUMN_NAME_MONTH_TAG,
-				monthTagFormat.format(date));
-		values.put(CashLogEntry.COLUMN_NAME_DAY_TAG, dayTagFormat.format(date));
-		values.put(CashLogEntry.COLUMN_NAME_ITEM_TITLE, tag);
-		values.put(CashLogEntry.COLUMN_NAME_PRICE, price);
+        SimpleDateFormat monthTagFormat = new SimpleDateFormat("yyyyMM");
+        SimpleDateFormat dayTagFormat = new SimpleDateFormat("yyyyMMdd");
 
-		// Insert the new row, returning the primary key value of the new row
-		long newRowId;
-		newRowId = db.insert(CashLogEntry.TABLE_NAME,
-				CashLogEntry.COLUMN_NAME_NULLABLE, values);
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        values.put(CashLogContract.CashLogEntry.COLUMN_NAME_EVENT_ID,
+                (int) (Math.random() * 10000));
+        values.put(CashLogContract.CashLogEntry.COLUMN_NAME_MONTH_TAG,
+                monthTagFormat.format(date));
+        values.put(CashLogContract.CashLogEntry.COLUMN_NAME_DAY_TAG, dayTagFormat.format(date));
+        values.put(CashLogContract.CashLogEntry.COLUMN_NAME_ITEM_TITLE, tag);
+        values.put(CashLogContract.CashLogEntry.COLUMN_NAME_PRICE, price);
 
-		//Log.d("MyCashbook", String.format("newRowId: %d", newRowId));
+        // Insert the new row, returning the primary key value of the new row
+        long newRowId;
+        newRowId = db.insert(CashLogContract.CashLogEntry.TABLE_NAME,
+                CashLogContract.CashLogEntry.COLUMN_NAME_NULLABLE, values);
 
-		return new CashLogItem(newRowId, tag, price);
-	}
+        //Log.d("MyCashbook", String.format("newRowId: %d", newRowId));
 
-	/**
-	 * This method will be deleted by rowId I refered this link.
-	 * http://developer.android.com/training/basics/data-storage/databases.html
-	 * 
-	 * @param deletedList
-	 */
-	private int deleteCashLogFromDB(ArrayList<CashLogItem> deletedList) {
+        return new CashLogItem(newRowId, tag, price);
+    }
 
-		int affectRows = 0;
+    /**
+     * This method will be deleted by rowId I refered this link.
+     * http://developer.android.com/training/basics/data-storage/databases.html
+     *
+     * @param deletedList
+     */
+    private int deleteCashLogFromDB(ArrayList<CashLogItem> deletedList) {
 
-		// Gets the data repository in write mode
-		SQLiteDatabase db = cashLogDbHelper.getWritableDatabase();
+        int affectRows = 0;
 
-		// Define 'where' part of query
-		String selection = CashLogEntry._ID + " = ? ";
+        // Gets the data repository in write mode
+        SQLiteDatabase db = cashLogDbHelper.getWritableDatabase();
 
-		// doing delete
-		for (CashLogItem deleteItem : deletedList) {
-			String[] selectionArgs = { String.valueOf(deleteItem.getRowId()) };
-			int rows = db.delete(CashLogEntry.TABLE_NAME, selection,
-					selectionArgs);
-			if (rows > 0) {
-				affectRows = affectRows + rows;
-			}
-		}
-		return affectRows;
-	}
+        // Define 'where' part of query
+        String selection = CashLogContract.CashLogEntry._ID + " = ? ";
 
-	/**
-	 * This method will return count of selected cashlogItem
-	 * 
-	 * @return
-	 */
-	private int getSelectedItemCount() {
-		return numberOfSelected;
-	}
+        // doing delete
+        for (CashLogItem deleteItem : deletedList) {
+            String[] selectionArgs = {String.valueOf(deleteItem.getRowId())};
+            int rows = db.delete(CashLogContract.CashLogEntry.TABLE_NAME, selection,
+                    selectionArgs);
+            if (rows > 0) {
+                affectRows = affectRows + rows;
+            }
+        }
+        return affectRows;
+    }
 
-	/**
-	 * This method just plus 1 to value of numberOfSelected
-	 */
-	private void minusNumberOfSelected() {
-		numberOfSelected--;
-	}
+    /**
+     * This method will return count of selected cashlogItem
+     *
+     * @return
+     */
+    private int getSelectedItemCount() {
+        return numberOfSelected;
+    }
 
-	/**
-	 * This method just minus 2 to value of numberOfSelected
-	 */
-	private void plusNumberOfSelected() {
-		numberOfSelected++;
-	}
+    /**
+     * This method just plus 1 to value of numberOfSelected
+     */
+    private void minusNumberOfSelected() {
+        numberOfSelected--;
+    }
 
-	/**
-	 * This method can set to number of selectItem value to zero value(0)
-	 */
-	private void resetValueOfselectedItem() {
-		numberOfSelected = 0;
-	}
+    /**
+     * This method just minus 2 to value of numberOfSelected
+     */
+    private void plusNumberOfSelected() {
+        numberOfSelected++;
+    }
+
+    /**
+     * This method can set to number of selectItem value to zero value(0)
+     */
+    private void resetValueOfselectedItem() {
+        numberOfSelected = 0;
+    }
 }
