@@ -1,0 +1,236 @@
+package kr.lindol.mycashbook.list;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import kr.lindol.mycashbook.R;
+import kr.lindol.mycashbook.data.db.CashLog;
+
+public class CashLogListFragment extends Fragment implements ListContract.View {
+    private static final String TAG = "CashLogListFragment";
+    private ListContract.Presenter mPresenter;
+    private CashLogListAdapter mListAdapter;
+    private boolean mShowSelection = false;
+
+    private TextView mTextViewCurrentDate;
+
+    private Button mButtonView;
+    private Button mButtonDelete;
+
+    public CashLogListFragment() {
+    }
+
+    public static CashLogListFragment newInstance() {
+        CashLogListFragment fragment = new CashLogListFragment();
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    static int a = 0;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View fragment = inflater.inflate(R.layout.fragment_cash_log_list, container, false);
+
+        mTextViewCurrentDate = fragment.findViewById(R.id.textView_currentDate);
+
+        mButtonDelete = fragment.findViewById(R.id.button_delete);
+        mButtonView = fragment.findViewById(R.id.button_view);
+        mButtonView.setOnClickListener((v) -> {
+            Log.d(TAG, "View button clicked");
+            mPresenter.openOptions();
+        });
+
+        mListAdapter = new CashLogListAdapter(getContext());
+        ListView listView = fragment.findViewById(R.id.listView_cashlog);
+        listView.setAdapter(mListAdapter);
+
+        Button buttonYesterday = fragment.findViewById(R.id.button_yesterday);
+        buttonYesterday.setOnClickListener((v) -> {
+            Log.d(TAG, "buttonYesterday clicked");
+
+            mPresenter.yesterday();
+        });
+
+        Button buttonToday = fragment.findViewById(R.id.button_today);
+        buttonToday.setOnClickListener((v) -> {
+            Log.d(TAG, "buttonToday clicked");
+
+            mPresenter.today();
+        });
+
+        Button buttonTomorrow = fragment.findViewById(R.id.button_tomorrow);
+        buttonTomorrow.setOnClickListener((v) -> {
+            Log.d(TAG, "buttonTomorrow clicked");
+
+            mPresenter.tomorrow();
+        });
+
+        Button buttonInput = fragment.findViewById(R.id.button_input);
+        buttonInput.setOnClickListener((v) -> {
+            Log.d(TAG, "button input");
+
+            CashLog newLog = new CashLog();
+            newLog.item = "test" + (a++);
+            newLog.amount = 20 + a;
+            newLog.tag = "202001";
+
+            mPresenter.addCashLog(newLog);
+        });
+
+        Button buttonClose = fragment.findViewById(R.id.button_close);
+        buttonClose.setOnClickListener((v) -> {
+            Log.d(TAG, "buttonClose clicked");
+
+            getActivity().finish();
+        });
+
+        return fragment;
+    }
+
+    @Override
+    public void setPresenter(@NonNull ListContract.Presenter presenter) {
+        checkNotNull(presenter);
+
+        mPresenter = presenter;
+    }
+
+    @Override
+    public void showList(@NonNull List<CashLog> logs) {
+        checkNotNull(logs, "logs cannot be null");
+
+        Log.d(TAG, "Cash logs size = " + logs.size());
+        for (CashLog log : logs) {
+            Log.d(TAG, "id = " + log.id + ", item = " + log.item + ", amount = " + log.amount + ", tag = " + log.tag);
+        }
+
+        mListAdapter.clear();
+        for (CashLog log : logs) {
+            mListAdapter.add(new CashLogItem(log));
+        }
+
+        mListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void showNoListData() {
+        Log.d(TAG, "No datas");
+    }
+
+    @Override
+    public void showAdded() {
+        Log.d(TAG, "showAdded()");
+    }
+
+    @Override
+    public void showError() {
+        Log.d(TAG, "showError()");
+    }
+
+    @Override
+    public void showDate(@NonNull Date date) {
+        Log.d(TAG, "showDate()");
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd (E)");
+        mTextViewCurrentDate.setText(sf.format(date));
+    }
+
+    @Override
+    public void showSelectionBox() {
+        Log.d(TAG, "showSelectionBox");
+        mShowSelection = true;
+        mListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void hideSelectionBox() {
+        Log.d(TAG, "hideSelectionBox");
+        mShowSelection = false;
+        mListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void showDeleteButton() {
+        Log.d(TAG, "showDeleteButton");
+        mButtonDelete.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideDeleteButton() {
+        Log.d(TAG, "hideDeleteButton");
+        mButtonDelete.setVisibility(View.GONE);
+    }
+
+    private class CashLogListAdapter extends BaseAdapter {
+
+        private List<CashLogItem> mCashLogs = new ArrayList<>();
+        private Context mContext;
+
+        public CashLogListAdapter(@NonNull Context context) {
+            mContext = checkNotNull(context, "context cannot be null");
+        }
+
+        public void add(CashLogItem log) {
+            mCashLogs.add(log);
+        }
+
+        public void addAll(List<CashLogItem> logs) {
+            mCashLogs.addAll(logs);
+        }
+
+        public void clear() {
+            mCashLogs.clear();
+        }
+
+        @Override
+        public int getCount() {
+            return mCashLogs.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return mCashLogs.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            CashLogItemView itemView = (CashLogItemView) convertView;
+            if (itemView == null) {
+                itemView = new CashLogItemView(mContext);
+            }
+
+            itemView.setTitle(mCashLogs.get(position).getTitle());
+            itemView.setAmount(String.valueOf(mCashLogs.get(position).getAmount()));
+            itemView.showCheckBox(mShowSelection);
+
+            return itemView;
+        }
+    }
+}
