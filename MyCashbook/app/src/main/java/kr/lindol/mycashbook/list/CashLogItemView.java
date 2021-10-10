@@ -60,4 +60,8 @@ public class CashLogItemView extends LinearLayout {
     public void setMemo(@Nullable String memo) {
         mMemo.setText(memo);
     }
+
+    public void showMemo(boolean isShow) {
+        mMemo.setVisibility(isShow ? VISIBLE : GONE);
+    }
 }

@@ -19,6 +19,7 @@ public class CashLogListPresenter implements ListContract.Presenter {
     private boolean mShowOption = false;
     private Calendar mCalendar;
     private Date mFixedDate;
+    private int mSelectedCashLogId;
 
     public CashLogListPresenter(@NonNull CashLogRepository repository, @NonNull ListContract.View view) {
         mRepository = checkNotNull(repository, "repository cannot be null");
@@ -26,6 +27,8 @@ public class CashLogListPresenter implements ListContract.Presenter {
 
         mCalendar = Calendar.getInstance();
         mView.setPresenter(this);
+
+        mSelectedCashLogId = -1;
     }
 
     @Override
@@ -109,6 +112,21 @@ public class CashLogListPresenter implements ListContract.Presenter {
         }
 
         mShowOption = !mShowOption;
+    }
+
+    @Override
+    public void selectCashLog(int id) {
+        if (mSelectedCashLogId == id) {
+            mSelectedCashLogId = -1;
+            mView.hideMemo(id);
+        } else {
+
+            if (mSelectedCashLogId > -1) {
+                mView.hideMemo(mSelectedCashLogId);
+            }
+            mSelectedCashLogId = id;
+            mView.showMemo(id);
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

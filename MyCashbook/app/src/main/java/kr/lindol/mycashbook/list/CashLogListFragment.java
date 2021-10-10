@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -67,6 +68,14 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         mListAdapter = new CashLogListAdapter(getContext());
         ListView listView = fragment.findViewById(R.id.listView_cashlog);
         listView.setAdapter(mListAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, "item click: pos = " + position + ", id = " + id);
+
+                mPresenter.selectCashLog((int) id);
+            }
+        });
 
         Button buttonYesterday = fragment.findViewById(R.id.button_yesterday);
         buttonYesterday.setOnClickListener((v) -> {
@@ -183,6 +192,20 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         mButtonDelete.setVisibility(View.GONE);
     }
 
+    @Override
+    public void showMemo(int id) {
+        CashLogItem item = (CashLogItem) mListAdapter.getItem(id);
+        item.setShowMemo(true);
+        mListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void hideMemo(int id) {
+        CashLogItem item = (CashLogItem) mListAdapter.getItem(id);
+        item.setShowMemo(false);
+        mListAdapter.notifyDataSetChanged();
+    }
+
     private class CashLogListAdapter extends BaseAdapter {
 
         private List<CashLogItem> mCashLogs = new ArrayList<>();
@@ -229,6 +252,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
             itemView.setTitle(mCashLogs.get(position).getTitle());
             itemView.setAmount(String.valueOf(mCashLogs.get(position).getAmount()));
             itemView.showCheckBox(mShowSelection);
+            itemView.showMemo(mCashLogs.get(position).isShowMemo());
 
             return itemView;
         }

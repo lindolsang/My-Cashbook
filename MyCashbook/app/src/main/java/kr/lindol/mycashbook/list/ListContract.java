@@ -28,6 +28,10 @@ public interface ListContract {
         void showDeleteButton();
 
         void hideDeleteButton();
+
+        void showMemo(int id);
+
+        void hideMemo(int id);
     }
 
     interface Presenter extends BasePresenter {
@@ -42,5 +46,7 @@ public interface ListContract {
         void addCashLog(@NonNull CashLog log);
 
         void openOptions();
+
+        void selectCashLog(int id);
     }
 }

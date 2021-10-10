@@ -245,4 +245,43 @@ public class CashLogListPresenterTest {
         verify(mView, times(1)).showDate(any());
         verify(mView, times(1)).showNoListData();
     }
+
+    @Test
+    public void selectCashLogThenShowMemo() {
+        new CashLogListPresenter(mRepository, mView).selectCashLog(1);
+
+        verify(mView, times(1)).showMemo(1);
+    }
+
+    @Test
+    public void selectCashLogThenHideMemoWhenSelectedBefore() {
+        CashLogListPresenter presenter = new CashLogListPresenter(mRepository, mView);
+        presenter.selectCashLog(1);
+        presenter.selectCashLog(1);
+
+        verify(mView, times(1)).showMemo(1);
+        verify(mView, times(1)).hideMemo(1);
+    }
+
+    @Test
+    public void selectCashLogThenShowMemoWhenSelected2TimesAfter() {
+        CashLogListPresenter presenter = new CashLogListPresenter(mRepository, mView);
+        presenter.selectCashLog(1);
+        presenter.selectCashLog(1);
+        presenter.selectCashLog(1);
+
+        verify(mView, times(2)).showMemo(1);
+        verify(mView, times(1)).hideMemo(1);
+    }
+
+    @Test
+    public void selectCashLogThenShowMemoAndHideSelectedMemo() {
+        CashLogListPresenter presenter = new CashLogListPresenter(mRepository, mView);
+        presenter.selectCashLog(1);
+        presenter.selectCashLog(2);
+
+        verify(mView, times(1)).showMemo(1);
+        verify(mView, times(1)).hideMemo(1);
+        verify(mView, times(1)).showMemo(2);
+    }
 }

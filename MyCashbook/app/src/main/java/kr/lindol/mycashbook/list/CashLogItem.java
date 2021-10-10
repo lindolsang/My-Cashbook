@@ -8,6 +8,7 @@ import kr.lindol.mycashbook.data.db.CashLog;
 
 public class CashLogItem {
     private CashLog mLog;
+    private boolean mShowMemo;
 
     public CashLogItem(@NonNull CashLog log) {
         mLog = checkNotNull(log, "log cannot be null");
@@ -19,5 +20,13 @@ public class CashLogItem {
 
     public int getAmount() {
         return mLog.amount;
+    }
+
+    public void setShowMemo(boolean isShow) {
+        mShowMemo = isShow;
+    }
+
+    public boolean isShowMemo() {
+        return mShowMemo;
     }
 }
