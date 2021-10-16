@@ -28,10 +28,13 @@ public class CashLogListPresenterTest {
     private Date mYesterday;
     private Date mTomorrow;
 
+    private CashLogListPresenter presenter;
+
     @Before
     public void setUp() throws Exception {
         mRepository = mock(CashLogRepository.class);
         mView = mock(ListContract.View.class);
+        presenter = new CashLogListPresenter(mRepository, mView);
 
         mToday = new Date();
         Calendar cal = Calendar.getInstance();
@@ -68,7 +71,7 @@ public class CashLogListPresenterTest {
     public void todayThenUpdateView() {
         mockOnCashLogLoaded();
 
-        new CashLogListPresenter(mRepository, mView).today();
+        presenter.today();
 
         verify(mView, times(1)).hideDeleteButton();
         verify(mView, times(1)).hideSelectionBox();
@@ -80,7 +83,7 @@ public class CashLogListPresenterTest {
     public void todayThenUpdateViewWhenNoData() {
         mockOnDataNotAvailable();
 
-        new CashLogListPresenter(mRepository, mView).today();
+        presenter.today();
 
         verify(mView, times(1)).hideDeleteButton();
         verify(mView, times(1)).hideSelectionBox();
@@ -92,7 +95,6 @@ public class CashLogListPresenterTest {
     public void todayThenShowDateAsToday() {
         mockOnCashLogLoaded();
 
-        CashLogListPresenter presenter = new CashLogListPresenter(mRepository, mView);
         presenter.setFixedDate(mToday);
         presenter.today();
 
@@ -103,7 +105,6 @@ public class CashLogListPresenterTest {
     public void todayThenShowDateAsTodayWhenNoData() {
         mockOnDataNotAvailable();
 
-        CashLogListPresenter presenter = new CashLogListPresenter(mRepository, mView);
         presenter.setFixedDate(mToday);
         presenter.today();
 
@@ -114,7 +115,6 @@ public class CashLogListPresenterTest {
     public void yesterdayThenShowDateAsYesterday() {
         mockOnCashLogLoaded();
 
-        CashLogListPresenter presenter = new CashLogListPresenter(mRepository, mView);
         presenter.setFixedDate(mToday);
         presenter.yesterday();
 
@@ -125,7 +125,6 @@ public class CashLogListPresenterTest {
     public void yesterdayThenShowDateAsYesterdayWhenNoData() {
         mockOnDataNotAvailable();
 
-        CashLogListPresenter presenter = new CashLogListPresenter(mRepository, mView);
         presenter.setFixedDate(mToday);
         presenter.yesterday();
 
@@ -136,7 +135,6 @@ public class CashLogListPresenterTest {
     public void tomorrowThenShowDateAsTomorrow() {
         mockOnCashLogLoaded();
 
-        CashLogListPresenter presenter = new CashLogListPresenter(mRepository, mView);
         presenter.setFixedDate(mToday);
         presenter.tomorrow();
 
@@ -147,7 +145,6 @@ public class CashLogListPresenterTest {
     public void tomorrowThenShowDateAsTomorrowWhenNoData() {
         mockOnDataNotAvailable();
 
-        CashLogListPresenter presenter = new CashLogListPresenter(mRepository, mView);
         presenter.setFixedDate(mToday);
         presenter.tomorrow();
 
@@ -159,7 +156,7 @@ public class CashLogListPresenterTest {
         mockOnCashLogLoaded();
 
         Date specifiedDate = Date.from(Instant.parse("2021-01-02T03:04:05.00Z"));
-        new CashLogListPresenter(mRepository, mView).setToDate(specifiedDate);
+        presenter.setToDate(specifiedDate);
 
         verify(mView, times(1)).showDate(specifiedDate);
     }
@@ -169,7 +166,7 @@ public class CashLogListPresenterTest {
         mockOnDataNotAvailable();
 
         Date specifiedDate = Date.from(Instant.parse("2021-01-02T03:04:05.00Z"));
-        new CashLogListPresenter(mRepository, mView).setToDate(specifiedDate);
+        presenter.setToDate(specifiedDate);
 
         verify(mView, times(1)).showDate(specifiedDate);
     }
@@ -178,7 +175,7 @@ public class CashLogListPresenterTest {
     public void yesterdayThenUpdateView() {
         mockOnCashLogLoaded();
 
-        new CashLogListPresenter(mRepository, mView).yesterday();
+        presenter.yesterday();
 
         verify(mView, times(1)).hideDeleteButton();
         verify(mView, times(1)).hideSelectionBox();
@@ -190,7 +187,7 @@ public class CashLogListPresenterTest {
     public void yesterdayThenUpdateViewWhenNoData() {
         mockOnDataNotAvailable();
 
-        new CashLogListPresenter(mRepository, mView).yesterday();
+        presenter.yesterday();
 
         verify(mView, times(1)).hideDeleteButton();
         verify(mView, times(1)).hideSelectionBox();
@@ -202,7 +199,7 @@ public class CashLogListPresenterTest {
     public void tomorrowThenUpdateView() {
         mockOnCashLogLoaded();
 
-        new CashLogListPresenter(mRepository, mView).tomorrow();
+        presenter.tomorrow();
 
         verify(mView, times(1)).hideDeleteButton();
         verify(mView, times(1)).hideSelectionBox();
@@ -214,7 +211,7 @@ public class CashLogListPresenterTest {
     public void tomorrowThenUpdateViewWhenNoData() {
         mockOnDataNotAvailable();
 
-        new CashLogListPresenter(mRepository, mView).tomorrow();
+        presenter.tomorrow();
 
         verify(mView, times(1)).hideDeleteButton();
         verify(mView, times(1)).hideSelectionBox();
@@ -226,7 +223,7 @@ public class CashLogListPresenterTest {
     public void setToDateThenUpdateView() {
         mockOnCashLogLoaded();
 
-        new CashLogListPresenter(mRepository, mView).setToDate(new Date());
+        presenter.setToDate(new Date());
 
         verify(mView, times(1)).hideDeleteButton();
         verify(mView, times(1)).hideSelectionBox();
@@ -238,7 +235,7 @@ public class CashLogListPresenterTest {
     public void setToDateThenUpdateViewWhenNoData() {
         mockOnDataNotAvailable();
 
-        new CashLogListPresenter(mRepository, mView).setToDate(new Date());
+        presenter.setToDate(new Date());
 
         verify(mView, times(1)).hideDeleteButton();
         verify(mView, times(1)).hideSelectionBox();
@@ -248,14 +245,13 @@ public class CashLogListPresenterTest {
 
     @Test
     public void selectCashLogThenShowMemo() {
-        new CashLogListPresenter(mRepository, mView).selectCashLog(1);
+        presenter.selectCashLog(1);
 
         verify(mView, times(1)).showMemo(1);
     }
 
     @Test
     public void selectCashLogThenHideMemoWhenSelectedBefore() {
-        CashLogListPresenter presenter = new CashLogListPresenter(mRepository, mView);
         presenter.selectCashLog(1);
         presenter.selectCashLog(1);
 
@@ -265,7 +261,6 @@ public class CashLogListPresenterTest {
 
     @Test
     public void selectCashLogThenShowMemoWhenSelected2TimesAfter() {
-        CashLogListPresenter presenter = new CashLogListPresenter(mRepository, mView);
         presenter.selectCashLog(1);
         presenter.selectCashLog(1);
         presenter.selectCashLog(1);
@@ -276,12 +271,18 @@ public class CashLogListPresenterTest {
 
     @Test
     public void selectCashLogThenShowMemoAndHideSelectedMemo() {
-        CashLogListPresenter presenter = new CashLogListPresenter(mRepository, mView);
         presenter.selectCashLog(1);
         presenter.selectCashLog(2);
 
         verify(mView, times(1)).showMemo(1);
         verify(mView, times(1)).hideMemo(1);
         verify(mView, times(1)).showMemo(2);
+    }
+
+    @Test
+    public void addLogThenShowAddLog() {
+        presenter.addLog();
+
+        verify(mView, times(1)).showAddLog(any(Date.class));
     }
 }

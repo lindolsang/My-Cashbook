@@ -8,8 +8,8 @@ import java.util.List;
 
 @Dao
 public interface CashLogDao {
-    @Query("SELECT * FROM cash_logs WHERE date_tag = :dateTag")
-    List<CashLog> loadByDate(String dateTag);
+    @Query("SELECT * FROM cash_logs WHERE day_tag = :dayTag")
+    List<CashLog> loadByDate(String dayTag);
 
     @Insert
     void insertAll(CashLog... cashLogs);

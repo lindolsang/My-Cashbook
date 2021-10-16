@@ -65,7 +65,7 @@ public class CashLogListPresenter implements ListContract.Presenter {
         checkNotNull(date, "date cannot be null");
 
         mCalendar.setTime(date);
-        mRepository.loadByDate(new Date(), new CashLogDataSource.LoadCashLogCallback() {
+        mRepository.loadByDate(date, new CashLogDataSource.LoadCashLogCallback() {
             @Override
             public void onCashLogLoaded(List<CashLog> cashLogs) {
                 mView.hideDeleteButton();
@@ -85,20 +85,8 @@ public class CashLogListPresenter implements ListContract.Presenter {
     }
 
     @Override
-    public void addCashLog(@NonNull CashLog log) {
-        checkNotNull(log, "log cannot be null");
-
-        mRepository.save(log, new CashLogDataSource.OperationCallback() {
-            @Override
-            public void onFinished() {
-                mView.showAdded();
-            }
-
-            @Override
-            public void onError() {
-                mView.showError();
-            }
-        });
+    public void addLog() {
+        mView.showAddLog(mCalendar.getTime());
     }
 
     @Override

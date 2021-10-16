@@ -29,4 +29,8 @@ public class CashLogItem {
     public boolean isShowMemo() {
         return mShowMemo;
     }
+
+    public String getMemo() {
+        return mLog.description;
+    }
 }

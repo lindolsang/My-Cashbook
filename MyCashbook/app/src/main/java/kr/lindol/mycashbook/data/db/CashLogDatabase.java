@@ -22,7 +22,7 @@ public abstract class CashLogDatabase extends RoomDatabase {
         if (INSTANCE == null) {
             INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                     CashLogDatabase.class,
-                    "CashLog")
+                    "MyCashLog")
                     .build();
         }
 

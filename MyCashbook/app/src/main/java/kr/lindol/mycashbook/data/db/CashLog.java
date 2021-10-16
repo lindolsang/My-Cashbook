@@ -22,8 +22,11 @@ public class CashLog {
     @ColumnInfo(name = "amount")
     public int amount;
 
-    @ColumnInfo(name = "date_tag")
-    public String tag;
+    @ColumnInfo(name = "day_tag")
+    public String dayTag;
+
+    @ColumnInfo(name = "month_tag")
+    public String monthTag;
 
     @ColumnInfo(name = "created_by")
     public long createdBy;

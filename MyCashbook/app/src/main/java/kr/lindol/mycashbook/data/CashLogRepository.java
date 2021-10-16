@@ -5,6 +5,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -26,11 +27,13 @@ public class CashLogRepository implements CashLogDataSource {
     public void loadByDate(@NonNull Date date, @Nullable LoadCashLogCallback callback) {
         checkNotNull(date, "date cannot be null");
 
+        SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd");
+        final String searchDate = sf.format(date);
+
         mExecutors.diskIo().execute(new Runnable() {
             @Override
             public void run() {
-                //TODO 2021/09/23 need to update
-                List<CashLog> result = mDao.loadByDate("202001");
+                List<CashLog> result = mDao.loadByDate(searchDate);
 
                 mExecutors.mainThread().execute(new Runnable() {
                     @Override

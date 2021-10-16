@@ -3,6 +3,7 @@ package kr.lindol.mycashbook.list;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 import kr.lindol.mycashbook.R;
+import kr.lindol.mycashbook.add.CashLogAddActivity;
 import kr.lindol.mycashbook.data.db.CashLog;
 
 public class CashLogListFragment extends Fragment implements ListContract.View {
@@ -48,8 +50,6 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
-    static int a = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -100,14 +100,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
         Button buttonInput = fragment.findViewById(R.id.button_input);
         buttonInput.setOnClickListener((v) -> {
-            Log.d(TAG, "button input");
-
-            CashLog newLog = new CashLog();
-            newLog.item = "test" + (a++);
-            newLog.amount = 20 + a;
-            newLog.tag = "202001";
-
-            mPresenter.addCashLog(newLog);
+            mPresenter.addLog();
         });
 
         Button buttonClose = fragment.findViewById(R.id.button_close);
@@ -133,7 +126,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
         Log.d(TAG, "Cash logs size = " + logs.size());
         for (CashLog log : logs) {
-            Log.d(TAG, "id = " + log.id + ", item = " + log.item + ", amount = " + log.amount + ", tag = " + log.tag);
+            Log.d(TAG, "id = " + log.id + ", item = " + log.item + ", amount = " + log.amount + ", dayTag = " + log.dayTag);
         }
 
         mListAdapter.clear();
@@ -147,6 +140,8 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
     @Override
     public void showNoListData() {
         Log.d(TAG, "No datas");
+        mListAdapter.clear();
+        mListAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -206,6 +201,14 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         mListAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void showAddLog(@NonNull Date date) {
+        Intent i = new Intent(getActivity(), CashLogAddActivity.class);
+        i.putExtra(CashLogAddActivity.EXTRA_DATE, date.getTime());
+
+        startActivity(i);
+    }
+
     private class CashLogListAdapter extends BaseAdapter {
 
         private List<CashLogItem> mCashLogs = new ArrayList<>();
@@ -253,6 +256,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
             itemView.setAmount(String.valueOf(mCashLogs.get(position).getAmount()));
             itemView.showCheckBox(mShowSelection);
             itemView.showMemo(mCashLogs.get(position).isShowMemo());
+            itemView.setMemo(mCashLogs.get(position).getMemo());
 
             return itemView;
         }
