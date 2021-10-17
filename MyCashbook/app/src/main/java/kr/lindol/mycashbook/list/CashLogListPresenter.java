@@ -14,10 +14,10 @@ import kr.lindol.mycashbook.data.CashLogRepository;
 import kr.lindol.mycashbook.data.db.CashLog;
 
 public class CashLogListPresenter implements ListContract.Presenter {
-    private CashLogRepository mRepository;
-    private ListContract.View mView;
+    private final CashLogRepository mRepository;
+    private final ListContract.View mView;
     private boolean mShowOption = false;
-    private Calendar mCalendar;
+    private final Calendar mCalendar;
     private Date mFixedDate;
     private int mSelectedCashLogId;
 
@@ -115,6 +115,11 @@ public class CashLogListPresenter implements ListContract.Presenter {
             mSelectedCashLogId = id;
             mView.showMemo(id);
         }
+    }
+
+    @Override
+    public void reload() {
+        setToDate(mCalendar.getTime());
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

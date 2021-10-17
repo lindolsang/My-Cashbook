@@ -15,6 +15,10 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
@@ -42,8 +46,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
     }
 
     public static CashLogListFragment newInstance() {
-        CashLogListFragment fragment = new CashLogListFragment();
-        return fragment;
+        return new CashLogListFragment();
     }
 
     @Override
@@ -99,15 +102,14 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         });
 
         Button buttonInput = fragment.findViewById(R.id.button_input);
-        buttonInput.setOnClickListener((v) -> {
-            mPresenter.addLog();
-        });
+        buttonInput.setOnClickListener((v) -> mPresenter.addLog());
 
         Button buttonClose = fragment.findViewById(R.id.button_close);
         buttonClose.setOnClickListener((v) -> {
             Log.d(TAG, "buttonClose clicked");
-
-            getActivity().finish();
+            if (getActivity() != null) {
+                getActivity().finish();
+            }
         });
 
         return fragment;
@@ -142,16 +144,6 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         Log.d(TAG, "No datas");
         mListAdapter.clear();
         mListAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void showAdded() {
-        Log.d(TAG, "showAdded()");
-    }
-
-    @Override
-    public void showError() {
-        Log.d(TAG, "showError()");
     }
 
     @Override
@@ -201,18 +193,27 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         mListAdapter.notifyDataSetChanged();
     }
 
+    ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    //TODO improve to reload when data was added only.
+                    mPresenter.reload();
+                }
+            });
+
     @Override
     public void showAddLog(@NonNull Date date) {
         Intent i = new Intent(getActivity(), CashLogAddActivity.class);
         i.putExtra(CashLogAddActivity.EXTRA_DATE, date.getTime());
 
-        startActivity(i);
+        mStartForResult.launch(i);
     }
 
     private class CashLogListAdapter extends BaseAdapter {
 
-        private List<CashLogItem> mCashLogs = new ArrayList<>();
-        private Context mContext;
+        private final List<CashLogItem> mCashLogs = new ArrayList<>();
+        private final Context mContext;
 
         public CashLogListAdapter(@NonNull Context context) {
             mContext = checkNotNull(context, "context cannot be null");

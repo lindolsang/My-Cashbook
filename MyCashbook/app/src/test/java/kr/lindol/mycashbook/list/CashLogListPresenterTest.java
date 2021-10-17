@@ -17,7 +17,6 @@ import java.util.Date;
 
 import kr.lindol.mycashbook.data.CashLogDataSource;
 import kr.lindol.mycashbook.data.CashLogRepository;
-import kr.lindol.mycashbook.data.db.CashLog;
 
 public class CashLogListPresenterTest {
 
@@ -31,7 +30,7 @@ public class CashLogListPresenterTest {
     private CashLogListPresenter presenter;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mRepository = mock(CashLogRepository.class);
         mView = mock(ListContract.View.class);
         presenter = new CashLogListPresenter(mRepository, mView);
@@ -48,13 +47,13 @@ public class CashLogListPresenterTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
     }
 
     private void mockOnCashLogLoaded() {
         doAnswer(invocation -> {
             CashLogDataSource.LoadCashLogCallback cb = invocation.getArgument(1, CashLogDataSource.LoadCashLogCallback.class);
-            cb.onCashLogLoaded(new ArrayList<CashLog>());
+            cb.onCashLogLoaded(new ArrayList<>());
             return null;
         }).when(mRepository).loadByDate(any(), any());
     }
@@ -284,5 +283,14 @@ public class CashLogListPresenterTest {
         presenter.addLog();
 
         verify(mView, times(1)).showAddLog(any(Date.class));
+    }
+
+    @Test
+    public void reloadThenShowList() {
+        mockOnCashLogLoaded();
+
+        presenter.reload();
+
+        verify(mView, times(1)).showList(any());
     }
 }

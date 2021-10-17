@@ -15,10 +15,6 @@ public interface ListContract {
 
         void showNoListData();
 
-        void showAdded();
-
-        void showError();
-
         void showDate(@NonNull Date date);
 
         void showSelectionBox();
@@ -50,5 +46,7 @@ public interface ListContract {
         void openOptions();
 
         void selectCashLog(int id);
+
+        void reload();
     }
 }
