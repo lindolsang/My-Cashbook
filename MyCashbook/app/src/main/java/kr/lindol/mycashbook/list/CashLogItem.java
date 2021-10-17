@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import kr.lindol.mycashbook.data.db.CashLog;
 
 public class CashLogItem {
-    private CashLog mLog;
+    private final CashLog mLog;
     private boolean mShowMemo;
 
     public CashLogItem(@NonNull CashLog log) {
@@ -32,5 +32,9 @@ public class CashLogItem {
 
     public String getMemo() {
         return mLog.description;
+    }
+
+    public int getType() {
+        return mLog.type;
     }
 }

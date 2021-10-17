@@ -64,4 +64,8 @@ public class CashLogItemView extends LinearLayout {
     public void showMemo(boolean isShow) {
         mMemo.setVisibility(isShow ? VISIBLE : GONE);
     }
+
+    public void setAmountColor(int color) {
+        mAmount.setTextColor(color);
+    }
 }

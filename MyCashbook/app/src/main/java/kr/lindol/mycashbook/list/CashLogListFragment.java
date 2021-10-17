@@ -39,7 +39,6 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
     private TextView mTextViewCurrentDate;
 
-    private Button mButtonView;
     private Button mButtonDelete;
 
     public CashLogListFragment() {
@@ -62,7 +61,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         mTextViewCurrentDate = fragment.findViewById(R.id.textView_currentDate);
 
         mButtonDelete = fragment.findViewById(R.id.button_delete);
-        mButtonView = fragment.findViewById(R.id.button_view);
+        Button mButtonView = fragment.findViewById(R.id.button_view);
         mButtonView.setOnClickListener((v) -> {
             Log.d(TAG, "View button clicked");
             mPresenter.openOptions();
@@ -258,6 +257,10 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
             itemView.showCheckBox(mShowSelection);
             itemView.showMemo(mCashLogs.get(position).isShowMemo());
             itemView.setMemo(mCashLogs.get(position).getMemo());
+
+            int coloIncome = getResources().getColor(R.color.list_income);
+            int colorOutlay = getResources().getColor(R.color.list_outlay);
+            itemView.setAmountColor(mCashLogs.get(position).getType() == 0 ? coloIncome : colorOutlay);
 
             return itemView;
         }
