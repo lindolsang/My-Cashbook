@@ -22,6 +22,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,6 +41,8 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
     private TextView mTextViewCurrentDate;
 
     private Button mButtonDelete;
+
+    private final DecimalFormat mAmountFormat = new DecimalFormat("###,###");
 
     public CashLogListFragment() {
     }
@@ -253,7 +256,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
             }
 
             itemView.setTitle(mCashLogs.get(position).getTitle());
-            itemView.setAmount(String.valueOf(mCashLogs.get(position).getAmount()));
+            itemView.setAmount(mAmountFormat.format(mCashLogs.get(position).getAmount()));
             itemView.showCheckBox(mShowSelection);
             itemView.showMemo(mCashLogs.get(position).isShowMemo());
             itemView.setMemo(mCashLogs.get(position).getMemo());
