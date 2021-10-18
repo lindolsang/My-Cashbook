@@ -33,7 +33,7 @@ public class CashLogListPresenter implements ListContract.Presenter {
 
     @Override
     public void start() {
-
+        setToDate(mCalendar.getTime());
     }
 
     @Override
@@ -120,11 +120,6 @@ public class CashLogListPresenter implements ListContract.Presenter {
             mSelectedCashLogId = id;
             mView.showMemo(id);
         }
-    }
-
-    @Override
-    public void reload() {
-        setToDate(mCalendar.getTime());
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

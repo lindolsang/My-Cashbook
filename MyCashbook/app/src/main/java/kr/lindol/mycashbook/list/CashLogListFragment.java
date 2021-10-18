@@ -204,7 +204,6 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     //TODO improve to reload when data was added only.
-                    mPresenter.reload();
                 }
             });
 
@@ -214,6 +213,12 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         i.putExtra(CashLogAddActivity.EXTRA_DATE, date.getTime());
 
         mStartForResult.launch(i);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mPresenter.start();
     }
 
     @Override

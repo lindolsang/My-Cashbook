@@ -286,12 +286,21 @@ public class CashLogListPresenterTest {
     }
 
     @Test
-    public void reloadThenShowList() {
+    public void startThenShowList() {
         mockOnCashLogLoaded();
 
-        presenter.reload();
+        presenter.start();
 
         verify(mView, times(1)).showList(any());
+    }
+
+    @Test
+    public void startThenNoShowListDataWhenDataIsNotAvailable() {
+        mockOnDataNotAvailable();
+
+        presenter.start();
+
+        verify(mView, times(1)).showNoListData();
     }
 
     @Test

@@ -50,7 +50,5 @@ public interface ListContract {
         void openCalendar();
 
         void selectCashLog(int id);
-
-        void reload();
     }
 }
