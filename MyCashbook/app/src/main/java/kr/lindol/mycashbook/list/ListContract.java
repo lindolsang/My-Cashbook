@@ -30,6 +30,8 @@ public interface ListContract {
         void hideMemo(int id);
 
         void showAddLog(@NonNull Date date);
+
+        void showCalendar(@NonNull Date date);
     }
 
     interface Presenter extends BasePresenter {
@@ -44,6 +46,8 @@ public interface ListContract {
         void addLog();
 
         void openOptions();
+
+        void openCalendar();
 
         void selectCashLog(int id);
 

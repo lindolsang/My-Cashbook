@@ -2,6 +2,7 @@ package kr.lindol.mycashbook.list;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -25,6 +27,7 @@ import androidx.fragment.app.Fragment;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -62,6 +65,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         View fragment = inflater.inflate(R.layout.fragment_cash_log_list, container, false);
 
         mTextViewCurrentDate = fragment.findViewById(R.id.textView_currentDate);
+        mTextViewCurrentDate.setOnClickListener((v) -> mPresenter.openCalendar());
 
         mButtonDelete = fragment.findViewById(R.id.button_delete);
         Button mButtonView = fragment.findViewById(R.id.button_view);
@@ -210,6 +214,25 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         i.putExtra(CashLogAddActivity.EXTRA_DATE, date.getTime());
 
         mStartForResult.launch(i);
+    }
+
+    @Override
+    public void showCalendar(@NonNull Date date) {
+        checkNotNull(date, "date cannot be null");
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+
+        DatePickerDialog dialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                Calendar setCal = Calendar.getInstance();
+                setCal.set(year, month, dayOfMonth);
+
+                mPresenter.setToDate(setCal.getTime());
+            }
+        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+        dialog.show();
     }
 
     private class CashLogListAdapter extends BaseAdapter {

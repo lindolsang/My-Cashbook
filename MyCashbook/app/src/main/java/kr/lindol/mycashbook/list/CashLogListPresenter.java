@@ -103,6 +103,11 @@ public class CashLogListPresenter implements ListContract.Presenter {
     }
 
     @Override
+    public void openCalendar() {
+        mView.showCalendar(mCalendar.getTime());
+    }
+
+    @Override
     public void selectCashLog(int id) {
         if (mSelectedCashLogId == id) {
             mSelectedCashLogId = -1;

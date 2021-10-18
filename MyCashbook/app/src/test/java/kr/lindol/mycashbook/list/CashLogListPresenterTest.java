@@ -293,4 +293,11 @@ public class CashLogListPresenterTest {
 
         verify(mView, times(1)).showList(any());
     }
+
+    @Test
+    public void openCalendarThenShowCalendar() {
+        presenter.openCalendar();
+
+        verify(mView, times(1)).showCalendar(any(Date.class));
+    }
 }
