@@ -67,26 +67,20 @@ public class CashLogListPresenterTest {
     }
 
     @Test
-    public void todayThenUpdateView() {
+    public void todayThenShowList() {
         mockOnCashLogLoaded();
 
         presenter.today();
 
-        verify(mView, times(1)).hideDeleteButton();
-        verify(mView, times(1)).hideSelectionBox();
-        verify(mView, times(1)).showDate(any());
         verify(mView, times(1)).showList(any());
     }
 
     @Test
-    public void todayThenUpdateViewWhenNoData() {
+    public void todayThenShowNoListDataWhenNoData() {
         mockOnDataNotAvailable();
 
         presenter.today();
 
-        verify(mView, times(1)).hideDeleteButton();
-        verify(mView, times(1)).hideSelectionBox();
-        verify(mView, times(1)).showDate(any());
         verify(mView, times(1)).showNoListData();
     }
 
@@ -171,74 +165,56 @@ public class CashLogListPresenterTest {
     }
 
     @Test
-    public void yesterdayThenUpdateView() {
+    public void yesterdayThenShowList() {
         mockOnCashLogLoaded();
 
         presenter.yesterday();
 
-        verify(mView, times(1)).hideDeleteButton();
-        verify(mView, times(1)).hideSelectionBox();
-        verify(mView, times(1)).showDate(any());
         verify(mView, times(1)).showList(any());
     }
 
     @Test
-    public void yesterdayThenUpdateViewWhenNoData() {
+    public void yesterdayThenShowNoListDataWhenNoData() {
         mockOnDataNotAvailable();
 
         presenter.yesterday();
 
-        verify(mView, times(1)).hideDeleteButton();
-        verify(mView, times(1)).hideSelectionBox();
-        verify(mView, times(1)).showDate(any());
         verify(mView, times(1)).showNoListData();
     }
 
     @Test
-    public void tomorrowThenUpdateView() {
+    public void tomorrowThenShowList() {
         mockOnCashLogLoaded();
 
         presenter.tomorrow();
 
-        verify(mView, times(1)).hideDeleteButton();
-        verify(mView, times(1)).hideSelectionBox();
-        verify(mView, times(1)).showDate(any());
         verify(mView, times(1)).showList(any());
     }
 
     @Test
-    public void tomorrowThenUpdateViewWhenNoData() {
+    public void tomorrowThenShowNoListDataWhenNoData() {
         mockOnDataNotAvailable();
 
         presenter.tomorrow();
 
-        verify(mView, times(1)).hideDeleteButton();
-        verify(mView, times(1)).hideSelectionBox();
-        verify(mView, times(1)).showDate(any());
         verify(mView, times(1)).showNoListData();
     }
 
     @Test
-    public void setToDateThenUpdateView() {
+    public void setToDateThenShowList() {
         mockOnCashLogLoaded();
 
         presenter.setToDate(new Date());
 
-        verify(mView, times(1)).hideDeleteButton();
-        verify(mView, times(1)).hideSelectionBox();
-        verify(mView, times(1)).showDate(any());
         verify(mView, times(1)).showList(any());
     }
 
     @Test
-    public void setToDateThenUpdateViewWhenNoData() {
+    public void setToDateThenShowNoListDataWhenNoData() {
         mockOnDataNotAvailable();
 
         presenter.setToDate(new Date());
 
-        verify(mView, times(1)).hideDeleteButton();
-        verify(mView, times(1)).hideSelectionBox();
-        verify(mView, times(1)).showDate(any());
         verify(mView, times(1)).showNoListData();
     }
 
@@ -259,7 +235,7 @@ public class CashLogListPresenterTest {
     }
 
     @Test
-    public void selectCashLogThenShowMemoWhenSelected2TimesAfter() {
+    public void selectCashLogThenShowMemoWhenSelectedAfterTwoTimes() {
         presenter.selectCashLog(1);
         presenter.selectCashLog(1);
         presenter.selectCashLog(1);
@@ -295,7 +271,7 @@ public class CashLogListPresenterTest {
     }
 
     @Test
-    public void startThenNoShowListDataWhenDataIsNotAvailable() {
+    public void startThenShowNoListDataWhenDataIsNotAvailable() {
         mockOnDataNotAvailable();
 
         presenter.start();
@@ -304,8 +280,8 @@ public class CashLogListPresenterTest {
     }
 
     @Test
-    public void openCalendarThenShowCalendar() {
-        presenter.openCalendar();
+    public void selectCalendarThenShowCalendar() {
+        presenter.selectDate();
 
         verify(mView, times(1)).showCalendar(any(Date.class));
     }

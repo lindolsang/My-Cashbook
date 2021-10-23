@@ -16,7 +16,6 @@ import kr.lindol.mycashbook.data.db.CashLog;
 public class CashLogListPresenter implements ListContract.Presenter {
     private final CashLogRepository mRepository;
     private final ListContract.View mView;
-    private boolean mShowOption = false;
     private final Calendar mCalendar;
     private Date mFixedDate;
     private int mSelectedCashLogId;
@@ -68,16 +67,12 @@ public class CashLogListPresenter implements ListContract.Presenter {
         mRepository.loadByDate(date, new CashLogDataSource.LoadCashLogCallback() {
             @Override
             public void onCashLogLoaded(List<CashLog> cashLogs) {
-                mView.hideDeleteButton();
-                mView.hideSelectionBox();
                 mView.showDate(mCalendar.getTime());
                 mView.showList(cashLogs);
             }
 
             @Override
             public void onDataNotAvailable() {
-                mView.hideDeleteButton();
-                mView.hideSelectionBox();
                 mView.showDate(mCalendar.getTime());
                 mView.showNoListData();
             }
@@ -90,20 +85,7 @@ public class CashLogListPresenter implements ListContract.Presenter {
     }
 
     @Override
-    public void openOptions() {
-        if (mShowOption) {
-            mView.hideSelectionBox();
-            mView.hideDeleteButton();
-        } else {
-            mView.showSelectionBox();
-            mView.showDeleteButton();
-        }
-
-        mShowOption = !mShowOption;
-    }
-
-    @Override
-    public void openCalendar() {
+    public void selectDate() {
         mView.showCalendar(mCalendar.getTime());
     }
 

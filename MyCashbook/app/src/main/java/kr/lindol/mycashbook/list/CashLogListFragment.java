@@ -65,13 +65,13 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         View fragment = inflater.inflate(R.layout.fragment_cash_log_list, container, false);
 
         mTextViewCurrentDate = fragment.findViewById(R.id.textView_currentDate);
-        mTextViewCurrentDate.setOnClickListener((v) -> mPresenter.openCalendar());
+        mTextViewCurrentDate.setOnClickListener((v) -> mPresenter.selectDate());
 
         mButtonDelete = fragment.findViewById(R.id.button_delete);
         Button mButtonView = fragment.findViewById(R.id.button_view);
         mButtonView.setOnClickListener((v) -> {
             Log.d(TAG, "View button clicked");
-            mPresenter.openOptions();
+
         });
 
         mListAdapter = new CashLogListAdapter(getContext());
@@ -159,27 +159,23 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         mTextViewCurrentDate.setText(sf.format(date));
     }
 
-    @Override
     public void showSelectionBox() {
         Log.d(TAG, "showSelectionBox");
         mShowSelection = true;
         mListAdapter.notifyDataSetChanged();
     }
 
-    @Override
     public void hideSelectionBox() {
         Log.d(TAG, "hideSelectionBox");
         mShowSelection = false;
         mListAdapter.notifyDataSetChanged();
     }
 
-    @Override
     public void showDeleteButton() {
         Log.d(TAG, "showDeleteButton");
         mButtonDelete.setVisibility(View.VISIBLE);
     }
 
-    @Override
     public void hideDeleteButton() {
         Log.d(TAG, "hideDeleteButton");
         mButtonDelete.setVisibility(View.GONE);

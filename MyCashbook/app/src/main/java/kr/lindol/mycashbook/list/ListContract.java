@@ -17,14 +17,6 @@ public interface ListContract {
 
         void showDate(@NonNull Date date);
 
-        void showSelectionBox();
-
-        void hideSelectionBox();
-
-        void showDeleteButton();
-
-        void hideDeleteButton();
-
         void showMemo(int id);
 
         void hideMemo(int id);
@@ -45,9 +37,7 @@ public interface ListContract {
 
         void addLog();
 
-        void openOptions();
-
-        void openCalendar();
+        void selectDate();
 
         void selectCashLog(int id);
     }
