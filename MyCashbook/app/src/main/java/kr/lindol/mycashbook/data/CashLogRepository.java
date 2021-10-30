@@ -82,4 +82,38 @@ public class CashLogRepository implements CashLogDataSource {
             }
         });
     }
+
+    @Override
+    public void delete(@NonNull List<CashLog> logs, @Nullable OperationCallback callback) {
+        checkNotNull(logs, "logs cannot be null");
+
+        mExecutors.diskIo().execute(new Runnable() {
+            @Override
+            public void run() {
+                boolean success;
+                try {
+                    for (CashLog log : logs) {
+                        mDao.delete(log);
+                    }
+                    success = true;
+                } catch (Exception e) {
+                    success = false;
+                }
+
+                final boolean opSuccess = success;
+                if (callback != null) {
+                    mExecutors.mainThread().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (opSuccess) {
+                                callback.onFinished();
+                            } else {
+                                callback.onError();
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
 }

@@ -24,6 +24,10 @@ public interface ListContract {
         void showAddLog(@NonNull Date date);
 
         void showCalendar(@NonNull Date date);
+
+        void showSuccessfullyDeletedLog();
+
+        void showErrorDeleteLog();
     }
 
     interface Presenter extends BasePresenter {
@@ -40,5 +44,7 @@ public interface ListContract {
         void selectDate();
 
         void selectCashLog(int id);
+
+        void deleteLog(@NonNull List<CashLog> logs);
     }
 }

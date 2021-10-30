@@ -14,9 +14,11 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import kr.lindol.mycashbook.data.CashLogDataSource;
 import kr.lindol.mycashbook.data.CashLogRepository;
+import kr.lindol.mycashbook.data.db.CashLog;
 
 public class CashLogListPresenterTest {
 
@@ -29,11 +31,16 @@ public class CashLogListPresenterTest {
 
     private CashLogListPresenter presenter;
 
+    private List<CashLog> DELETE_LOGS;
+
     @Before
     public void setUp() {
         mRepository = mock(CashLogRepository.class);
         mView = mock(ListContract.View.class);
         presenter = new CashLogListPresenter(mRepository, mView);
+
+        DELETE_LOGS = new ArrayList<>();
+        DELETE_LOGS.add(new CashLog());
 
         mToday = new Date();
         Calendar cal = Calendar.getInstance();
@@ -284,5 +291,59 @@ public class CashLogListPresenterTest {
         presenter.selectDate();
 
         verify(mView, times(1)).showCalendar(any(Date.class));
+    }
+
+    private void mockDeletedSuccessfully() {
+        doAnswer(invocation -> {
+            CashLogDataSource.OperationCallback cb = invocation.getArgument(1);
+            cb.onFinished();
+            return null;
+        }).when(mRepository).delete(any(), any());
+    }
+
+    private void mockDeleteFailed() {
+        doAnswer(invocation -> {
+            CashLogDataSource.OperationCallback cb = invocation.getArgument(1);
+            cb.onError();
+            return null;
+        }).when(mRepository).delete(any(), any());
+    }
+
+    @Test
+    public void deleteLogAndShowSuccessfullyDeletedLog() {
+        mockDeletedSuccessfully();
+
+        presenter.deleteLog(DELETE_LOGS);
+
+        verify(mView, times(1)).showSuccessfullyDeletedLog();
+    }
+
+    @Test
+    public void deleteLogAndShowErrorDeleteLogWhenErrorOccurred() {
+        mockDeleteFailed();
+
+        presenter.deleteLog(DELETE_LOGS);
+
+        verify(mView, times(1)).showErrorDeleteLog();
+    }
+
+    @Test
+    public void deleteLogAndLoadLogsIntoUi() {
+        mockDeletedSuccessfully();
+        mockOnCashLogLoaded();
+
+        presenter.deleteLog(DELETE_LOGS);
+
+        verify(mView, times(1)).showList(any());
+    }
+
+    @Test
+    public void deleteLogAndShowNoDataUiWhenNoLog() {
+        mockDeletedSuccessfully();
+        mockOnDataNotAvailable();
+
+        presenter.deleteLog(DELETE_LOGS);
+
+        verify(mView, times(1)).showNoListData();
     }
 }

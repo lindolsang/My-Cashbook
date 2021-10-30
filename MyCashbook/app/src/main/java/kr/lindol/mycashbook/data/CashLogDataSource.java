@@ -24,4 +24,6 @@ public interface CashLogDataSource {
     void loadByDate(@NonNull Date date, @Nullable LoadCashLogCallback callback);
 
     void save(@NonNull CashLog log, @Nullable OperationCallback callback);
+
+    void delete(@NonNull List<CashLog> logs, @Nullable OperationCallback callback);
 }

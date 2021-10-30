@@ -4,7 +4,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +24,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import java.text.DecimalFormat;
@@ -68,10 +71,15 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         mTextViewCurrentDate.setOnClickListener((v) -> mPresenter.selectDate());
 
         mButtonDelete = fragment.findViewById(R.id.button_delete);
+        mButtonDelete.setOnClickListener((v) -> {
+            Log.d(TAG, "Delete button clicked");
+            confirmDeleteItem();
+        });
+
         Button mButtonView = fragment.findViewById(R.id.button_view);
         mButtonView.setOnClickListener((v) -> {
             Log.d(TAG, "View button clicked");
-
+            selectOption();
         });
 
         mListAdapter = new CashLogListAdapter(getContext());
@@ -82,7 +90,13 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(TAG, "item click: pos = " + position + ", id = " + id);
 
-                mPresenter.selectCashLog((int) id);
+                if (mShowSelection) {
+                    CashLogItem item = (CashLogItem) mListAdapter.getItem(position);
+                    item.setChecked(!item.isChecked());
+                    mListAdapter.notifyDataSetChanged();
+                } else {
+                    mPresenter.selectCashLog((int) id);
+                }
             }
         });
 
@@ -132,6 +146,8 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
     public void showList(@NonNull List<CashLog> logs) {
         checkNotNull(logs, "logs cannot be null");
 
+        hideOption();
+
         Log.d(TAG, "Cash logs size = " + logs.size());
         for (CashLog log : logs) {
             Log.d(TAG, "id = " + log.id + ", item = " + log.item + ", amount = " + log.amount + ", dayTag = " + log.dayTag);
@@ -148,6 +164,9 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
     @Override
     public void showNoListData() {
         Log.d(TAG, "No datas");
+
+        hideOption();
+
         mListAdapter.clear();
         mListAdapter.notifyDataSetChanged();
     }
@@ -159,26 +178,78 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         mTextViewCurrentDate.setText(sf.format(date));
     }
 
-    public void showSelectionBox() {
+    private void showSelectionBox() {
         Log.d(TAG, "showSelectionBox");
         mShowSelection = true;
-        mListAdapter.notifyDataSetChanged();
     }
 
-    public void hideSelectionBox() {
+    private void hideSelectionBox() {
         Log.d(TAG, "hideSelectionBox");
         mShowSelection = false;
-        mListAdapter.notifyDataSetChanged();
     }
 
-    public void showDeleteButton() {
+    private void showDeleteButton() {
         Log.d(TAG, "showDeleteButton");
         mButtonDelete.setVisibility(View.VISIBLE);
     }
 
-    public void hideDeleteButton() {
+    private void hideDeleteButton() {
         Log.d(TAG, "hideDeleteButton");
         mButtonDelete.setVisibility(View.GONE);
+    }
+
+    private void confirmDeleteItem() {
+
+        int numChecked = mListAdapter.getCheckedItems().size();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        Resources res = getResources();
+        builder.setMessage(res.getString(R.string.dialog_delete_message, numChecked))
+                .setTitle(R.string.dialog_delete_title)
+                .setPositiveButton(R.string.button_delete, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d(TAG, "delete button");
+
+                        deleteItem();
+                    }
+                })
+                .setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d(TAG, "cancel button");
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void deleteItem() {
+        List<CashLogItem> items = mListAdapter.getCheckedItems();
+
+        List<CashLog> deleteLogs = new ArrayList<>();
+        for (CashLogItem item : items) {
+            deleteLogs.add(item.getLog());
+        }
+
+        mPresenter.deleteLog(deleteLogs);
+    }
+
+    private void selectOption() {
+        if (!mShowSelection) {
+            showDeleteButton();
+            showSelectionBox();
+        } else {
+            hideDeleteButton();
+            hideSelectionBox();
+        }
+        mListAdapter.notifyDataSetChanged();
+    }
+
+    private void hideOption() {
+        hideSelectionBox();
+        hideDeleteButton();
     }
 
     @Override
@@ -236,6 +307,16 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         dialog.show();
     }
 
+    @Override
+    public void showSuccessfullyDeletedLog() {
+        Log.d(TAG, "successfully deleted log");
+    }
+
+    @Override
+    public void showErrorDeleteLog() {
+        Log.d(TAG, "Error delete log");
+    }
+
     private class CashLogListAdapter extends BaseAdapter {
 
         private final List<CashLogItem> mCashLogs = new ArrayList<>();
@@ -255,6 +336,18 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
         public void clear() {
             mCashLogs.clear();
+        }
+
+        public List<CashLogItem> getCheckedItems() {
+            List<CashLogItem> temp = new ArrayList<>();
+
+            for (CashLogItem item : mCashLogs) {
+                if (item.isChecked()) {
+                    temp.add(item);
+                }
+            }
+
+            return temp;
         }
 
         @Override
@@ -282,6 +375,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
             itemView.setTitle(mCashLogs.get(position).getTitle());
             itemView.setAmount(mAmountFormat.format(mCashLogs.get(position).getAmount()));
             itemView.showCheckBox(mShowSelection);
+            itemView.setCheck(mCashLogs.get(position).isChecked());
             itemView.showMemo(mCashLogs.get(position).isShowMemo());
             itemView.setMemo(mCashLogs.get(position).getMemo());
 

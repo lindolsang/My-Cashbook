@@ -104,6 +104,25 @@ public class CashLogListPresenter implements ListContract.Presenter {
         }
     }
 
+    @Override
+    public void deleteLog(@NonNull List<CashLog> logs) {
+        checkNotNull(logs, "logs cannot be null");
+
+        mRepository.delete(logs, new CashLogDataSource.OperationCallback() {
+            @Override
+            public void onFinished() {
+                mView.showSuccessfullyDeletedLog();
+                setToDate(mCalendar.getTime());
+            }
+
+            @Override
+            public void onError() {
+                mView.showErrorDeleteLog();
+                setToDate(mCalendar.getTime());
+            }
+        });
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public void setFixedDate(@NonNull Date date) {
         checkNotNull(date, "date cannot be null");

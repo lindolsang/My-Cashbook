@@ -9,6 +9,7 @@ import kr.lindol.mycashbook.data.db.CashLog;
 public class CashLogItem {
     private final CashLog mLog;
     private boolean mShowMemo;
+    private boolean mChecked;
 
     public CashLogItem(@NonNull CashLog log) {
         mLog = checkNotNull(log, "log cannot be null");
@@ -36,5 +37,17 @@ public class CashLogItem {
 
     public int getType() {
         return mLog.type;
+    }
+
+    public boolean isChecked() {
+        return mChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.mChecked = checked;
+    }
+
+    public CashLog getLog() {
+        return mLog;
     }
 }

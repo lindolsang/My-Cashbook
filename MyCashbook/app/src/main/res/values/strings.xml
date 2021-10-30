@@ -5,4 +5,8 @@
     <string name="error_amount_empty">Amount is empty</string>
     <string name="error_amount_small">Amount is small</string>
     <string name="error_amount_format">Amount is not number</string>
+    <string name="dialog_delete_message">Are you sure that deletes %d item(s)?</string>
+    <string name="dialog_delete_title">Delete item</string>
+    <string name="button_delete">Delete</string>
+    <string name="button_cancel">Cancel</string>
 </resources>
