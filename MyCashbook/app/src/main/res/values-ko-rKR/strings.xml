@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MyCashbook</string>
+    <string name="added_item">항목 추가</string>
+    <string name="error_item_empty">항목이 비어있습니다.</string>
+    <string name="error_amount_empty">금액이 비어있습니다.</string>
+    <string name="error_amount_small">금액이 작습니다.</string>
+    <string name="error_amount_format">금액이 숫자형식이 아닙니다.</string>
+    <string name="dialog_delete_message">정말로 %d 항목(들)을 삭제하시겠습니까?</string>
+    <string name="dialog_delete_title">항목 삭제</string>
+    <string name="button_delete">삭제</string>
+    <string name="button_list_d">D</string>
+    <string name="button_list_v">V</string>
+    <string name="button_cancel">취소</string>
+    <string name="balance_title_daily_expenses">일 지출</string>
+    <string name="balance_title_monthly_income">%1$s 수입</string>
+    <string name="balance_title_monthly_expenses">%1$s 지출</string>
+    <string name="balance_title_monthly_balance">%1$s 잔액</string>
+</resources>

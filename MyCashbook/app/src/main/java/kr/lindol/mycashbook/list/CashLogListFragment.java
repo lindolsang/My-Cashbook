@@ -413,8 +413,8 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
             itemView.setMemo(mCashLogs.get(position).getMemo());
 
             int coloIncome = getResources().getColor(R.color.list_income);
-            int colorOutlay = getResources().getColor(R.color.list_outlay);
-            itemView.setAmountColor(mCashLogs.get(position).getType() == 0 ? coloIncome : colorOutlay);
+            int colorExpense = getResources().getColor(R.color.list_expense);
+            itemView.setAmountColor(mCashLogs.get(position).getType() == 0 ? coloIncome : colorExpense);
 
             return itemView;
         }

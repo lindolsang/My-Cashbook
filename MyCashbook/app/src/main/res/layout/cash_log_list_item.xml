@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="10dp"
     android:orientation="horizontal">
 
     <LinearLayout
@@ -13,10 +14,10 @@
 
         <CheckBox
             android:id="@+id/checkBox_list_item"
-            android:clickable="false"
-            android:focusable="false"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false" />
     </LinearLayout>
 
     <LinearLayout
@@ -36,13 +37,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="4dp"
                 android:layout_weight="1"
-                android:text="텍스트 표시 영역" />
+                android:text="텍스트 표시 영역"
+                android:textSize="@dimen/list_text_size" />
 
             <TextView
                 android:id="@+id/textView_list_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0" />
+                android:text="0"
+                android:textSize="@dimen/list_amount_size" />
         </LinearLayout>
 
         <TextView
