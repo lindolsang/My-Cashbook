@@ -40,15 +40,24 @@ import kr.lindol.mycashbook.data.db.CashLog;
 
 public class CashLogListFragment extends Fragment implements ListContract.View {
     private static final String TAG = "CashLogListFragment";
+
     private ListContract.Presenter mPresenter;
     private CashLogListAdapter mListAdapter;
     private boolean mShowSelection = false;
 
     private TextView mTextViewCurrentDate;
+    private TextView mTextViewDailyExpenses;
+    private TextView mTextViewTitleMonthlyIncome;
+    private TextView mTextViewMonthlyIncome;
+    private TextView mTextViewTitleMonthlyExpenses;
+    private TextView mTextViewMonthlyExpenses;
+    private TextView mTextViewTitleMonthlyBalance;
+    private TextView mTextViewMonthlyBalance;
 
     private Button mButtonDelete;
 
     private final DecimalFormat mAmountFormat = new DecimalFormat("###,###");
+    private final SimpleDateFormat mBalanceTitleDateFormat = new SimpleDateFormat("MMM");
 
     public CashLogListFragment() {
     }
@@ -66,6 +75,14 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View fragment = inflater.inflate(R.layout.fragment_cash_log_list, container, false);
+
+        mTextViewDailyExpenses = fragment.findViewById(R.id.textView_daily_expense);
+        mTextViewTitleMonthlyIncome = fragment.findViewById(R.id.textView_title_monthly_income);
+        mTextViewMonthlyIncome = fragment.findViewById(R.id.textView_monthly_income);
+        mTextViewTitleMonthlyExpenses = fragment.findViewById(R.id.textView_title_monthly_expenses);
+        mTextViewMonthlyExpenses = fragment.findViewById(R.id.textView_monthly_expenses);
+        mTextViewTitleMonthlyBalance = fragment.findViewById(R.id.textView_title_monthly_balance);
+        mTextViewMonthlyBalance = fragment.findViewById(R.id.textView_monthly_balance);
 
         mTextViewCurrentDate = fragment.findViewById(R.id.textView_currentDate);
         mTextViewCurrentDate.setOnClickListener((v) -> mPresenter.selectDate());
@@ -163,7 +180,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
     @Override
     public void showNoListData() {
-        Log.d(TAG, "No datas");
+        Log.d(TAG, "No data");
 
         hideOption();
 
@@ -270,7 +287,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-                    //TODO improve to reload when data was added only.
+                    // TODO: improve to reload when data was added only.
                 }
             });
 
@@ -317,6 +334,26 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         Log.d(TAG, "Error delete log");
     }
 
+    @Override
+    public void showBalance(@NonNull Date date, long monthlyIncome, long monthlyExpenses, long monthlyBalance, long dailyExpenses) {
+        checkNotNull(date, "date cannot be null");
+
+        String month = mBalanceTitleDateFormat.format(date);
+
+        mTextViewDailyExpenses.setText(mAmountFormat.format(dailyExpenses));
+        mTextViewTitleMonthlyIncome.setText(getString(R.string.balance_title_monthly_income, month));
+        mTextViewMonthlyIncome.setText(mAmountFormat.format(monthlyIncome));
+        mTextViewTitleMonthlyExpenses.setText(getString(R.string.balance_title_monthly_expenses, month));
+        mTextViewMonthlyExpenses.setText(mAmountFormat.format(monthlyExpenses));
+        mTextViewTitleMonthlyBalance.setText(getString(R.string.balance_title_monthly_balance, month));
+        mTextViewMonthlyBalance.setText(mAmountFormat.format(monthlyBalance));
+    }
+
+    @Override
+    public void showErrorBalanceLoad() {
+        Log.w(TAG, "Can't show state");
+    }
+
     private class CashLogListAdapter extends BaseAdapter {
 
         private final List<CashLogItem> mCashLogs = new ArrayList<>();
@@ -328,10 +365,6 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
         public void add(CashLogItem log) {
             mCashLogs.add(log);
-        }
-
-        public void addAll(List<CashLogItem> logs) {
-            mCashLogs.addAll(logs);
         }
 
         public void clear() {

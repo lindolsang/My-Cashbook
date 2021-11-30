@@ -28,6 +28,14 @@ public interface ListContract {
         void showSuccessfullyDeletedLog();
 
         void showErrorDeleteLog();
+
+        void showBalance(@NonNull Date date,
+                         long monthlyIncome,
+                         long monthlyExpenses,
+                         long monthlyBalance,
+                         long dailyExpenses);
+
+        void showErrorBalanceLoad();
     }
 
     interface Presenter extends BasePresenter {

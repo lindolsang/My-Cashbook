@@ -17,4 +17,10 @@ public interface CashLogDao {
 
     @Delete
     void delete(CashLog log);
+
+    @Query("SELECT sum(amount) FROM cash_logs WHERE month_tag = :monthTag AND type = :type")
+    long sumOnMonth(String monthTag, int type);
+
+    @Query("SELECT sum(amount) FROM cash_logs WHERE day_tag = :date AND type = :type")
+    long sumOnDate(String date, int type);
 }

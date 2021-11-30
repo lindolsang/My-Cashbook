@@ -17,6 +17,8 @@ public class CashLogRepository implements CashLogDataSource {
 
     private CashLogDao mDao;
     private AppExecutors mExecutors;
+    private SimpleDateFormat mSfDate = new SimpleDateFormat("yyyyMMdd");
+    private SimpleDateFormat mSfMonth = new SimpleDateFormat("yyyyMM");
 
     public CashLogRepository(@NonNull CashLogDao dao, @NonNull AppExecutors executors) {
         mDao = checkNotNull(dao, "dao cannot be null");
@@ -113,6 +115,32 @@ public class CashLogRepository implements CashLogDataSource {
                         }
                     });
                 }
+            }
+        });
+    }
+
+    @Override
+    public void balance(@NonNull Date date, @NonNull BalanceLoadCallback callback) {
+        checkNotNull(date, "date cannot be null");
+        checkNotNull(callback, "callback cannot be null");
+
+        String tempDate = mSfDate.format(date);
+        String tempMonth = mSfMonth.format(date);
+
+        mExecutors.diskIo().execute(new Runnable() {
+            @Override
+            public void run() {
+                long incomeMonth = mDao.sumOnMonth(tempMonth, 0);
+                long outlayMonth = mDao.sumOnMonth(tempMonth, 1);
+                long outlayToday = mDao.sumOnDate(tempDate, 1);
+                long balance = incomeMonth - outlayMonth;
+
+                mExecutors.mainThread().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onBalanceLoaded(incomeMonth, outlayMonth, balance, outlayToday);
+                    }
+                });
             }
         });
     }

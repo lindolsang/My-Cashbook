@@ -9,4 +9,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="list_income">#FFFF0000</color>
     <color name="list_outlay">#FF000000</color>
+    <color name="balance_daily_expenses">#FF000000</color>
+    <color name="balance_monthly_income">#FF000000</color>
+    <color name="balance_monthly_expenses">#FF000000</color>
+    <color name="balance_monthly_balance">#FF000000</color>
 </resources>

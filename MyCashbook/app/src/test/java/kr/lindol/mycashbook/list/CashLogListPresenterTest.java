@@ -1,6 +1,7 @@
 package kr.lindol.mycashbook.list;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -345,5 +346,93 @@ public class CashLogListPresenterTest {
         presenter.deleteLog(DELETE_LOGS);
 
         verify(mView, times(1)).showNoListData();
+    }
+
+    private void mockBalanceLoaded() {
+        doAnswer(invocation -> {
+            CashLogDataSource.BalanceLoadCallback cb = invocation.getArgument(1);
+            cb.onBalanceLoaded(1, 0, 0, 0);
+            return null;
+        }).when(mRepository).balance(any(Date.class), any());
+    }
+
+    private void mockBalanceLoadFailed() {
+        doAnswer(invocation -> {
+            CashLogDataSource.BalanceLoadCallback cb = invocation.getArgument(1);
+            cb.onError();
+            return null;
+        }).when(mRepository).balance(any(Date.class), any());
+    }
+
+    @Test
+    public void setToDateThenShowBalance() {
+        mockBalanceLoaded();
+
+        presenter.setToDate(new Date());
+
+        verify(mView, times(1)).showBalance(any(Date.class), anyLong(), anyLong(), anyLong(), anyLong());
+    }
+
+    @Test
+    public void setToDateThenShowErrorBalanceLoadWhenBalanceLoadFailed() {
+        mockBalanceLoadFailed();
+
+        presenter.setToDate(new Date());
+
+        verify(mView, times(1)).showErrorBalanceLoad();
+    }
+
+    @Test
+    public void yesterdayThenShowBalance() {
+        mockBalanceLoaded();
+
+        presenter.yesterday();
+
+        verify(mView, times(1)).showBalance(any(Date.class), anyLong(), anyLong(), anyLong(), anyLong());
+    }
+
+    @Test
+    public void yesterdayThenShowErrorBalanceLoadWhenBalanceLoadFailed() {
+        mockBalanceLoadFailed();
+
+        presenter.yesterday();
+
+        verify(mView, times(1)).showErrorBalanceLoad();
+    }
+
+    @Test
+    public void todayThenShowBalance() {
+        mockBalanceLoaded();
+
+        presenter.today();
+
+        verify(mView, times(1)).showBalance(any(Date.class), anyLong(), anyLong(), anyLong(), anyLong());
+    }
+
+    @Test
+    public void todayThenShowErrorBalanceLoadWhenBalanceLoadFailed() {
+        mockBalanceLoadFailed();
+
+        presenter.today();
+
+        verify(mView, times(1)).showErrorBalanceLoad();
+    }
+
+    @Test
+    public void tomorrowThenShowBalance() {
+        mockBalanceLoaded();
+
+        presenter.tomorrow();
+
+        verify(mView, times(1)).showBalance(any(Date.class), anyLong(), anyLong(), anyLong(), anyLong());
+    }
+
+    @Test
+    public void tomorrowThenShowErrorBalanceLoadWhenBalanceLoadFailed() {
+        mockBalanceLoadFailed();
+
+        presenter.tomorrow();
+
+        verify(mView, times(1)).showErrorBalanceLoad();
     }
 }

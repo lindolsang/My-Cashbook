@@ -8,5 +8,11 @@
     <string name="dialog_delete_message">Are you sure that deletes %d item(s)?</string>
     <string name="dialog_delete_title">Delete item</string>
     <string name="button_delete">Delete</string>
+    <string name="button_list_d">D</string>
+    <string name="button_list_v">V</string>
     <string name="button_cancel">Cancel</string>
+    <string name="balance_title_daily_expenses">Daily expenses</string>
+    <string name="balance_title_monthly_income">%1$s Income</string>
+    <string name="balance_title_monthly_expenses">%1$s Expenses</string>
+    <string name="balance_title_monthly_balance">%1$s Balance</string>
 </resources>
