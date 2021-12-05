@@ -75,6 +75,7 @@ public class CashLogAddPresenter implements AddContract.Presenter {
         newLog.amount = amount;
         newLog.dayTag = sfDay.format(date);
         newLog.monthTag = sfMonth.format(date);
+        newLog.createdBy = System.currentTimeMillis();
         newLog.description = description;
 
         mRepository.save(newLog, new CashLogDataSource.OperationCallback() {

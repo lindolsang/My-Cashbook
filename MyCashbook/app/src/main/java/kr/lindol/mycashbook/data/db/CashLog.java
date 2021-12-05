@@ -15,7 +15,7 @@ public class CashLog {
     @ColumnInfo(name = "type")
     /**
      * 0 - income
-     * 1 - outlay
+     * 1 - expense
      */
     public int type;
 
