@@ -14,4 +14,6 @@
     <color name="balance_monthly_income">#FF1E73BE</color>
     <color name="balance_monthly_expenses">#FFE80000</color>
     <color name="balance_monthly_balance">#FF000000</color>
+    <color name="splash_background">#FF53BF14</color>
+    <color name="splash_statusBar">#FF53BF14</color>
 </resources>
