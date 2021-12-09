@@ -46,9 +46,9 @@ public class CashLogDatabaseMigrationTest {
     }
 
     private void insertSampleDataIntoOldDb(SQLiteDatabase db) {
-        db.execSQL("INSERT INTO cash_log VALUES(1,'7723','202012','20201204','tgf','5000')");
-        db.execSQL("INSERT INTO cash_log VALUES(2,'181','202111','20211104','ujh''','3666')");
-        db.execSQL("INSERT INTO cash_log VALUES(3,'6156','202112','20211203','aaa','60')");
+        db.execSQL("INSERT INTO cash_log VALUES(1,'7723','202012','20201204','Watermelon','5000')");
+        db.execSQL("INSERT INTO cash_log VALUES(2,'181','202111','20211104','Drinking water''','3666')");
+        db.execSQL("INSERT INTO cash_log VALUES(3,'6156','202112','20211203','Pencil','60')");
     }
 
     /**
@@ -86,9 +86,9 @@ public class CashLogDatabaseMigrationTest {
         db.close();
 
         List<String> expectedList = new ArrayList<>();
-        expectedList.add("1,tgf,1,5000,20201204,202012,,");
-        expectedList.add("2,ujh',1,3666,20211104,202111,,"); // test with escaping character
-        expectedList.add("3,aaa,1,60,20211203,202112,,");
+        expectedList.add("1,Watermelon,1,5000,20201204,202012,,");
+        expectedList.add("2,Drinking water',1,3666,20211104,202111,,"); // test with escaping character
+        expectedList.add("3,Pencil,1,60,20211203,202112,,");
 
         assertArrayEquals(expectedList.toArray(), migratedList.toArray());
         assertTrue(migratedCreatedByDataList.get(0).longValue() > 0);
