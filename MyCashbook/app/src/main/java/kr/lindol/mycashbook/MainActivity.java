@@ -1,6 +1,7 @@
 package kr.lindol.mycashbook;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -15,18 +16,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
+            startListActivity();
+        } else {
+            setContentView(R.layout.activity_main);
+        }
+    }
+
+    private void startListActivity() {
+        startActivity(new Intent(getApplicationContext(), CashLogListActivity.class));
+        finish();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startActivity(new Intent(getApplicationContext(), CashLogListActivity.class));
-                finish();
-            }
-        }, DELAY_MILLIS);
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
+            new Handler().postDelayed(() -> {
+                startListActivity();
+            }, DELAY_MILLIS);
+        }
     }
 }
