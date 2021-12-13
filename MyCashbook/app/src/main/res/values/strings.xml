@@ -15,4 +15,9 @@
     <string name="balance_title_monthly_income">%1$s Income</string>
     <string name="balance_title_monthly_expenses">%1$s Expenses</string>
     <string name="balance_title_monthly_balance">%1$s Balance</string>
+    <string name="button_navi_yesterday">Yesterday</string>
+    <string name="button_navi_today">Today</string>
+    <string name="button_navi_tomorrow">Tomorrow</string>
+    <string name="button_navi_write">Write</string>
+    <string name="button_navi_close">Close</string>
 </resources>

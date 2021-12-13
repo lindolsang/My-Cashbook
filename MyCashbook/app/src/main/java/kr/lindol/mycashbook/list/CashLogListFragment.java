@@ -136,8 +136,8 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
             mPresenter.tomorrow();
         });
 
-        Button buttonInput = fragment.findViewById(R.id.button_input);
-        buttonInput.setOnClickListener((v) -> mPresenter.addLog());
+        Button buttonWrite = fragment.findViewById(R.id.button_write);
+        buttonWrite.setOnClickListener((v) -> mPresenter.addLog());
 
         Button buttonClose = fragment.findViewById(R.id.button_close);
         buttonClose.setOnClickListener((v) -> {

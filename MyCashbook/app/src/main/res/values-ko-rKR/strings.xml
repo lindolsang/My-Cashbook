@@ -16,4 +16,9 @@
     <string name="balance_title_monthly_income">%1$s 수입</string>
     <string name="balance_title_monthly_expenses">%1$s 지출</string>
     <string name="balance_title_monthly_balance">%1$s 잔액</string>
+    <string name="button_navi_yesterday">어제</string>
+    <string name="button_navi_today">오늘</string>
+    <string name="button_navi_tomorrow">내일</string>
+    <string name="button_navi_write">기록하기</string>
+    <string name="button_navi_close">닫기</string>
 </resources>

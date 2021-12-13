@@ -178,33 +178,33 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="4dp"
-                android:text="Yesterday" />
+                android:text="@string/button_navi_yesterday" />
 
             <Button
                 android:id="@+id/button_today"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="4dp"
-                android:text="Today" />
+                android:text="@string/button_navi_today" />
 
             <Button
                 android:id="@+id/button_tomorrow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tomorrow" />
+                android:text="@string/button_navi_tomorrow" />
         </LinearLayout>
 
         <Button
-            android:id="@+id/button_input"
+            android:id="@+id/button_write"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="입력" />
+            android:text="@string/button_navi_write" />
 
         <Button
             android:id="@+id/button_close"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="닫기" />
+            android:text="@string/button_navi_close" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
