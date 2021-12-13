@@ -109,6 +109,8 @@ public class CashLogAddFragment extends Fragment implements AddContract.View {
     public void showSuccess() {
         Log.d(TAG, "log added");
         Toast.makeText(getContext(), R.string.added_item, Toast.LENGTH_SHORT).show();
+
+        mEditTextItem.requestFocus();
     }
 
     @Override
