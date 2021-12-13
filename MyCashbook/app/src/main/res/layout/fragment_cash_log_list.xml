@@ -22,7 +22,7 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:text="2021년 2월 25일"
-            android:textSize="20sp" />
+            android:textSize="@dimen/date_text_size" />
 
         <LinearLayout
             android:layout_width="wrap_content"
