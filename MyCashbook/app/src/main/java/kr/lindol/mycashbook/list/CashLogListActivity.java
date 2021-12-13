@@ -26,6 +26,8 @@ public class CashLogListActivity extends AppCompatActivity {
         }
 
         CashLogDatabase db = CashLogDatabase.getInstance(this);
-        mPresenter = new CashLogListPresenter(new CashLogRepository(db.cashLogDao(), new AppExecutors()), cashLogListFragment);
+        mPresenter = new CashLogListPresenter(
+                new CashLogRepository(db.cashLogDao(), AppExecutors.getInstance()),
+                cashLogListFragment);
     }
 }

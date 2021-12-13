@@ -39,7 +39,7 @@ public class CashLogAddActivity extends AppCompatActivity {
 
         CashLogDatabase db = CashLogDatabase.getInstance(this);
         mPresenter = new CashLogAddPresenter(
-                new CashLogRepository(db.cashLogDao(), new AppExecutors()),
+                new CashLogRepository(db.cashLogDao(), AppExecutors.getInstance()),
                 fragment);
     }
 }

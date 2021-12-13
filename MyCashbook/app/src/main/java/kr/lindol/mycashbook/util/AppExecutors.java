@@ -10,9 +10,20 @@ public class AppExecutors {
     private Executor mDiskIo;
     private Executor mMainThread;
 
-    public AppExecutors() {
+    private static AppExecutors INSTANCE;
+
+    private AppExecutors() {
         mDiskIo = Executors.newSingleThreadExecutor();
         mMainThread = new MainThreadExecutor();
+    }
+
+    public static AppExecutors getInstance() {
+        // TODO: need to improve for singleton
+        if (INSTANCE == null) {
+            INSTANCE = new AppExecutors();
+        }
+
+        return INSTANCE;
     }
 
     public Executor diskIo() {
