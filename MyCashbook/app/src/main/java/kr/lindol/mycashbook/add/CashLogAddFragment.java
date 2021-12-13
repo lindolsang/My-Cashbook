@@ -107,7 +107,7 @@ public class CashLogAddFragment extends Fragment implements AddContract.View {
 
     @Override
     public void showSuccess() {
-        Log.d(TAG, "log added");
+        Log.i(TAG, "CashLog was added");
         Toast.makeText(getContext(), R.string.added_item, Toast.LENGTH_SHORT).show();
 
         mEditTextItem.requestFocus();
@@ -120,19 +120,19 @@ public class CashLogAddFragment extends Fragment implements AddContract.View {
 
     @Override
     public void showItemValueEmptyError() {
-        Log.d(TAG, "Error: item value is empty");
+        Log.d(TAG, "Error: Item value is empty");
         Toast.makeText(getContext(), R.string.error_item_empty, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void showAmountValueEmptyError() {
-        Log.d(TAG, "Error: amount value is empty");
+        Log.d(TAG, "Error: Amount value is empty");
         Toast.makeText(getContext(), R.string.error_amount_empty, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void showAmountValueSmallError() {
-        Log.d(TAG, "Error: amount value is small");
+        Log.d(TAG, "Error: Amount value is small");
         Toast.makeText(getContext(), R.string.error_amount_small, Toast.LENGTH_SHORT).show();
     }
 

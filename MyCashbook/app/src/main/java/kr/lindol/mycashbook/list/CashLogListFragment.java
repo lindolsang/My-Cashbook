@@ -89,13 +89,13 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
         mButtonDelete = fragment.findViewById(R.id.button_delete);
         mButtonDelete.setOnClickListener((v) -> {
-            Log.d(TAG, "Delete button clicked");
+            Log.d(TAG, "Delete button");
             confirmDeleteItem();
         });
 
         Button mButtonView = fragment.findViewById(R.id.button_view);
         mButtonView.setOnClickListener((v) -> {
-            Log.d(TAG, "View button clicked");
+            Log.d(TAG, "View button");
             selectOption();
         });
 
@@ -105,8 +105,6 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, "item click: pos = " + position + ", id = " + id);
-
                 if (mShowSelection) {
                     CashLogItem item = (CashLogItem) mListAdapter.getItem(position);
                     item.setChecked(!item.isChecked());
@@ -119,21 +117,21 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
         Button buttonYesterday = fragment.findViewById(R.id.button_yesterday);
         buttonYesterday.setOnClickListener((v) -> {
-            Log.d(TAG, "buttonYesterday clicked");
+            Log.d(TAG, "Yesterday button");
 
             mPresenter.yesterday();
         });
 
         Button buttonToday = fragment.findViewById(R.id.button_today);
         buttonToday.setOnClickListener((v) -> {
-            Log.d(TAG, "buttonToday clicked");
+            Log.d(TAG, "Today button");
 
             mPresenter.today();
         });
 
         Button buttonTomorrow = fragment.findViewById(R.id.button_tomorrow);
         buttonTomorrow.setOnClickListener((v) -> {
-            Log.d(TAG, "buttonTomorrow clicked");
+            Log.d(TAG, "Tomorrow button");
 
             mPresenter.tomorrow();
         });
@@ -143,7 +141,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
         Button buttonClose = fragment.findViewById(R.id.button_close);
         buttonClose.setOnClickListener((v) -> {
-            Log.d(TAG, "buttonClose clicked");
+            Log.d(TAG, "Close button");
             if (getActivity() != null) {
                 getActivity().finish();
             }
@@ -165,10 +163,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
         hideOption();
 
-        Log.d(TAG, "Cash logs size = " + logs.size());
-        for (CashLog log : logs) {
-            Log.d(TAG, "id = " + log.id + ", item = " + log.item + ", amount = " + log.amount + ", dayTag = " + log.dayTag);
-        }
+        Log.i(TAG, "Show list: " + logs.size());
 
         mListAdapter.clear();
         for (CashLog log : logs) {
@@ -180,7 +175,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
     @Override
     public void showNoListData() {
-        Log.d(TAG, "No data");
+        Log.i(TAG, "Show list: No data");
 
         hideOption();
 
@@ -190,33 +185,34 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
     @Override
     public void showDate(@NonNull Date date) {
-        Log.d(TAG, "showDate()");
+        checkNotNull(date, "date cannot be null");
+
+        Log.d(TAG, "Show date: " + date);
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd (E)");
         mTextViewCurrentDate.setText(sf.format(date));
     }
 
     private void showSelectionBox() {
-        Log.d(TAG, "showSelectionBox");
+        Log.d(TAG, "Show selectionBox");
         mShowSelection = true;
     }
 
     private void hideSelectionBox() {
-        Log.d(TAG, "hideSelectionBox");
+        Log.d(TAG, "Hide SelectionBox");
         mShowSelection = false;
     }
 
     private void showDeleteButton() {
-        Log.d(TAG, "showDeleteButton");
+        Log.d(TAG, "Show DeleteButton");
         mButtonDelete.setVisibility(View.VISIBLE);
     }
 
     private void hideDeleteButton() {
-        Log.d(TAG, "hideDeleteButton");
+        Log.d(TAG, "Hide DeleteButton");
         mButtonDelete.setVisibility(View.GONE);
     }
 
     private void confirmDeleteItem() {
-
         int numChecked = mListAdapter.getCheckedItems().size();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

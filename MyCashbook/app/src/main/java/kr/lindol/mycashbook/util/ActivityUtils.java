@@ -8,8 +8,8 @@ import androidx.fragment.app.FragmentManager;
 
 public class ActivityUtils {
     public static void addFragmentToActivity(@NonNull FragmentManager fragmentManager, @NonNull Fragment fragment, int frameId) {
-        checkNotNull(fragmentManager);
-        checkNotNull(fragment);
+        checkNotNull(fragmentManager, "fragmentManager cannot be null");
+        checkNotNull(fragment, "fragment cannot be null");
 
         fragmentManager.beginTransaction().add(frameId, fragment).commit();
     }
