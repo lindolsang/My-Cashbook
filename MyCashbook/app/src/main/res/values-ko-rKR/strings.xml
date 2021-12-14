@@ -19,6 +19,6 @@
     <string name="button_navi_yesterday">어제</string>
     <string name="button_navi_today">오늘</string>
     <string name="button_navi_tomorrow">내일</string>
-    <string name="button_navi_write">기록하기</string>
+    <string name="button_navi_write">입력</string>
     <string name="button_navi_close">닫기</string>
 </resources>

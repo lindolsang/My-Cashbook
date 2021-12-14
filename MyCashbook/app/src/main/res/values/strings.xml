@@ -18,6 +18,6 @@
     <string name="button_navi_yesterday">Yesterday</string>
     <string name="button_navi_today">Today</string>
     <string name="button_navi_tomorrow">Tomorrow</string>
-    <string name="button_navi_write">Write</string>
+    <string name="button_navi_write">Input</string>
     <string name="button_navi_close">Close</string>
 </resources>

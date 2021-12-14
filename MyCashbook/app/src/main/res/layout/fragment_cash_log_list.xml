@@ -195,7 +195,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/button_write"
+            android:id="@+id/button_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/button_navi_write" />
