@@ -26,14 +26,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
                 android:layout_marginRight="4dp"
-                android:text="항목" />
+                android:text="@string/add_item_title_text"
+                android:textSize="@dimen/add_item_text_size"
+                android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/editText_item"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="예) 필기구 구입"
+                android:hint="@string/add_item_title_hint_text"
                 android:inputType="text"
                 android:minHeight="48dp" />
         </LinearLayout>
@@ -49,14 +51,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
                 android:layout_marginRight="4dp"
-                android:text="금액" />
+                android:text="@string/add_item_amount_text"
+                android:textSize="@dimen/add_item_text_size"
+                android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/editText_amount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="예) 1000"
+                android:hint="@string/add_item_amount_hint_text"
                 android:inputType="number"
                 android:minHeight="48dp" />
         </LinearLayout>
@@ -71,19 +75,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
                 android:layout_marginRight="4dp"
-                android:text="메모" />
+                android:text="@string/add_item_memo_text"
+                android:textSize="@dimen/add_item_text_size"
+                android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/editText_description"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="예) 부족한 색상을 새로 구입함"
+                android:hint="@string/add_item_memo_hint_text"
                 android:inputType="text"
                 android:minHeight="48dp" />
         </LinearLayout>
-
-
     </LinearLayout>
 
     <LinearLayout
@@ -110,15 +114,15 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
                     android:layout_weight="1"
-                    android:text="수입으로 입력" />
+                    android:text="@string/button_add_as_income" />
 
                 <Button
-                    android:id="@+id/button_inputAsOutlay"
+                    android:id="@+id/button_inputAsExpense"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
                     android:layout_weight="1"
-                    android:text="지출로 입력" />
+                    android:text="@string/button_add_as_expense" />
             </LinearLayout>
 
             <LinearLayout
@@ -131,7 +135,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    android:text="닫기" />
+                    android:text="@string/button_add_close" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

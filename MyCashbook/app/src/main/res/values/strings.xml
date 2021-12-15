@@ -20,4 +20,13 @@
     <string name="button_navi_tomorrow">Tomorrow</string>
     <string name="button_navi_write">Input</string>
     <string name="button_navi_close">Close</string>
+    <string name="add_item_title_text">Item</string>
+    <string name="add_item_title_hint_text">Enter item</string>
+    <string name="add_item_amount_text">Amount</string>
+    <string name="add_item_amount_hint_text">Enter amount of money</string>
+    <string name="add_item_memo_text">Memo</string>
+    <string name="add_item_memo_hint_text">Enter describing text</string>
+    <string name="button_add_as_income">Input as income</string>
+    <string name="button_add_as_expense">Input as expense</string>
+    <string name="button_add_close">Close</string>
 </resources>

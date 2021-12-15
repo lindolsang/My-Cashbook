@@ -72,7 +72,7 @@ public class CashLogAddFragment extends Fragment implements AddContract.View {
                     mPresenter.addAsIncome(item, amount, mDate, description);
                 }
         );
-        Button inputButtonAsOutlay = view.findViewById(R.id.button_inputAsOutlay);
+        Button inputButtonAsOutlay = view.findViewById(R.id.button_inputAsExpense);
         inputButtonAsOutlay.setOnClickListener((v) -> {
                     String item = mEditTextItem.getText().toString().trim();
                     String amount = mEditTextAmount.getText().toString().trim();
