@@ -9,8 +9,8 @@ android {
         applicationId "kr.lindol.mycashbook"
         minSdk 16
         targetSdk 30
-        versionCode 1001001
-        versionName "1.0"
+        versionCode 1002000
+        versionName "1.2.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
