@@ -6,7 +6,7 @@
     <string name="error_amount_empty">금액이 비어있습니다.</string>
     <string name="error_amount_small">금액이 작습니다.</string>
     <string name="error_amount_format">금액이 숫자형식이 아닙니다.</string>
-    <string name="dialog_delete_message">정말로 %d개 항목(들)을 삭제하시겠습니까?</string>
+    <string name="dialog_delete_message">정말로 %d개 항목을 삭제하시겠습니까?</string>
     <string name="dialog_delete_title">항목 삭제</string>
     <string name="button_delete">삭제</string>
     <string name="button_list_d">D</string>
