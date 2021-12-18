@@ -1,124 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/splash_screen_background"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:id="@+id/display_top"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <ImageView
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:src="@drawable/splash_image"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/today"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/string_date"
-            android:textSize="26dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:gravity="end">
-
-            <Button
-                android:id="@+id/button_delete_item"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="D"
-                android:visibility="gone" />
-
-            <Button
-                android:id="@+id/button_select_item"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="V" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/button_close_app"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:text="@string/button_close_app" />
-
-    <Button
-        android:id="@+id/button_add_cash_log"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/button_close_app"
-        android:text="@string/string_of_add_cash_button" />
-
-    <LinearLayout
-        android:id="@+id/navigate_of_date"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/button_add_cash_log"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp">
-
-        <Button
-            android:id="@+id/button_yesterday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/string_yesterday" />
-
-        <Button
-            android:id="@+id/button_today"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/string_today" />
-
-        <Button
-            android:id="@+id/button_tomorrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/string_tomorrow" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/sum_of_month"
-        android:layout_width="fill_parent"
-        android:layout_height="30dp"
-        android:layout_above="@id/navigate_of_date"
-        android:gravity="end"
-        android:text="@string/default_sum_of_month_value"
-        android:textColor="@color/color_sum_of_month"
-        android:textSize="22dp" />
-
-    <TextView
-        android:id="@+id/sum_of_cash"
-        android:layout_width="fill_parent"
-        android:layout_height="30dp"
-        android:layout_above="@id/sum_of_month"
-        android:gravity="end"
-        android:text="@string/default_sum_value"
-        android:textColor="@color/color_sum_of_cash"
-        android:textSize="26dp" />
-
-    <LinearLayout
-        android:id="@+id/cash_log"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/sum_of_cash"
-        android:layout_below="@id/display_top"
-        android:orientation="vertical"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp">
-
-        <ListView
-            android:id="@+id/log_list"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:longClickable="true"></ListView>
-    </LinearLayout>
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

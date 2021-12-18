@@ -1,0 +1,37 @@
+package kr.lindol.mycashbook.data;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import java.util.Date;
+import java.util.List;
+
+import kr.lindol.mycashbook.data.db.CashLog;
+
+public interface CashLogDataSource {
+    interface LoadCashLogCallback {
+        void onCashLogLoaded(List<CashLog> cashLogs);
+
+        void onDataNotAvailable();
+    }
+
+    interface OperationCallback {
+        void onFinished();
+
+        void onError();
+    }
+
+    interface BalanceLoadCallback {
+        void onBalanceLoaded(long monthlyIncome, long monthlyExpenses, long monthlyBalance, long dailyExpenses);
+
+        void onError();
+    }
+
+    void loadByDate(@NonNull Date date, @Nullable LoadCashLogCallback callback);
+
+    void save(@NonNull CashLog log, @Nullable OperationCallback callback);
+
+    void delete(@NonNull List<CashLog> logs, @Nullable OperationCallback callback);
+
+    void balance(@NonNull Date date, @NonNull BalanceLoadCallback callback);
+}
