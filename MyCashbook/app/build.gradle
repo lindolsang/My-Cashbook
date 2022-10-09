@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    compileSdk 30
+    compileSdk 32
 
     defaultConfig {
         applicationId "kr.lindol.mycashbook"
         minSdk 16
-        targetSdk 30
+        targetSdk 31
         versionCode 1002000
         versionName "1.2.0"
 
@@ -54,7 +54,7 @@ dependencies {
     implementation 'com.google.guava:guava:30.1.1-android'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
-    def room_version = "2.3.0"
+    def room_version = "2.4.3"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     // optional - Guava support for Room, including Optional and ListenableFuture
@@ -62,7 +62,7 @@ dependencies {
     // optional - Test helpers
     testImplementation "androidx.room:room-testing:$room_version"
 
-    testImplementation 'junit:junit:4.+'
+    testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.robolectric:robolectric:4.6'
     // https://mvnrepository.com/artifact/org.mockito/mockito-core
     testImplementation 'org.mockito:mockito-core:3.12.4'
