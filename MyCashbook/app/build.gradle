@@ -9,6 +9,7 @@ android {
         applicationId "kr.lindol.mycashbook"
         minSdk 16
         targetSdk 32
+        multiDexEnabled true
         versionCode 1002000
         versionName "1.2.0"
 
@@ -53,6 +54,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.google.guava/guava
     implementation 'com.google.guava:guava:30.1.1-android'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "androidx.multidex:multidex:2.0.1"
 
     def room_version = "2.4.3"
     implementation "androidx.room:room-runtime:$room_version"
