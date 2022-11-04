@@ -8,7 +8,7 @@ android {
     defaultConfig {
         applicationId "kr.lindol.mycashbook"
         minSdk 16
-        targetSdk 31
+        targetSdk 32
         versionCode 1002000
         versionName "1.2.0"
 
@@ -47,9 +47,9 @@ android {
 
 dependencies {
 
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     // https://mvnrepository.com/artifact/com.google.guava/guava
     implementation 'com.google.guava:guava:30.1.1-android'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
