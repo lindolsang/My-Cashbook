@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +24,7 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
@@ -355,8 +357,14 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         private final List<CashLogItem> mCashLogs = new ArrayList<>();
         private final Context mContext;
 
+        private final int mColorIncome;
+        private final int mColorExpense;
+
         public CashLogListAdapter(@NonNull Context context) {
             mContext = checkNotNull(context, "context cannot be null");
+
+            mColorIncome = getResourceColor(R.color.list_income);
+            mColorExpense = getResourceColor(R.color.list_expense);
         }
 
         public void add(CashLogItem log) {
@@ -408,11 +416,18 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
             itemView.showMemo(mCashLogs.get(position).isShowMemo());
             itemView.setMemo(mCashLogs.get(position).getMemo());
 
-            int coloIncome = getResources().getColor(R.color.list_income);
-            int colorExpense = getResources().getColor(R.color.list_expense);
-            itemView.setAmountColor(mCashLogs.get(position).getType() == 0 ? coloIncome : colorExpense);
+            itemView.setAmountColor(mCashLogs.get(position).getType() == 0 ? mColorIncome : mColorExpense);
 
             return itemView;
+        }
+
+        @SuppressWarnings("deprecation")
+        private int getResourceColor(@ColorRes int resId) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                return getResources().getColor(resId, mContext.getTheme());
+            }
+
+            return getResources().getColor(resId);
         }
     }
 }
