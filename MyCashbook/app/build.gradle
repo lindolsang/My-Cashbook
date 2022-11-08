@@ -44,12 +44,6 @@ android {
         // Testing for room
         androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
     }
-
-    gradle.projectsEvaluated {
-        tasks.withType(JavaCompile) {
-            options.compilerArgs << "-Xlint:deprecation"
-        }
-    }
 }
 
 dependencies {
