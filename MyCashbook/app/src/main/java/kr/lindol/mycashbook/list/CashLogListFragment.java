@@ -29,6 +29,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import com.google.common.base.Preconditions;
+
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -121,7 +123,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         buttonYesterday.setOnClickListener((v) -> {
             Log.d(TAG, "Yesterday button");
 
-            mPresenter.yesterday();
+            mPresenter.previous();
         });
 
         Button buttonToday = fragment.findViewById(R.id.button_today);
@@ -135,7 +137,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         buttonTomorrow.setOnClickListener((v) -> {
             Log.d(TAG, "Tomorrow button");
 
-            mPresenter.tomorrow();
+            mPresenter.next();
         });
 
         Button buttonInput = fragment.findViewById(R.id.button_input);
@@ -350,6 +352,23 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
     @Override
     public void showErrorBalanceLoad() {
         Log.w(TAG, "Can't show state");
+    }
+
+    @Override
+    public void showListType(@NonNull ListType type) {
+        Preconditions.checkNotNull(type, "type can not be null");
+
+    }
+
+    @Override
+    public void showMonth(@NonNull Date date) {
+        Preconditions.checkNotNull(date, "date can not be null");
+    }
+
+    @Override
+    public void showDateRange(@NonNull Date from, @NonNull Date to) {
+        Preconditions.checkNotNull(from, "from can not be null");
+        Preconditions.checkNotNull(to, "to can not be null");
     }
 
     private class CashLogListAdapter extends BaseAdapter {

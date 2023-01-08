@@ -1,5 +1,7 @@
 package kr.lindol.mycashbook.list;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
@@ -10,6 +12,8 @@ import static org.mockito.Mockito.verify;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -29,6 +33,9 @@ public class CashLogListPresenterTest {
     private Date mToday;
     private Date mYesterday;
     private Date mTomorrow;
+
+    private Date mLastMonth;
+    private Date mNextMonth;
 
     private CashLogListPresenter presenter;
 
@@ -52,6 +59,14 @@ public class CashLogListPresenterTest {
         cal.setTime(mToday);
         cal.add(Calendar.DAY_OF_MONTH, 1);
         mTomorrow = cal.getTime();
+
+        cal.setTime(mToday);
+        cal.add(Calendar.MONTH, -1);
+        mLastMonth = cal.getTime();
+
+        cal.setTime(mToday);
+        cal.add(Calendar.MONTH, 1);
+        mNextMonth = cal.getTime();
     }
 
     @After
@@ -94,8 +109,6 @@ public class CashLogListPresenterTest {
 
     @Test
     public void todayThenShowDateAsToday() {
-        mockOnCashLogLoaded();
-
         presenter.setFixedDate(mToday);
         presenter.today();
 
@@ -103,59 +116,23 @@ public class CashLogListPresenterTest {
     }
 
     @Test
-    public void todayThenShowDateAsTodayWhenNoData() {
-        mockOnDataNotAvailable();
-
+    public void previousThenShowDateAsYesterday() {
         presenter.setFixedDate(mToday);
-        presenter.today();
-
-        verify(mView, times(1)).showDate(mToday);
-    }
-
-    @Test
-    public void yesterdayThenShowDateAsYesterday() {
-        mockOnCashLogLoaded();
-
-        presenter.setFixedDate(mToday);
-        presenter.yesterday();
+        presenter.previous();
 
         verify(mView, times(1)).showDate(mYesterday);
     }
 
     @Test
-    public void yesterdayThenShowDateAsYesterdayWhenNoData() {
-        mockOnDataNotAvailable();
-
+    public void nextThenShowDateAsTomorrow() {
         presenter.setFixedDate(mToday);
-        presenter.yesterday();
-
-        verify(mView, times(1)).showDate(mYesterday);
-    }
-
-    @Test
-    public void tomorrowThenShowDateAsTomorrow() {
-        mockOnCashLogLoaded();
-
-        presenter.setFixedDate(mToday);
-        presenter.tomorrow();
-
-        verify(mView, times(1)).showDate(mTomorrow);
-    }
-
-    @Test
-    public void tomorrowThenShowDateAsTomorrowWhenNoData() {
-        mockOnDataNotAvailable();
-
-        presenter.setFixedDate(mToday);
-        presenter.tomorrow();
+        presenter.next();
 
         verify(mView, times(1)).showDate(mTomorrow);
     }
 
     @Test
     public void setToDateThenShowDateAsPassedDate() {
-        mockOnCashLogLoaded();
-
         Date specifiedDate = Date.from(Instant.parse("2021-01-02T03:04:05.00Z"));
         presenter.setToDate(specifiedDate);
 
@@ -163,47 +140,37 @@ public class CashLogListPresenterTest {
     }
 
     @Test
-    public void setToDateThenShowDateAsPassedDateWhenNoData() {
-        mockOnDataNotAvailable();
-
-        Date specifiedDate = Date.from(Instant.parse("2021-01-02T03:04:05.00Z"));
-        presenter.setToDate(specifiedDate);
-
-        verify(mView, times(1)).showDate(specifiedDate);
-    }
-
-    @Test
-    public void yesterdayThenShowList() {
+    public void previousThenShowList() {
         mockOnCashLogLoaded();
 
-        presenter.yesterday();
+        presenter.previous();
 
         verify(mView, times(1)).showList(any());
     }
 
     @Test
-    public void yesterdayThenShowNoListDataWhenNoData() {
+    public void previousThenShowNoListDataWhenNoData() {
         mockOnDataNotAvailable();
 
-        presenter.yesterday();
+        presenter.previous();
 
         verify(mView, times(1)).showNoListData();
     }
 
     @Test
-    public void tomorrowThenShowList() {
+    public void nextThenShowList() {
         mockOnCashLogLoaded();
 
-        presenter.tomorrow();
+        presenter.next();
 
         verify(mView, times(1)).showList(any());
     }
 
     @Test
-    public void tomorrowThenShowNoListDataWhenNoData() {
+    public void nextThenShowNoListDataWhenNoData() {
         mockOnDataNotAvailable();
 
-        presenter.tomorrow();
+        presenter.next();
 
         verify(mView, times(1)).showNoListData();
     }
@@ -383,19 +350,19 @@ public class CashLogListPresenterTest {
     }
 
     @Test
-    public void yesterdayThenShowBalance() {
+    public void previousThenShowBalance() {
         mockBalanceLoaded();
 
-        presenter.yesterday();
+        presenter.previous();
 
         verify(mView, times(1)).showBalance(any(Date.class), anyLong(), anyLong(), anyLong(), anyLong());
     }
 
     @Test
-    public void yesterdayThenShowErrorBalanceLoadWhenBalanceLoadFailed() {
+    public void previousThenShowErrorBalanceLoadWhenBalanceLoadFailed() {
         mockBalanceLoadFailed();
 
-        presenter.yesterday();
+        presenter.previous();
 
         verify(mView, times(1)).showErrorBalanceLoad();
     }
@@ -419,20 +386,231 @@ public class CashLogListPresenterTest {
     }
 
     @Test
-    public void tomorrowThenShowBalance() {
+    public void nextThenShowBalance() {
         mockBalanceLoaded();
 
-        presenter.tomorrow();
+        presenter.next();
 
         verify(mView, times(1)).showBalance(any(Date.class), anyLong(), anyLong(), anyLong(), anyLong());
     }
 
     @Test
-    public void tomorrowThenShowErrorBalanceLoadWhenBalanceLoadFailed() {
+    public void nextThenShowErrorBalanceLoadWhenBalanceLoadFailed() {
         mockBalanceLoadFailed();
 
-        presenter.tomorrow();
+        presenter.next();
 
         verify(mView, times(1)).showErrorBalanceLoad();
+    }
+
+    @Test
+    public void getListTypeThenReturnDefaultTypeForDay() {
+        assertThat(presenter.getListType(), equalTo(ListType.FOR_DAY));
+    }
+
+    @Test
+    public void setListTypeForDay() {
+        presenter.setListType(ListType.FOR_DAY);
+
+        assertThat(presenter.getListType(), equalTo(ListType.FOR_DAY));
+    }
+
+    @Test
+    public void setListTypeForMonth() {
+        presenter.setListType(ListType.FOR_MONTH);
+
+        assertThat(presenter.getListType(), equalTo(ListType.FOR_MONTH));
+    }
+
+    @Test
+    public void setListTypeForDateRange() {
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+
+        assertThat(presenter.getListType(), equalTo(ListType.FOR_DATE_RANGE));
+    }
+
+    @Test
+    public void setListTypeWithForDayThenShowListTypeWithForDay() {
+        presenter.setListType(ListType.FOR_DAY);
+
+        verify(mView, times(1)).showListType(ListType.FOR_DAY);
+    }
+
+    @Test
+    public void setListTypeWithForMonthThenShowListTypeWithForMonth() {
+        presenter.setListType(ListType.FOR_MONTH);
+
+        verify(mView, times(1)).showListType(ListType.FOR_MONTH);
+    }
+
+    @Test
+    public void setListTypeWithForDateRangeThenShowListTypeWithForDateRange() {
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+
+        verify(mView, times(1)).showListType(ListType.FOR_DATE_RANGE);
+    }
+
+    @Test
+    public void todayThenShowMonthAsThisMonth() {
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.setFixedDate(mToday);
+        presenter.today();
+
+        verify(mView, times(1)).showMonth(mToday);
+    }
+
+    @Test
+    public void previousThenShowMonthAsLastMonth() {
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.setFixedDate(mToday);
+        presenter.previous();
+
+        verify(mView, times(1)).showMonth(mLastMonth);
+    }
+
+    @Test
+    public void nextThenShowMonthAsNextMonth() {
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.setFixedDate(mToday);
+        presenter.next();
+
+        verify(mView, times(1)).showMonth(mNextMonth);
+    }
+
+    @Test
+    public void setToDateThenShowMonthAsPassedDate() {
+        Date specifiedDate = Date.from(Instant.parse("2021-01-02T03:04:05.00Z"));
+
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.setToDate(specifiedDate);
+
+        verify(mView, times(1)).showMonth(specifiedDate);
+    }
+
+    @Test
+    public void todayThenShowDateRangeAsTodayWhenNotToSetDateRange() {
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setFixedDate(mToday);
+        presenter.today();
+
+        verify(mView, times(1)).showDateRange(mToday, mToday);
+    }
+
+    @Test
+    public void todayThenShowDateRangeAsTodayWhenNotToCallPreviousOrNext() {
+        Date fromDate = Date.from(Instant.parse("2022-11-30T03:04:05.00Z"));
+        Date toDate = Date.from(Instant.parse("2022-12-31T03:04:05.00Z"));
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setFixedDate(mToday);
+        presenter.setToDateRange(fromDate, toDate);
+        presenter.today();
+
+        InOrder inOrder = Mockito.inOrder(mView);
+        inOrder.verify(mView).showDateRange(fromDate, toDate);
+        inOrder.verify(mView).showDateRange(mToday, mToday);
+    }
+
+    @Test
+    public void todayThenShowDateRangeAsPassedDateAfterPrevious() {
+        Date fromDate = Date.from(Instant.parse("2022-11-30T03:04:05.00Z"));
+        Date toDate = Date.from(Instant.parse("2022-12-01T03:04:05.00Z"));
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setToDateRange(fromDate, toDate); // 1
+        presenter.previous();
+        presenter.today(); // 2
+
+        Date previousFrom = addDays(-2, fromDate);
+        Date previousTo = addDays(-2, toDate);
+
+        InOrder inOrder = Mockito.inOrder(mView);
+        inOrder.verify(mView).showDateRange(fromDate, toDate);
+        inOrder.verify(mView).showDateRange(previousFrom, previousTo);
+        inOrder.verify(mView).showDateRange(fromDate, toDate);
+    }
+
+    @Test
+    public void todayThenShowDateRangeAsPassedDateAfterNext() {
+        Date fromDate = Date.from(Instant.parse("2022-11-30T03:04:05.00Z"));
+        Date toDate = Date.from(Instant.parse("2022-12-01T03:04:05.00Z"));
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setToDateRange(fromDate, toDate); // 1
+        presenter.next();
+        presenter.today(); // 2
+
+        Date nextFrom = addDays(2, fromDate);
+        Date nextTo = addDays(2, toDate);
+
+        InOrder inOrder = Mockito.inOrder(mView);
+        inOrder.verify(mView).showDateRange(fromDate, toDate);
+        inOrder.verify(mView).showDateRange(nextFrom, nextTo);
+        inOrder.verify(mView).showDateRange(fromDate, toDate);
+    }
+
+    @Test
+    public void previousThenShowDateRangeAsYesterdayWhenNotToSetDateRange() {
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setFixedDate(mToday);
+        presenter.previous();
+
+        verify(mView, times(1)).showDateRange(mYesterday, mYesterday);
+    }
+
+    @Test
+    public void previousThenShowDateRangeAsPreviousDateRange() {
+        Date fromDate = Date.from(Instant.parse("2022-11-30T03:04:05.00Z"));
+        Date toDate = Date.from(Instant.parse("2022-12-01T03:04:05.00Z"));
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setToDateRange(fromDate, toDate);
+        presenter.previous();
+
+        Date previousFrom = addDays(-2, fromDate);
+        Date previousTo = addDays(-2, toDate);
+        verify(mView, times(1)).showDateRange(previousFrom, previousTo);
+    }
+
+    @Test
+    public void nextThenShowDateRangeAsTomorrowWhenNotToSetDateRange() {
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setFixedDate(mToday);
+        presenter.next();
+
+        verify(mView, times(1)).showDateRange(mTomorrow, mTomorrow);
+    }
+
+    @Test
+    public void nextThenShowDateRangeAsNextDateRange() {
+        Date fromDate = Date.from(Instant.parse("2022-11-30T03:04:05.00Z"));
+        Date toDate = Date.from(Instant.parse("2022-12-01T03:04:05.00Z"));
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setToDateRange(fromDate, toDate);
+        presenter.next();
+
+        Date nextFrom = addDays(2, fromDate);
+        Date nextTo = addDays(2, toDate);
+        verify(mView, times(1)).showDateRange(nextFrom, nextTo);
+    }
+
+    @Test
+    public void setToDateRangeThenShowDateRangeAsPassedDate() {
+        Date fromDate = Date.from(Instant.parse("2022-11-30T03:04:05.00Z"));
+        Date toDate = Date.from(Instant.parse("2022-12-01T03:04:05.00Z"));
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setToDateRange(fromDate, toDate);
+
+        verify(mView, times(1)).showDateRange(fromDate, toDate);
+    }
+
+    private Date addDays(int plus, Date from) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(from);
+        cal.add(Calendar.DAY_OF_MONTH, plus);
+
+        return cal.getTime();
     }
 }

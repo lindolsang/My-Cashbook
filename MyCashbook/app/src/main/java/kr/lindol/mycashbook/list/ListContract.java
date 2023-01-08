@@ -36,16 +36,24 @@ public interface ListContract {
                          long dailyExpenses);
 
         void showErrorBalanceLoad();
+
+        void showListType(@NonNull ListType type);
+
+        void showMonth(@NonNull Date date);
+
+        void showDateRange(@NonNull Date from, @NonNull Date to);
     }
 
     interface Presenter extends BasePresenter {
-        void yesterday();
+        void previous();
 
         void today();
 
-        void tomorrow();
+        void next();
 
         void setToDate(@NonNull Date date);
+
+        void setToDateRange(@NonNull Date from, @NonNull Date to);
 
         void addLog();
 
@@ -54,5 +62,10 @@ public interface ListContract {
         void selectCashLog(int id);
 
         void deleteLog(@NonNull List<CashLog> logs);
+
+        void setListType(@NonNull ListType type);
+
+        @NonNull
+        ListType getListType();
     }
 }
