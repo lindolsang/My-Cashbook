@@ -317,7 +317,7 @@ public class CashLogListPresenterTest {
 
     private void mockBalanceLoaded() {
         doAnswer(invocation -> {
-            CashLogDataSource.BalanceLoadCallback cb = invocation.getArgument(1);
+            CashLogDataSource.GetBalanceForDayCallback cb = invocation.getArgument(1);
             cb.onBalanceLoaded(1, 0, 0, 0);
             return null;
         }).when(mRepository).balance(any(Date.class), any());
@@ -325,7 +325,7 @@ public class CashLogListPresenterTest {
 
     private void mockBalanceLoadFailed() {
         doAnswer(invocation -> {
-            CashLogDataSource.BalanceLoadCallback cb = invocation.getArgument(1);
+            CashLogDataSource.GetBalanceForDayCallback cb = invocation.getArgument(1);
             cb.onError();
             return null;
         }).when(mRepository).balance(any(Date.class), any());

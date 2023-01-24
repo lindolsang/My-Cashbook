@@ -132,7 +132,7 @@ public class CashLogListPresenter implements ListContract.Presenter {
             }
         });
 
-        mRepository.balance(mCalendar.getTime(), new CashLogDataSource.BalanceLoadCallback() {
+        mRepository.balance(mCalendar.getTime(), new CashLogDataSource.GetBalanceForDayCallback() {
             @Override
             public void onBalanceLoaded(long incomeOnMonth, long outlayOnMonth, long balance, long outlay) {
                 mView.showBalance(mCalendar.getTime(), incomeOnMonth, outlayOnMonth, balance, outlay);

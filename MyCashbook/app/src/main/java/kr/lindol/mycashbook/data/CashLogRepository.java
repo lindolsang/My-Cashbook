@@ -26,8 +26,9 @@ public class CashLogRepository implements CashLogDataSource {
     }
 
     @Override
-    public void loadByDate(@NonNull Date date, @Nullable LoadCashLogCallback callback) {
+    public void loadByDate(@NonNull Date date, @NonNull LoadCashLogCallback callback) {
         checkNotNull(date, "date cannot be null");
+        checkNotNull(callback, "callback cannot be null");
 
         SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd");
         final String searchDate = sf.format(date);
@@ -51,6 +52,18 @@ public class CashLogRepository implements CashLogDataSource {
                 });
             }
         });
+    }
+
+    @Override
+    public void loadByMonth(@NonNull Date date, @NonNull LoadCashLogCallback callback) {
+
+        //TODO 2023/01/24 start implementation here
+    }
+
+    @Override
+    public void loadByDateRange(@NonNull Date from, @NonNull Date to,
+                                @NonNull LoadCashLogCallback callback) {
+
     }
 
     @Override
@@ -120,7 +133,7 @@ public class CashLogRepository implements CashLogDataSource {
     }
 
     @Override
-    public void balance(@NonNull Date date, @NonNull BalanceLoadCallback callback) {
+    public void balance(@NonNull Date date, @NonNull GetBalanceForDayCallback callback) {
         checkNotNull(date, "date cannot be null");
         checkNotNull(callback, "callback cannot be null");
 
@@ -143,5 +156,16 @@ public class CashLogRepository implements CashLogDataSource {
                 });
             }
         });
+    }
+
+    @Override
+    public void balanceByMonth(@NonNull Date date, @NonNull GetBalanceCallback callback) {
+
+    }
+
+    @Override
+    public void balanceByDateRange(@NonNull Date from, @NonNull Date to,
+                                   @NonNull GetBalanceCallback callback) {
+
     }
 }
