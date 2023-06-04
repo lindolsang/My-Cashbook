@@ -78,7 +78,7 @@ public class CashLogAddFragment extends Fragment implements AddContract.View {
                     String amount = mEditTextAmount.getText().toString().trim();
                     String description = mEditTextDescription.getText().toString().trim();
 
-                    mPresenter.addAsOutlay(item, amount, mDate, description);
+                    mPresenter.addAsExpense(item, amount, mDate, description);
                 }
         );
 

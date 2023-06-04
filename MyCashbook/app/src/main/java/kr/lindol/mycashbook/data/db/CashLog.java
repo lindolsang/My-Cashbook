@@ -22,6 +22,9 @@ public class CashLog {
     @ColumnInfo(name = "amount")
     public int amount;
 
+    @ColumnInfo(name = "date_tag")
+    public int dateTag;
+
     @ColumnInfo(name = "day_tag")
     public String dayTag;
 

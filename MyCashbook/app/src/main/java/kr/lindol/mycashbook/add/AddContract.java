@@ -31,9 +31,9 @@ public interface AddContract {
                          @NonNull Date date,
                          @Nullable String description);
 
-        void addAsOutlay(@NonNull String item,
-                         @NonNull String amount,
-                         @NonNull Date date,
-                         @Nullable String description);
+        void addAsExpense(@NonNull String item,
+                          @NonNull String amount,
+                          @NonNull Date date,
+                          @Nullable String description);
     }
 }

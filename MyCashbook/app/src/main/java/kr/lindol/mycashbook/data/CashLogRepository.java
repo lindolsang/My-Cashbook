@@ -56,14 +56,58 @@ public class CashLogRepository implements CashLogDataSource {
 
     @Override
     public void loadByMonth(@NonNull Date date, @NonNull LoadCashLogCallback callback) {
+        checkNotNull(date, "date can not be null");
+        checkNotNull(callback, "callback can not be null");
 
-        //TODO 2023/01/24 start implementation here
+        SimpleDateFormat sf = new SimpleDateFormat("yyyyMM");
+        final String searchMonth = sf.format(date);
+
+        mExecutors.diskIo().execute(new Runnable() {
+            @Override
+            public void run() {
+                List<CashLog> result = mDao.loadByMonth(searchMonth);
+
+                mExecutors.mainThread().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (result.size() > 0) {
+                            callback.onCashLogLoaded(result);
+                        } else {
+                            callback.onDataNotAvailable();
+                        }
+                    }
+                });
+            }
+        });
     }
 
     @Override
     public void loadByDateRange(@NonNull Date from, @NonNull Date to,
                                 @NonNull LoadCashLogCallback callback) {
+        checkNotNull(from, "from can not be null");
+        checkNotNull(to, "to can not be null");
+        checkNotNull(callback, "callback can not be null");
 
+        SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd");
+        int dateFrom = Integer.parseInt(sf.format(from));
+        int dateTo = Integer.parseInt(sf.format(to));
+        mExecutors.diskIo().execute(new Runnable() {
+            @Override
+            public void run() {
+                List<CashLog> result = mDao.loadByDateRange(dateFrom, dateTo);
+
+                mExecutors.mainThread().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (result.size() > 0) {
+                            callback.onCashLogLoaded(result);
+                        } else {
+                            callback.onDataNotAvailable();
+                        }
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -160,12 +204,47 @@ public class CashLogRepository implements CashLogDataSource {
 
     @Override
     public void balanceByMonth(@NonNull Date date, @NonNull GetBalanceCallback callback) {
+        checkNotNull(date, "date can not be null");
+        checkNotNull(callback, "callback can not be null");
 
+        SimpleDateFormat sf = new SimpleDateFormat("yyyyMM");
+
+        String monthTag = sf.format(date);
+        mExecutors.diskIo().execute(new Runnable() {
+            @Override
+            public void run() {
+                long incomeMonth = mDao.sumOnMonth(monthTag, 0);
+                long outlayMonth = mDao.sumOnMonth(monthTag, 1);
+                long balance = incomeMonth - outlayMonth;
+
+                mExecutors.mainThread().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onBalanceLoaded(incomeMonth, outlayMonth, balance);
+                    }
+                });
+            }
+        });
     }
 
     @Override
     public void balanceByDateRange(@NonNull Date from, @NonNull Date to,
                                    @NonNull GetBalanceCallback callback) {
+        checkNotNull(from, "from can not be null");
+        checkNotNull(to, "to can not be null");
 
+        SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd");
+        int dateFrom = Integer.parseInt(sf.format(from));
+        int dateTo = Integer.parseInt(sf.format(to));
+        mExecutors.diskIo().execute(new Runnable() {
+            @Override
+            public void run() {
+                long income = mDao.sumOnDateRange(dateFrom, dateTo, 0);
+                long outlay = mDao.sumOnDateRange(dateFrom, dateTo, 1);
+                long balance = income - outlay;
+
+                callback.onBalanceLoaded(income, outlay, balance);
+            }
+        });
     }
 }

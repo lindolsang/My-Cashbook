@@ -73,6 +73,7 @@ public class CashLogAddPresenter implements AddContract.Presenter {
         newLog.item = item;
         newLog.type = type;
         newLog.amount = amount;
+        newLog.dateTag = Integer.parseInt(sfDay.format(date));
         newLog.dayTag = sfDay.format(date);
         newLog.monthTag = sfMonth.format(date);
         newLog.createdBy = System.currentTimeMillis();
@@ -93,7 +94,7 @@ public class CashLogAddPresenter implements AddContract.Presenter {
     }
 
     @Override
-    public void addAsOutlay(@NonNull String item, @NonNull String amount, @NonNull Date date, @Nullable String description) {
+    public void addAsExpense(@NonNull String item, @NonNull String amount, @NonNull Date date, @Nullable String description) {
         if (checkParameters(item, amount, date)) {
             saveCashLog(item, 1, Integer.parseInt(amount), date, description);
         }

@@ -8,7 +8,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -29,17 +28,13 @@ public class CashLogAddPresenterTest {
     private CashLogAddPresenter presenter;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         repository = mock(CashLogRepository.class);
         view = mock(AddContract.View.class);
 
         argumentCaptor = ArgumentCaptor.forClass(CashLog.class);
 
         presenter = new CashLogAddPresenter(repository, view);
-    }
-
-    @After
-    public void tearDown() throws Exception {
     }
 
     private void mockSuccess() {
@@ -51,52 +46,64 @@ public class CashLogAddPresenterTest {
         }).when(repository).save(any(), any());
     }
 
-    private Date getTime(int year, int month, int date) {
-        Calendar cal = Calendar.getInstance();
-        cal.set(year, month, date);
-
-        return cal.getTime();
-    }
-
     @Test
     public void addAsIncomeThenSuccess() {
         mockSuccess();
 
-        presenter.addAsIncome("Hello", "1000", new Date(), "description");
+        presenter.addAsIncome("Salary", "1000", new Date(), "description");
 
         verify(view, times(1)).showSuccess();
     }
 
+    private Date date(int year, int month, int date) {
+        Calendar c = Calendar.getInstance();
+        c.set(year, month - 1, date);
+
+        return c.getTime();
+    }
+
     @Test
-    public void addAsOutlayThenSuccess() {
+    public void addAsExpenseThenSuccess() {
         mockSuccess();
 
-        presenter.addAsOutlay("Hello", "1000", new Date(), "description");
+        presenter.addAsExpense("Ice cream", "1000", new Date(), "description");
 
         verify(view, times(1)).showSuccess();
     }
 
     @Test
-    public void addAsOutlayWithSpecifiedDateThenSave() {
-        presenter.addAsOutlay("hello", "1000", getTime(2021, 0, 1), "description");
+    public void addAsExpenseWithSpecifiedDateThenSave() {
+        presenter.addAsExpense("Ice cream", "1000", date(2021, 1, 1), "description");
 
         verify(repository, times(1)).save(argumentCaptor.capture(), any());
-        assertThat(argumentCaptor.getValue().monthTag, equalTo("202101"));
-        assertThat(argumentCaptor.getValue().dayTag, equalTo("20210101"));
+        CashLog cashLog = argumentCaptor.getValue();
+        assertThat(cashLog.item, equalTo("Ice cream"));
+        assertThat(cashLog.type, equalTo(1));
+        assertThat(cashLog.amount, equalTo(1000));
+        assertThat(cashLog.dateTag, equalTo(20210101));
+        assertThat(cashLog.dayTag, equalTo("20210101"));
+        assertThat(cashLog.monthTag, equalTo("202101"));
+        assertThat(cashLog.description, equalTo("description"));
     }
 
     @Test
     public void addAsIncomeWithSpecifiedDateThenSave() {
-        presenter.addAsIncome("hello", "1000", getTime(2021, 0, 1), "description");
+        presenter.addAsIncome("Salary", "1000", date(2021, 1, 1), "description");
 
         verify(repository, times(1)).save(argumentCaptor.capture(), any());
-        assertThat(argumentCaptor.getValue().monthTag, equalTo("202101"));
-        assertThat(argumentCaptor.getValue().dayTag, equalTo("20210101"));
+        CashLog cashLog = argumentCaptor.getValue();
+        assertThat(cashLog.item, equalTo("Salary"));
+        assertThat(cashLog.type, equalTo(0));
+        assertThat(cashLog.amount, equalTo(1000));
+        assertThat(cashLog.dateTag, equalTo(20210101));
+        assertThat(cashLog.dayTag, equalTo("20210101"));
+        assertThat(cashLog.monthTag, equalTo("202101"));
+        assertThat(cashLog.description, equalTo("description"));
     }
 
     @Test
-    public void addAsOutlayThenSaveWithType1() {
-        presenter.addAsOutlay("hello", "1000", new Date(), "description");
+    public void addAsExpenseThenSaveWithType1() {
+        presenter.addAsExpense("Ice cream", "1000", new Date(), "description");
 
         verify(repository, times(1)).save(argumentCaptor.capture(), any());
         assertThat(argumentCaptor.getValue().type, equalTo(1));
@@ -104,26 +111,26 @@ public class CashLogAddPresenterTest {
 
     @Test
     public void addAsIncomeThenSaveWithType0() {
-        presenter.addAsIncome("hello", "1000", new Date(), "description");
+        presenter.addAsIncome("Salary", "1000", new Date(), "description");
 
         verify(repository, times(1)).save(argumentCaptor.capture(), any());
         assertThat(argumentCaptor.getValue().type, equalTo(0));
     }
 
     @Test
-    public void addAsOutlayThenClearForms() {
+    public void addAsIncomeThenClearForms() {
         mockSuccess();
 
-        presenter.addAsIncome("hello", "1000", new Date(), "description");
+        presenter.addAsIncome("Salary", "1000", new Date(), "description");
 
         verify(view, times(1)).clearForms();
     }
 
     @Test
-    public void addAsIncomeThenClearForms() {
+    public void addAsExpenseThenClearForms() {
         mockSuccess();
 
-        presenter.addAsOutlay("hello", "1000", new Date(), "description");
+        presenter.addAsExpense("Ice cream", "1000", new Date(), "description");
 
         verify(view, times(1)).clearForms();
     }
@@ -137,63 +144,63 @@ public class CashLogAddPresenterTest {
 
     @Test
     public void addAsIncomeWithEmptyAmountThenShowAmountValueEmptyError() {
-        presenter.addAsIncome("hello", "", new Date(), "description");
+        presenter.addAsIncome("Salary", "", new Date(), "description");
 
         verify(view, times(1)).showAmountValueEmptyError();
     }
 
     @Test
     public void addAsIncomeWithZeroAmountThenShowAmountValueSmallError() {
-        presenter.addAsIncome("hello", "0", new Date(), "description");
+        presenter.addAsIncome("Salary", "0", new Date(), "description");
 
         verify(view, times(1)).showAmountValueSmallError();
     }
 
     @Test
     public void addAsIncomeWithMinusAmountThenShowAmountValueSmallError() {
-        presenter.addAsIncome("hello", "-1", new Date(), "description");
+        presenter.addAsIncome("Salary", "-1", new Date(), "description");
 
         verify(view, times(1)).showAmountValueSmallError();
     }
 
     @Test
-    public void addAsIncomeWithAmountHasNonNumberCharThenShowAmountValueFormatError() {
-        presenter.addAsIncome("hello", "10.0", new Date(), "description");
+    public void addAsIncomeWithNonNumberAmountThenShowAmountValueFormatError() {
+        presenter.addAsIncome("Salary", "10.0", new Date(), "description");
 
         verify(view, times(1)).showAmountValueFormatError();
     }
 
     @Test
-    public void addAsOutlayWithEmptyItemThenShowItemValueEmptyError() {
-        presenter.addAsOutlay("", "1000", new Date(), "description");
+    public void addAsExpenseWithEmptyItemThenShowItemValueEmptyError() {
+        presenter.addAsExpense("", "1000", new Date(), "description");
 
         verify(view, times(1)).showItemValueEmptyError();
     }
 
     @Test
-    public void addAsOutlayWithEmptyAmountThenShowAmountValueEmptyError() {
-        presenter.addAsOutlay("hello", "", new Date(), "description");
+    public void addAsExpenseWithEmptyAmountThenShowAmountValueEmptyError() {
+        presenter.addAsExpense("Ice cream", "", new Date(), "description");
 
         verify(view, times(1)).showAmountValueEmptyError();
     }
 
     @Test
-    public void addAsOutlayWithZeroAmountThenShowAmountValueSmallError() {
-        presenter.addAsOutlay("hello", "0", new Date(), "description");
+    public void addAsExpenseWithZeroAmountThenShowAmountValueSmallError() {
+        presenter.addAsExpense("Ice cream", "0", new Date(), "description");
 
         verify(view, times(1)).showAmountValueSmallError();
     }
 
     @Test
-    public void addAsOutlayWithMinusAmountThenShowAmountValueSmallError() {
-        presenter.addAsOutlay("hello", "-1", new Date(), "description");
+    public void addAsExpenseWithMinusAmountThenShowAmountValueSmallError() {
+        presenter.addAsExpense("Ice cream", "-1", new Date(), "description");
 
         verify(view, times(1)).showAmountValueSmallError();
     }
 
     @Test
-    public void addAsOutlayWithAmountHasNonNumberCharThenShowAmountValueFormatError() {
-        presenter.addAsOutlay("hello", "10.0", new Date(), "description");
+    public void addAsExpenseWithNonNumberAmountThenShowAmountValueFormatError() {
+        presenter.addAsExpense("Ice cream", "10.0", new Date(), "description");
 
         verify(view, times(1)).showAmountValueFormatError();
     }

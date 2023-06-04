@@ -1,7 +1,11 @@
 package kr.lindol.mycashbook.util;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import android.os.Handler;
 import android.os.Looper;
+
+import androidx.annotation.NonNull;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -15,6 +19,14 @@ public class AppExecutors {
     private AppExecutors() {
         mDiskIo = Executors.newSingleThreadExecutor();
         mMainThread = new MainThreadExecutor();
+    }
+
+    protected AppExecutors(@NonNull Executor diskIo, @NonNull Executor mainThread) {
+        checkNotNull(diskIo, "diskIo can not be null");
+        checkNotNull(mainThread, "mainThread can not be null");
+
+        this.mDiskIo = diskIo;
+        this.mMainThread = mainThread;
     }
 
     public static AppExecutors getInstance() {

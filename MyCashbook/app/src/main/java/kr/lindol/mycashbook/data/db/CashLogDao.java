@@ -12,6 +12,12 @@ public interface CashLogDao {
     @Query("SELECT * FROM cash_logs WHERE day_tag = :dayTag")
     List<CashLog> loadByDate(String dayTag);
 
+    @Query("SELECT * FROM cash_logs WHERE month_tag = :monthTag")
+    List<CashLog> loadByMonth(String monthTag);
+
+    @Query("SELECT * FROM cash_logs WHERE date_tag BETWEEN :dateFrom AND :dateTo")
+    List<CashLog> loadByDateRange(int dateFrom, int dateTo);
+
     @Insert
     void insertAll(CashLog... cashLogs);
 
@@ -23,4 +29,7 @@ public interface CashLogDao {
 
     @Query("SELECT sum(amount) FROM cash_logs WHERE day_tag = :date AND type = :type")
     long sumOnDate(String date, int type);
+
+    @Query("SELECT sum(amount) FROM cash_logs WHERE date_tag BETWEEN :dateFrom AND :dateTo AND type = :type")
+    long sumOnDateRange(int dateFrom, int dateTo, int type);
 }
