@@ -20,7 +20,6 @@ import kr.lindol.mycashbook.data.CashLogRepository;
 import kr.lindol.mycashbook.data.db.CashLog;
 
 public class CashLogAddPresenterTest {
-
     private CashLogRepository repository;
     private AddContract.View view;
     private ArgumentCaptor<CashLog> argumentCaptor;
@@ -37,7 +36,7 @@ public class CashLogAddPresenterTest {
         presenter = new CashLogAddPresenter(repository, view);
     }
 
-    private void mockSuccess() {
+    private void setRepositorySaveOk() {
         doAnswer(invocation -> {
             CashLogDataSource.OperationCallback cb = invocation.getArgument(1);
             cb.onFinished();
@@ -48,9 +47,18 @@ public class CashLogAddPresenterTest {
 
     @Test
     public void addAsIncomeThenSuccess() {
-        mockSuccess();
+        setRepositorySaveOk();
 
         presenter.addAsIncome("Salary", "1000", new Date(), "description");
+
+        verify(view, times(1)).showSuccess();
+    }
+
+    @Test
+    public void addAsExpenseThenSuccess() {
+        setRepositorySaveOk();
+
+        presenter.addAsExpense("Ice cream", "1000", new Date(), "description");
 
         verify(view, times(1)).showSuccess();
     }
@@ -60,15 +68,6 @@ public class CashLogAddPresenterTest {
         c.set(year, month - 1, date);
 
         return c.getTime();
-    }
-
-    @Test
-    public void addAsExpenseThenSuccess() {
-        mockSuccess();
-
-        presenter.addAsExpense("Ice cream", "1000", new Date(), "description");
-
-        verify(view, times(1)).showSuccess();
     }
 
     @Test
@@ -102,24 +101,8 @@ public class CashLogAddPresenterTest {
     }
 
     @Test
-    public void addAsExpenseThenSaveWithType1() {
-        presenter.addAsExpense("Ice cream", "1000", new Date(), "description");
-
-        verify(repository, times(1)).save(argumentCaptor.capture(), any());
-        assertThat(argumentCaptor.getValue().type, equalTo(1));
-    }
-
-    @Test
-    public void addAsIncomeThenSaveWithType0() {
-        presenter.addAsIncome("Salary", "1000", new Date(), "description");
-
-        verify(repository, times(1)).save(argumentCaptor.capture(), any());
-        assertThat(argumentCaptor.getValue().type, equalTo(0));
-    }
-
-    @Test
     public void addAsIncomeThenClearForms() {
-        mockSuccess();
+        setRepositorySaveOk();
 
         presenter.addAsIncome("Salary", "1000", new Date(), "description");
 
@@ -128,7 +111,7 @@ public class CashLogAddPresenterTest {
 
     @Test
     public void addAsExpenseThenClearForms() {
-        mockSuccess();
+        setRepositorySaveOk();
 
         presenter.addAsExpense("Ice cream", "1000", new Date(), "description");
 

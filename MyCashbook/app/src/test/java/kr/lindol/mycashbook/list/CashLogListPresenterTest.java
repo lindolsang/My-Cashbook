@@ -9,7 +9,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -67,10 +66,6 @@ public class CashLogListPresenterTest {
         cal.setTime(mToday);
         cal.add(Calendar.MONTH, 1);
         mNextMonth = cal.getTime();
-    }
-
-    @After
-    public void tearDown() {
     }
 
     private void mockOnCashLogLoaded() {

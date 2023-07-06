@@ -17,6 +17,7 @@ public class CashLog {
      * 0 - income
      * 1 - expense
      */
+    //TODO 2023-07-06 needs to consider that changes to enum class
     public int type;
 
     @ColumnInfo(name = "amount")
