@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -28,8 +29,6 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-
-import com.google.common.base.Preconditions;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -50,6 +49,8 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
     private boolean mShowSelection = false;
 
     private TextView mTextViewCurrentDate;
+    private TextView mTextViewFromDate;
+    private TextView mTextViewToDate;
     private TextView mTextViewDailyExpenses;
     private TextView mTextViewTitleMonthlyIncome;
     private TextView mTextViewMonthlyIncome;
@@ -58,7 +59,14 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
     private TextView mTextViewTitleMonthlyBalance;
     private TextView mTextViewMonthlyBalance;
 
+    private LinearLayout mLayoutCurrentDate;
+    private LinearLayout mLayoutCurrentDateRange;
+
     private Button mButtonDelete;
+
+    private TextView mTextViewTabPerDay;
+    private TextView mTextViewTabPerMonth;
+    private TextView mTextViewTabRange;
 
     private final DecimalFormat mAmountFormat = new DecimalFormat("###,###");
     private final SimpleDateFormat mBalanceTitleDateFormat = new SimpleDateFormat("MMM");
@@ -88,8 +96,48 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         mTextViewTitleMonthlyBalance = fragment.findViewById(R.id.textView_title_monthly_balance);
         mTextViewMonthlyBalance = fragment.findViewById(R.id.textView_monthly_balance);
 
+        mLayoutCurrentDate = fragment.findViewById(R.id.layout_current_date);
+        mLayoutCurrentDateRange = fragment.findViewById(R.id.layout_current_date_range);
+
         mTextViewCurrentDate = fragment.findViewById(R.id.textView_currentDate);
-        mTextViewCurrentDate.setOnClickListener((v) -> mPresenter.selectDate());
+        mTextViewCurrentDate.setOnClickListener((v) -> {
+            if (mPresenter.getListType() == ListType.FOR_DAY) {
+                mPresenter.selectDate();
+            } else {
+                mPresenter.selectMonth();
+            }
+        });
+
+        mTextViewFromDate = fragment.findViewById(R.id.textView_from_currentDate);
+        mTextViewFromDate.setOnClickListener((v) -> mPresenter.selectFromDate());
+
+        mTextViewToDate = fragment.findViewById(R.id.textView_to_currentDate);
+        mTextViewToDate.setOnClickListener(((v) -> mPresenter.selectToDate()));
+
+        mTextViewTabPerDay = fragment.findViewById(R.id.textView_tabPerDay);
+        mTextViewTabPerDay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.setListType(ListType.FOR_DAY);
+                mPresenter.reload();
+            }
+        });
+        mTextViewTabPerMonth = fragment.findViewById(R.id.textView_tabPerMonth);
+        mTextViewTabPerMonth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.setListType(ListType.FOR_MONTH);
+                mPresenter.reload();
+            }
+        });
+        mTextViewTabRange = fragment.findViewById(R.id.textView_tabRange);
+        mTextViewTabRange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.setListType(ListType.FOR_DATE_RANGE);
+                mPresenter.reload();
+            }
+        });
 
         mButtonDelete = fragment.findViewById(R.id.button_delete);
         mButtonDelete.setOnClickListener((v) -> {
@@ -194,6 +242,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         Log.d(TAG, "Show date: " + date);
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd (E)");
         mTextViewCurrentDate.setText(sf.format(date));
+
     }
 
     private void showSelectionBox() {
@@ -287,7 +336,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-                    // TODO: improve to reload when data was added only.
+                    // TODO 2023-08-16 improve to reload when data was added only.
                 }
             });
 
@@ -303,6 +352,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
     public void onResume() {
         super.onResume();
         mPresenter.start();
+        //TODO 2023-08-17 implement here to update list
     }
 
     @Override
@@ -319,6 +369,66 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
                 setCal.set(year, month, dayOfMonth);
 
                 mPresenter.setToDate(setCal.getTime());
+            }
+        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+        dialog.show();
+    }
+
+    //TODO 2023-08-27 needs to improve to pick Year and Month
+    @Override
+    public void showCalendarForMonth(@NonNull Date date) {
+        checkNotNull(date, "date can not be null");
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+
+        DatePickerDialog dialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                Calendar setCal = Calendar.getInstance();
+                setCal.set(year, month, dayOfMonth);
+
+                mPresenter.setToDate(setCal.getTime());
+            }
+        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+        dialog.show();
+    }
+
+    @Override
+    public void showCalendarForFromDate(@NonNull Date fromDate, @NonNull Date toDate) {
+        checkNotNull(fromDate, "fromDate can not be null");
+        checkNotNull(toDate, "toDate can not be null");
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(fromDate);
+
+        DatePickerDialog dialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                Calendar setCal = Calendar.getInstance();
+                setCal.set(year, month, dayOfMonth);
+
+                mPresenter.setToDateRange(setCal.getTime(), toDate);
+            }
+        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+        dialog.show();
+    }
+
+    @Override
+    public void showCalendarForToDate(@NonNull Date fromDate, @NonNull Date toDate) {
+        checkNotNull(fromDate, "fromDate can not be null");
+        checkNotNull(toDate, "toDate can not be null");
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(toDate);
+
+        DatePickerDialog dialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                Calendar setCal = Calendar.getInstance();
+                setCal.set(year, month, dayOfMonth);
+
+                mPresenter.setToDateRange(fromDate, setCal.getTime());
             }
         }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
         dialog.show();
@@ -350,25 +460,74 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
     }
 
     @Override
+    public void showBalanceForMonth(@NonNull Date date, long income, long expense, long balance) {
+        //TODO 2023-08-16 implement here
+    }
+
+    @Override
+    public void showBalanceForDateRange(@NonNull Date from, @NonNull Date to, long income, long expense, long balance) {
+        //TODO 2023-08-16 implement here
+    }
+
+    @Override
     public void showErrorBalanceLoad() {
         Log.w(TAG, "Can't show state");
     }
 
     @Override
     public void showListType(@NonNull ListType type) {
-        Preconditions.checkNotNull(type, "type can not be null");
+        checkNotNull(type, "type can not be null");
 
+        int selectedColor = getResources().getColor(R.color.list_tab_selected);
+        switch (type) {
+            case FOR_DAY:
+                mLayoutCurrentDate.setVisibility(View.VISIBLE);
+                mLayoutCurrentDateRange.setVisibility(View.GONE);
+
+                mTextViewTabPerDay.setBackgroundColor(selectedColor);
+                mTextViewTabPerMonth.setBackground(null);
+                mTextViewTabRange.setBackground(null);
+                break;
+            case FOR_MONTH:
+                mLayoutCurrentDate.setVisibility(View.VISIBLE);
+                mLayoutCurrentDateRange.setVisibility(View.GONE);
+
+                mTextViewTabPerDay.setBackground(null);
+                mTextViewTabPerMonth.setBackgroundColor(selectedColor);
+                mTextViewTabRange.setBackground(null);
+                break;
+            case FOR_DATE_RANGE:
+                mLayoutCurrentDate.setVisibility(View.GONE);
+                mLayoutCurrentDateRange.setVisibility(View.VISIBLE);
+
+                mTextViewTabPerDay.setBackground(null);
+                mTextViewTabPerMonth.setBackground(null);
+                mTextViewTabRange.setBackgroundColor(selectedColor);
+                break;
+        }
     }
 
     @Override
     public void showMonth(@NonNull Date date) {
-        Preconditions.checkNotNull(date, "date can not be null");
+        checkNotNull(date, "date can not be null");
+
+        Log.d(TAG, "showMonth date = " + date);
+
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM");
+        mTextViewCurrentDate.setText(sf.format(date));
     }
 
     @Override
     public void showDateRange(@NonNull Date from, @NonNull Date to) {
-        Preconditions.checkNotNull(from, "from can not be null");
-        Preconditions.checkNotNull(to, "to can not be null");
+        checkNotNull(from, "from can not be null");
+        checkNotNull(to, "to can not be null");
+
+        Log.d(TAG, "showDateRange from = " + from);
+        Log.d(TAG, "showDateRange to = " + to);
+
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd (E)");
+        mTextViewFromDate.setText(sf.format(from));
+        mTextViewToDate.setText(sf.format(to));
     }
 
     private class CashLogListAdapter extends BaseAdapter {

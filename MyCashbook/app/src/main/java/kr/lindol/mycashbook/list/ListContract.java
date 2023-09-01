@@ -25,6 +25,12 @@ public interface ListContract {
 
         void showCalendar(@NonNull Date date);
 
+        void showCalendarForMonth(@NonNull Date date);
+
+        void showCalendarForFromDate(@NonNull Date fromDate, @NonNull Date toDate);
+
+        void showCalendarForToDate(@NonNull Date fromDate, @NonNull Date toDate);
+
         void showSuccessfullyDeletedLog();
 
         void showErrorDeleteLog();
@@ -34,6 +40,17 @@ public interface ListContract {
                          long monthlyExpenses,
                          long monthlyBalance,
                          long dailyExpenses);
+
+        void showBalanceForMonth(@NonNull Date date,
+                                 long income,
+                                 long expense,
+                                 long balance);
+
+        void showBalanceForDateRange(@NonNull Date from,
+                                     @NonNull Date to,
+                                     long income,
+                                     long expense,
+                                     long balance);
 
         void showErrorBalanceLoad();
 
@@ -59,6 +76,12 @@ public interface ListContract {
 
         void selectDate();
 
+        void selectMonth();
+
+        void selectFromDate();
+
+        void selectToDate();
+
         void selectCashLog(int id);
 
         void deleteLog(@NonNull List<CashLog> logs);
@@ -67,5 +90,10 @@ public interface ListContract {
 
         @NonNull
         ListType getListType();
+
+        /**
+         * reload all of data with current options
+         */
+        void reload();
     }
 }

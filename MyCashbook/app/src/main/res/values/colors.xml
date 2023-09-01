@@ -16,4 +16,5 @@
     <color name="balance_monthly_balance">#FF000000</color>
     <color name="splash_screen_background">#FF53BF14</color>
     <color name="splash_screen_statusBar">#FF53BF14</color>
+    <color name="list_tab_selected">#CCD1D1</color>
 </resources>

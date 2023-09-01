@@ -42,7 +42,7 @@ public class CashLogListPresenter implements ListContract.Presenter {
 
     @Override
     public void start() {
-        setToDate(mCalendar.getTime());
+        reload();
     }
 
     @Override
@@ -118,37 +118,75 @@ public class CashLogListPresenter implements ListContract.Presenter {
             mView.showDate(mCalendar.getTime());
         } else if (mListType == ListType.FOR_MONTH) {
             mView.showMonth(mCalendar.getTime());
+        } else {
+            String msg = "ListType is not FOR_DAY or FOR_MONTH";
+            throw new IllegalStateException(msg);
         }
 
-        mRepository.loadByDate(date, new CashLogDataSource.LoadCashLogCallback() {
-            @Override
-            public void onCashLogLoaded(List<CashLog> cashLogs) {
-                mView.showList(cashLogs);
-            }
+        if (mListType == ListType.FOR_DAY) {
+            mRepository.loadByDate(date, new CashLogDataSource.LoadCashLogCallback() {
+                @Override
+                public void onCashLogLoaded(List<CashLog> cashLogs) {
+                    mView.showList(cashLogs);
+                }
 
-            @Override
-            public void onDataNotAvailable() {
-                mView.showNoListData();
-            }
-        });
+                @Override
+                public void onDataNotAvailable() {
+                    mView.showNoListData();
+                }
+            });
+        } else {
+            mRepository.loadByMonth(date, new CashLogDataSource.LoadCashLogCallback() {
+                @Override
+                public void onCashLogLoaded(List<CashLog> cashLogs) {
+                    mView.showList(cashLogs);
+                }
 
-        mRepository.balance(mCalendar.getTime(), new CashLogDataSource.GetBalanceForDayCallback() {
-            @Override
-            public void onBalanceLoaded(long incomeOnMonth, long outlayOnMonth, long balance, long outlay) {
-                mView.showBalance(mCalendar.getTime(), incomeOnMonth, outlayOnMonth, balance, outlay);
-            }
+                @Override
+                public void onDataNotAvailable() {
+                    mView.showNoListData();
+                }
+            });
+        }
 
-            @Override
-            public void onError() {
-                mView.showErrorBalanceLoad();
-            }
-        });
+        if (mListType == ListType.FOR_DAY) {
+            mRepository.balance(mCalendar.getTime(), new CashLogDataSource.GetBalanceForDayCallback() {
+                @Override
+                public void onBalanceLoaded(long incomeOnMonth, long outlayOnMonth, long balance, long outlay) {
+                    mView.showBalance(mCalendar.getTime(), incomeOnMonth, outlayOnMonth, balance, outlay);
+                }
+
+                @Override
+                public void onError() {
+                    mView.showErrorBalanceLoad();
+                }
+            });
+        } else {
+            mRepository.balanceByMonth(mCalendar.getTime(), new CashLogDataSource.GetBalanceCallback() {
+                @Override
+                public void onBalanceLoaded(long income, long expense, long balance) {
+                    mView.showBalanceForMonth(mCalendar.getTime(), income, expense, balance);
+                }
+
+                @Override
+                public void onError() {
+                    mView.showErrorBalanceLoad();
+                }
+            });
+        }
     }
 
     @Override
     public void setToDateRange(@NonNull Date from, @NonNull Date to) {
         checkNotNull(from, "from cannot be null");
         checkNotNull(to, "to cannot be null");
+
+        if (mListType != ListType.FOR_DATE_RANGE) {
+            throw new IllegalStateException("ListType is not FOR_DATE_RANGE");
+        }
+        //TODO 2023-07-17 needs to implement here
+        // load data with date range
+        // call some of callbacks
 
         mMarkFrom = from;
         mMarkTo = to;
@@ -161,6 +199,29 @@ public class CashLogListPresenter implements ListContract.Presenter {
         mCalendar.setTime(to);
 
         mView.showDateRange(from, to);
+        mRepository.loadByDateRange(from, to, new CashLogDataSource.LoadCashLogCallback() {
+            @Override
+            public void onCashLogLoaded(List<CashLog> cashLogs) {
+                mView.showList(cashLogs);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+                mView.showNoListData();
+            }
+        });
+
+        mRepository.balanceByDateRange(from, to, new CashLogDataSource.GetBalanceCallback() {
+            @Override
+            public void onBalanceLoaded(long income, long expense, long balance) {
+                mView.showBalanceForDateRange(from, to, income, expense, balance);
+            }
+
+            @Override
+            public void onError() {
+                mView.showErrorBalanceLoad();
+            }
+        });
     }
 
     @Override
@@ -170,7 +231,38 @@ public class CashLogListPresenter implements ListContract.Presenter {
 
     @Override
     public void selectDate() {
+        if (mListType != ListType.FOR_DAY) {
+            throw new IllegalStateException("ListType is not FOR_DAY");
+        }
+
         mView.showCalendar(mCalendar.getTime());
+    }
+
+    @Override
+    public void selectMonth() {
+        if (mListType != ListType.FOR_MONTH) {
+            throw new IllegalStateException("ListType is not FOR_MONTH");
+        }
+
+        mView.showCalendarForMonth(mCalendar.getTime());
+    }
+
+    @Override
+    public void selectFromDate() {
+        if (mListType != ListType.FOR_DATE_RANGE) {
+            throw new IllegalStateException("ListType is not FOR_DATE_RANGE");
+        }
+
+        mView.showCalendarForFromDate(mCalendarFrom.getTime(), mCalendar.getTime());
+    }
+
+    @Override
+    public void selectToDate() {
+        if (mListType != ListType.FOR_DATE_RANGE) {
+            throw new IllegalStateException("ListType is not DATE_RANGE");
+        }
+
+        mView.showCalendarForToDate(mCalendarFrom.getTime(), mCalendar.getTime());
     }
 
     @Override
@@ -188,6 +280,7 @@ public class CashLogListPresenter implements ListContract.Presenter {
         }
     }
 
+    //TODO 2023-07-24 needs to consider that load for list type
     @Override
     public void deleteLog(@NonNull List<CashLog> logs) {
         checkNotNull(logs, "logs cannot be null");
@@ -210,7 +303,6 @@ public class CashLogListPresenter implements ListContract.Presenter {
     @Override
     public void setListType(@NonNull ListType type) {
         mListType = Preconditions.checkNotNull(type, "type can not be null");
-
         mView.showListType(type);
     }
 
@@ -218,6 +310,16 @@ public class CashLogListPresenter implements ListContract.Presenter {
     @Override
     public ListType getListType() {
         return mListType;
+    }
+
+    @Override
+    public void reload() {
+        if (mListType == ListType.FOR_DATE_RANGE) {
+            //TODO 2023-08-20 needs to review that mark today behavior
+            setToDateRange(mCalendarFrom.getTime(), mCalendar.getTime());
+        } else {
+            setToDate(mCalendar.getTime());
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

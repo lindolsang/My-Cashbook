@@ -15,14 +15,48 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textView_currentDate"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:text="2021년 2월 25일"
-            android:textSize="@dimen/date_text_size" />
+            android:layout_centerVertical="true">
+
+            <LinearLayout
+                android:id="@+id/layout_current_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/textView_currentDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2021년 2월 25일"
+                    android:textSize="@dimen/date_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_current_date_range"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/textView_from_currentDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2023년 7월 20일"
+                    android:textSize="@dimen/date_from_text_size" />
+
+                <TextView
+                    android:id="@+id/textView_to_currentDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="24dp"
+                    android:text="2023년 8월 20일"
+                    android:textSize="@dimen/date_to_text_size" />
+            </LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -68,19 +102,22 @@
         app:layout_constraintRight_toRightOf="parent">
 
         <TextView
+            android:id="@+id/textView_tabPerDay"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="4dp"
-            android:background="#ccd1d1"
+            android:background="@color/list_tab_selected"
             android:text="Per day" />
 
         <TextView
+            android:id="@+id/textView_tabPerMonth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
             android:text="Per month" />
 
         <TextView
+            android:id="@+id/textView_tabRange"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
