@@ -232,6 +232,7 @@ public class CashLogRepository implements CashLogDataSource {
                                    @NonNull GetBalanceCallback callback) {
         checkNotNull(from, "from can not be null");
         checkNotNull(to, "to can not be null");
+        checkNotNull(callback, "callback can not be null");
 
         SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd");
         int dateFrom = Integer.parseInt(sf.format(from));
@@ -243,7 +244,12 @@ public class CashLogRepository implements CashLogDataSource {
                 long outlay = mDao.sumOnDateRange(dateFrom, dateTo, 1);
                 long balance = income - outlay;
 
-                callback.onBalanceLoaded(income, outlay, balance);
+                mExecutors.mainThread().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onBalanceLoaded(income, outlay, balance);
+                    }
+                });
             }
         });
     }

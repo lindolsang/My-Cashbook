@@ -62,6 +62,8 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
     private LinearLayout mLayoutCurrentDate;
     private LinearLayout mLayoutCurrentDateRange;
 
+    private LinearLayout mLayoutDateStatus;
+
     private Button mButtonDelete;
 
     private TextView mTextViewTabPerDay;
@@ -98,6 +100,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
         mLayoutCurrentDate = fragment.findViewById(R.id.layout_current_date);
         mLayoutCurrentDateRange = fragment.findViewById(R.id.layout_current_date_range);
+        mLayoutDateStatus = fragment.findViewById(R.id.layout_date_status);
 
         mTextViewCurrentDate = fragment.findViewById(R.id.textView_currentDate);
         mTextViewCurrentDate.setOnClickListener((v) -> {
@@ -450,6 +453,8 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
         String month = mBalanceTitleDateFormat.format(date);
 
+        mLayoutDateStatus.setVisibility(View.VISIBLE);
+
         mTextViewDailyExpenses.setText(mAmountFormat.format(dailyExpenses));
         mTextViewTitleMonthlyIncome.setText(getString(R.string.balance_title_monthly_income, month));
         mTextViewMonthlyIncome.setText(mAmountFormat.format(monthlyIncome));
@@ -461,12 +466,35 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
     @Override
     public void showBalanceForMonth(@NonNull Date date, long income, long expense, long balance) {
-        //TODO 2023-08-16 implement here
+        checkNotNull(date, "date can not be null");
+
+        String month = mBalanceTitleDateFormat.format(date);
+
+        mLayoutDateStatus.setVisibility(View.GONE);
+
+        //TODO 2023-09-03 implement to show balance of month
+        mTextViewTitleMonthlyIncome.setText(getString(R.string.balance_title_monthly_income, month));
+        mTextViewMonthlyIncome.setText(mAmountFormat.format(income));
+        mTextViewTitleMonthlyExpenses.setText(getString(R.string.balance_title_monthly_expenses, month));
+        mTextViewMonthlyExpenses.setText(mAmountFormat.format(expense));
+        mTextViewTitleMonthlyBalance.setText(getString(R.string.balance_title_monthly_balance, month));
+        mTextViewMonthlyBalance.setText(mAmountFormat.format(balance));
     }
 
     @Override
     public void showBalanceForDateRange(@NonNull Date from, @NonNull Date to, long income, long expense, long balance) {
         //TODO 2023-08-16 implement here
+        checkNotNull(from, "from can not be null");
+        checkNotNull(to, "to can not be null");
+
+        mLayoutDateStatus.setVisibility(View.GONE);
+
+        mTextViewTitleMonthlyIncome.setText(getString(R.string.balance_title_income));
+        mTextViewMonthlyIncome.setText(mAmountFormat.format(income));
+        mTextViewTitleMonthlyExpenses.setText(getString(R.string.balance_title_expenses));
+        mTextViewMonthlyExpenses.setText(mAmountFormat.format(expense));
+        mTextViewTitleMonthlyBalance.setText(getString(R.string.balance_title_balance));
+        mTextViewMonthlyBalance.setText(mAmountFormat.format(balance));
     }
 
     @Override

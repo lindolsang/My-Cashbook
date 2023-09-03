@@ -18,7 +18,7 @@ public class CashLogItemView extends LinearLayout {
     private CheckBox mCheck;
     private TextView mMemo;
 
-    //TODO 2023-07-06 needs refactoring to show date
+    //TODO 2023-07-06 needs refactoring to show date for cash log on top
     public CashLogItemView(Context context) {
         super(context);
 
