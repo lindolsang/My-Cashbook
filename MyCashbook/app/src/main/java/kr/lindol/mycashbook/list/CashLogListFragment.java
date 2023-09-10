@@ -355,7 +355,6 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
     public void onResume() {
         super.onResume();
         mPresenter.start();
-        //TODO 2023-08-17 implement here to update list
     }
 
     @Override
@@ -377,7 +376,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         dialog.show();
     }
 
-    //TODO 2023-08-27 needs to improve to pick Year and Month
+    //TODO 2023-08-27 (improve) needs to improve to pick Year and Month
     @Override
     public void showCalendarForMonth(@NonNull Date date) {
         checkNotNull(date, "date can not be null");
@@ -472,7 +471,6 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
         mLayoutDateStatus.setVisibility(View.GONE);
 
-        //TODO 2023-09-03 implement to show balance of month
         mTextViewTitleMonthlyIncome.setText(getString(R.string.balance_title_monthly_income, month));
         mTextViewMonthlyIncome.setText(mAmountFormat.format(income));
         mTextViewTitleMonthlyExpenses.setText(getString(R.string.balance_title_monthly_expenses, month));
@@ -483,7 +481,6 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
     @Override
     public void showBalanceForDateRange(@NonNull Date from, @NonNull Date to, long income, long expense, long balance) {
-        //TODO 2023-08-16 implement here
         checkNotNull(from, "from can not be null");
         checkNotNull(to, "to can not be null");
 
