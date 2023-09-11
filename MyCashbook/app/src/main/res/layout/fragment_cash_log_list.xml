@@ -102,7 +102,7 @@
         app:layout_constraintRight_toRightOf="parent">
 
         <TextView
-            android:id="@+id/textView_tabPerDay"
+            android:id="@+id/textView_tabByDate"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginLeft="4dp"
@@ -110,14 +110,14 @@
             android:text="Per day" />
 
         <TextView
-            android:id="@+id/textView_tabPerMonth"
+            android:id="@+id/textView_tabByMonth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
             android:text="Per month" />
 
         <TextView
-            android:id="@+id/textView_tabRange"
+            android:id="@+id/textView_tabByDateRange"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"

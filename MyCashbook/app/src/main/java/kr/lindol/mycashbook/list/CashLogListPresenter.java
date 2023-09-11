@@ -35,7 +35,7 @@ public class CashLogListPresenter implements ListContract.Presenter {
         mCalendarFrom = Calendar.getInstance();
         mCalendar = Calendar.getInstance();
         mView.setPresenter(this);
-        mListType = ListType.FOR_DAY;
+        mListType = ListType.FOR_DATE;
 
         mSelectedCashLogId = -1;
     }
@@ -51,7 +51,7 @@ public class CashLogListPresenter implements ListContract.Presenter {
             mCalendarFrom.setTime(mFixedDate);
             mCalendar.setTime(mFixedDate);
         }
-        if (mListType == ListType.FOR_DAY) {
+        if (mListType == ListType.FOR_DATE) {
             mCalendar.add(Calendar.DAY_OF_MONTH, -1);
             setToDate(mCalendar.getTime());
         } else if (mListType == ListType.FOR_MONTH) {
@@ -93,7 +93,7 @@ public class CashLogListPresenter implements ListContract.Presenter {
         if (mListType == ListType.FOR_MONTH) {
             mCalendar.add(Calendar.MONTH, 1);
             setToDate(mCalendar.getTime());
-        } else if (mListType == ListType.FOR_DAY) {
+        } else if (mListType == ListType.FOR_DATE) {
             mCalendar.add(Calendar.DAY_OF_MONTH, 1);
             setToDate(mCalendar.getTime());
         } else {
@@ -114,7 +114,7 @@ public class CashLogListPresenter implements ListContract.Presenter {
 
         mCalendar.setTime(date);
 
-        if (mListType == ListType.FOR_DAY) {
+        if (mListType == ListType.FOR_DATE) {
             mView.showDate(mCalendar.getTime());
         } else if (mListType == ListType.FOR_MONTH) {
             mView.showMonth(mCalendar.getTime());
@@ -123,7 +123,7 @@ public class CashLogListPresenter implements ListContract.Presenter {
             throw new IllegalStateException(msg);
         }
 
-        if (mListType == ListType.FOR_DAY) {
+        if (mListType == ListType.FOR_DATE) {
             mRepository.loadByDate(date, new CashLogDataSource.LoadCashLogCallback() {
                 @Override
                 public void onCashLogLoaded(List<CashLog> cashLogs) {
@@ -149,7 +149,7 @@ public class CashLogListPresenter implements ListContract.Presenter {
             });
         }
 
-        if (mListType == ListType.FOR_DAY) {
+        if (mListType == ListType.FOR_DATE) {
             mRepository.balance(mCalendar.getTime(), new CashLogDataSource.GetBalanceForDayCallback() {
                 @Override
                 public void onBalanceLoaded(long incomeOnMonth, long outlayOnMonth, long balance, long outlay) {
@@ -184,9 +184,6 @@ public class CashLogListPresenter implements ListContract.Presenter {
         if (mListType != ListType.FOR_DATE_RANGE) {
             throw new IllegalStateException("ListType is not FOR_DATE_RANGE");
         }
-        //TODO 2023-07-17 needs to implement here
-        // load data with date range
-        // call some of callbacks
 
         mMarkFrom = from;
         mMarkTo = to;
@@ -231,7 +228,7 @@ public class CashLogListPresenter implements ListContract.Presenter {
 
     @Override
     public void selectDate() {
-        if (mListType != ListType.FOR_DAY) {
+        if (mListType != ListType.FOR_DATE) {
             throw new IllegalStateException("ListType is not FOR_DAY");
         }
 

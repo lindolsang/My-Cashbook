@@ -283,7 +283,7 @@ public class CashLogListPresenterTest {
 
     @Test
     public void selectDateThenShowCalendar() {
-        presenter.setListType(ListType.FOR_DAY);
+        presenter.setListType(ListType.FOR_DATE);
         presenter.selectDate();
 
         verify(mView, times(1)).showCalendar(any(Date.class));
@@ -314,8 +314,8 @@ public class CashLogListPresenterTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void selectMonthThenThrowIllegalStateExceptionWhenListTypeIsForDay() {
-        presenter.setListType(ListType.FOR_DAY);
+    public void selectMonthThenThrowIllegalStateExceptionWhenListTypeIsForDate() {
+        presenter.setListType(ListType.FOR_DATE);
         presenter.selectMonth();
 
         verify(mView, times(1)).showCalendarForMonth(any(Date.class));
@@ -340,8 +340,8 @@ public class CashLogListPresenterTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void selectFromDateThenThrowIllegalStateExceptionWhenListTypeIsForDay() {
-        presenter.setListType(ListType.FOR_DAY);
+    public void selectFromDateThenThrowIllegalStateExceptionWhenListTypeIsForDate() {
+        presenter.setListType(ListType.FOR_DATE);
         presenter.selectFromDate();
 
         verify(mView, times(1))
@@ -368,8 +368,8 @@ public class CashLogListPresenterTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void selectToDateThenThrowIllegalStateExceptionWhenListTypeIsForDay() {
-        presenter.setListType(ListType.FOR_DAY);
+    public void selectToDateThenThrowIllegalStateExceptionWhenListTypeIsForDate() {
+        presenter.setListType(ListType.FOR_DATE);
         presenter.selectToDate();
 
         verify(mView, times(1))
@@ -625,15 +625,15 @@ public class CashLogListPresenterTest {
     }
 
     @Test
-    public void getListTypeThenReturnDefaultTypeForDay() {
-        assertThat(presenter.getListType(), equalTo(ListType.FOR_DAY));
+    public void getListTypeThenReturnDefaultTypeForDate() {
+        assertThat(presenter.getListType(), equalTo(ListType.FOR_DATE));
     }
 
     @Test
-    public void setListTypeForDay() {
-        presenter.setListType(ListType.FOR_DAY);
+    public void setListTypeForDate() {
+        presenter.setListType(ListType.FOR_DATE);
 
-        assertThat(presenter.getListType(), equalTo(ListType.FOR_DAY));
+        assertThat(presenter.getListType(), equalTo(ListType.FOR_DATE));
     }
 
     @Test
@@ -651,10 +651,10 @@ public class CashLogListPresenterTest {
     }
 
     @Test
-    public void setListTypeWithForDayThenShowListTypeWithForDay() {
-        presenter.setListType(ListType.FOR_DAY);
+    public void setListTypeWithForDayThenShowListTypeWithForDate() {
+        presenter.setListType(ListType.FOR_DATE);
 
-        verify(mView, times(1)).showListType(ListType.FOR_DAY);
+        verify(mView, times(1)).showListType(ListType.FOR_DATE);
     }
 
     @Test

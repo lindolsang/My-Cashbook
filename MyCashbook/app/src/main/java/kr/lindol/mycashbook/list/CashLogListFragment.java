@@ -66,9 +66,9 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
     private Button mButtonDelete;
 
-    private TextView mTextViewTabPerDay;
-    private TextView mTextViewTabPerMonth;
-    private TextView mTextViewTabRange;
+    private TextView mTextViewTabByDate;
+    private TextView mTextViewTabByMonth;
+    private TextView mTextViewTabByDateRange;
 
     private final DecimalFormat mAmountFormat = new DecimalFormat("###,###");
     private final SimpleDateFormat mBalanceTitleDateFormat = new SimpleDateFormat("MMM");
@@ -104,7 +104,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
         mTextViewCurrentDate = fragment.findViewById(R.id.textView_currentDate);
         mTextViewCurrentDate.setOnClickListener((v) -> {
-            if (mPresenter.getListType() == ListType.FOR_DAY) {
+            if (mPresenter.getListType() == ListType.FOR_DATE) {
                 mPresenter.selectDate();
             } else {
                 mPresenter.selectMonth();
@@ -117,24 +117,24 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         mTextViewToDate = fragment.findViewById(R.id.textView_to_currentDate);
         mTextViewToDate.setOnClickListener(((v) -> mPresenter.selectToDate()));
 
-        mTextViewTabPerDay = fragment.findViewById(R.id.textView_tabPerDay);
-        mTextViewTabPerDay.setOnClickListener(new View.OnClickListener() {
+        mTextViewTabByDate = fragment.findViewById(R.id.textView_tabByDate);
+        mTextViewTabByDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPresenter.setListType(ListType.FOR_DAY);
+                mPresenter.setListType(ListType.FOR_DATE);
                 mPresenter.reload();
             }
         });
-        mTextViewTabPerMonth = fragment.findViewById(R.id.textView_tabPerMonth);
-        mTextViewTabPerMonth.setOnClickListener(new View.OnClickListener() {
+        mTextViewTabByMonth = fragment.findViewById(R.id.textView_tabByMonth);
+        mTextViewTabByMonth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mPresenter.setListType(ListType.FOR_MONTH);
                 mPresenter.reload();
             }
         });
-        mTextViewTabRange = fragment.findViewById(R.id.textView_tabRange);
-        mTextViewTabRange.setOnClickListener(new View.OnClickListener() {
+        mTextViewTabByDateRange = fragment.findViewById(R.id.textView_tabByDateRange);
+        mTextViewTabByDateRange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mPresenter.setListType(ListType.FOR_DATE_RANGE);
@@ -339,7 +339,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-                    // TODO 2023-08-16 improve to reload when data was added only.
+                    // TODO 2023-08-16 (improve) needs to reload when data was added only.
                 }
             });
 
@@ -505,29 +505,29 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
         int selectedColor = getResources().getColor(R.color.list_tab_selected);
         switch (type) {
-            case FOR_DAY:
+            case FOR_DATE:
                 mLayoutCurrentDate.setVisibility(View.VISIBLE);
                 mLayoutCurrentDateRange.setVisibility(View.GONE);
 
-                mTextViewTabPerDay.setBackgroundColor(selectedColor);
-                mTextViewTabPerMonth.setBackground(null);
-                mTextViewTabRange.setBackground(null);
+                mTextViewTabByDate.setBackgroundColor(selectedColor);
+                mTextViewTabByMonth.setBackground(null);
+                mTextViewTabByDateRange.setBackground(null);
                 break;
             case FOR_MONTH:
                 mLayoutCurrentDate.setVisibility(View.VISIBLE);
                 mLayoutCurrentDateRange.setVisibility(View.GONE);
 
-                mTextViewTabPerDay.setBackground(null);
-                mTextViewTabPerMonth.setBackgroundColor(selectedColor);
-                mTextViewTabRange.setBackground(null);
+                mTextViewTabByDate.setBackground(null);
+                mTextViewTabByMonth.setBackgroundColor(selectedColor);
+                mTextViewTabByDateRange.setBackground(null);
                 break;
             case FOR_DATE_RANGE:
                 mLayoutCurrentDate.setVisibility(View.GONE);
                 mLayoutCurrentDateRange.setVisibility(View.VISIBLE);
 
-                mTextViewTabPerDay.setBackground(null);
-                mTextViewTabPerMonth.setBackground(null);
-                mTextViewTabRange.setBackgroundColor(selectedColor);
+                mTextViewTabByDate.setBackground(null);
+                mTextViewTabByMonth.setBackground(null);
+                mTextViewTabByDateRange.setBackgroundColor(selectedColor);
                 break;
         }
     }
