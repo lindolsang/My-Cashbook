@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="date_text_size">24sp</dimen>
-    <dimen name="date_from_text_size">18sp</dimen>
-    <dimen name="date_to_text_size">20sp</dimen>
+    <dimen name="date_from_text_size">10sp</dimen>
+    <dimen name="date_to_text_size">14sp</dimen>
     <dimen name="list_text_size">18sp</dimen>
     <dimen name="list_amount_size">18sp</dimen>
     <dimen name="balance_title_text_size">22sp</dimen>
