@@ -32,4 +32,7 @@
     <string name="button_add_as_income">Input as income</string>
     <string name="button_add_as_expense">Input as expense</string>
     <string name="button_add_close">Close</string>
+    <string name="tab_text_by_date">By date</string>
+    <string name="tab_text_by_month">By month</string>
+    <string name="tab_text_by_date_range">By date range</string>
 </resources>

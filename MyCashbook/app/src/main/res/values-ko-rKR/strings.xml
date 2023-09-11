@@ -33,4 +33,7 @@
     <string name="button_add_as_income">수입으로 입력</string>
     <string name="button_add_as_expense">지출로 입력</string>
     <string name="button_add_close">닫기</string>
+    <string name="tab_text_by_date">일별</string>
+    <string name="tab_text_by_month">월별</string>
+    <string name="tab_text_by_date_range">기간별</string>
 </resources>
