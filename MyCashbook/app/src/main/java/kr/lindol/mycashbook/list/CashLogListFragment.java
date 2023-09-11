@@ -66,6 +66,10 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
     private Button mButtonDelete;
 
+    private Button mButtonYesterday;
+    private Button mButtonToday;
+    private Button mButtonTomorrow;
+
     private TextView mTextViewTabByDate;
     private TextView mTextViewTabByMonth;
     private TextView mTextViewTabByDateRange;
@@ -170,22 +174,22 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
             }
         });
 
-        Button buttonYesterday = fragment.findViewById(R.id.button_yesterday);
-        buttonYesterday.setOnClickListener((v) -> {
+        mButtonYesterday = fragment.findViewById(R.id.button_yesterday);
+        mButtonYesterday.setOnClickListener((v) -> {
             Log.d(TAG, "Yesterday button");
 
             mPresenter.previous();
         });
 
-        Button buttonToday = fragment.findViewById(R.id.button_today);
-        buttonToday.setOnClickListener((v) -> {
+        mButtonToday = fragment.findViewById(R.id.button_today);
+        mButtonToday.setOnClickListener((v) -> {
             Log.d(TAG, "Today button");
 
             mPresenter.today();
         });
 
-        Button buttonTomorrow = fragment.findViewById(R.id.button_tomorrow);
-        buttonTomorrow.setOnClickListener((v) -> {
+        mButtonTomorrow = fragment.findViewById(R.id.button_tomorrow);
+        mButtonTomorrow.setOnClickListener((v) -> {
             Log.d(TAG, "Tomorrow button");
 
             mPresenter.next();
@@ -512,6 +516,10 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
                 mTextViewTabByDate.setBackgroundColor(selectedColor);
                 mTextViewTabByMonth.setBackground(null);
                 mTextViewTabByDateRange.setBackground(null);
+
+                mButtonYesterday.setText(R.string.button_navi_yesterday);
+                mButtonToday.setText(R.string.button_navi_today);
+                mButtonTomorrow.setText(R.string.button_navi_tomorrow);
                 break;
             case FOR_MONTH:
                 mLayoutCurrentDate.setVisibility(View.VISIBLE);
@@ -520,6 +528,10 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
                 mTextViewTabByDate.setBackground(null);
                 mTextViewTabByMonth.setBackgroundColor(selectedColor);
                 mTextViewTabByDateRange.setBackground(null);
+
+                mButtonYesterday.setText(R.string.button_navi_last_month);
+                mButtonToday.setText(R.string.button_navi_this_month);
+                mButtonTomorrow.setText(R.string.button_navi_next_month);
                 break;
             case FOR_DATE_RANGE:
                 mLayoutCurrentDate.setVisibility(View.GONE);
@@ -528,6 +540,10 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
                 mTextViewTabByDate.setBackground(null);
                 mTextViewTabByMonth.setBackground(null);
                 mTextViewTabByDateRange.setBackgroundColor(selectedColor);
+
+                mButtonYesterday.setText(R.string.button_navi_previous);
+                mButtonToday.setText(R.string.button_navi_current);
+                mButtonTomorrow.setText(R.string.button_navi_next);
                 break;
         }
     }

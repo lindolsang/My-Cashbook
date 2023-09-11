@@ -22,6 +22,12 @@
     <string name="button_navi_yesterday">어제</string>
     <string name="button_navi_today">오늘</string>
     <string name="button_navi_tomorrow">내일</string>
+    <string name="button_navi_last_month">지난달</string>
+    <string name="button_navi_this_month">오늘</string>
+    <string name="button_navi_next_month">다음달</string>
+    <string name="button_navi_previous">시작</string>
+    <string name="button_navi_current">처음</string>
+    <string name="button_navi_next">다음</string>
     <string name="button_navi_write">입력</string>
     <string name="button_navi_close">닫기</string>
     <string name="add_item_title_text">항 목</string>
