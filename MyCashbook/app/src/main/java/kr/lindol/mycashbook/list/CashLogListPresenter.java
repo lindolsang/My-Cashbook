@@ -277,7 +277,6 @@ public class CashLogListPresenter implements ListContract.Presenter {
         }
     }
 
-    //TODO 2023-07-24 needs to consider that load for list type
     @Override
     public void deleteLog(@NonNull List<CashLog> logs) {
         checkNotNull(logs, "logs cannot be null");
@@ -286,13 +285,13 @@ public class CashLogListPresenter implements ListContract.Presenter {
             @Override
             public void onFinished() {
                 mView.showSuccessfullyDeletedLog();
-                setToDate(mCalendar.getTime());
+                reload();
             }
 
             @Override
             public void onError() {
                 mView.showErrorDeleteLog();
-                setToDate(mCalendar.getTime());
+                reload();
             }
         });
     }
