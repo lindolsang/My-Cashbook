@@ -17,22 +17,27 @@ public class CashLogAddPresenter implements AddContract.Presenter {
     private CashLogRepository mRepository;
     private AddContract.View mView;
 
-    public CashLogAddPresenter(CashLogRepository repository, AddContract.View view) {
+    private Date mDate;
+
+    public CashLogAddPresenter(@NonNull CashLogRepository repository,
+                               @NonNull AddContract.View view,
+                               @NonNull Date date) {
         mRepository = checkNotNull(repository, "repository cannot be null");
         mView = checkNotNull(view, "view cannot be null");
+        mDate = checkNotNull(date, "date can not be null");
 
         view.setPresenter(this);
     }
 
     @Override
     public void start() {
-
+        mView.showDate(mDate);
     }
 
     private boolean checkParameters(String item, String amount, Date date) {
-        checkNotNull(item, "item cannot be null");
-        checkNotNull(amount, "amount cannot be null");
-        checkNotNull(date, "date cannot be null");
+        checkNotNull(item, "item can not be null");
+        checkNotNull(amount, "amount can not be null");
+        checkNotNull(date, "date can not be null");
 
         if (item.isEmpty()) {
             mView.showItemValueEmptyError();
@@ -59,9 +64,11 @@ public class CashLogAddPresenter implements AddContract.Presenter {
     }
 
     @Override
-    public void addAsIncome(@NonNull String item, @NonNull String amount, @NonNull Date date, @Nullable String description) {
-        if (checkParameters(item, amount, date)) {
-            saveCashLog(item, 0, Integer.parseInt(amount), date, description);
+    public void addAsIncome(@NonNull String item,
+                            @NonNull String amount,
+                            @Nullable String description) {
+        if (checkParameters(item, amount, mDate)) {
+            saveCashLog(item, 0, Integer.parseInt(amount), mDate, description);
         }
     }
 
@@ -94,9 +101,24 @@ public class CashLogAddPresenter implements AddContract.Presenter {
     }
 
     @Override
-    public void addAsExpense(@NonNull String item, @NonNull String amount, @NonNull Date date, @Nullable String description) {
-        if (checkParameters(item, amount, date)) {
-            saveCashLog(item, 1, Integer.parseInt(amount), date, description);
+    public void addAsExpense(@NonNull String item,
+                             @NonNull String amount,
+                             @Nullable String description) {
+        if (checkParameters(item, amount, mDate)) {
+            saveCashLog(item, 1, Integer.parseInt(amount), mDate, description);
         }
+    }
+
+    @Override
+    public void selectDate() {
+        mView.showCalendar(mDate);
+    }
+
+    @Override
+    public void setToDate(@NonNull Date date) {
+        checkNotNull(date, "date can not be null");
+        mDate = date;
+
+        mView.showDate(date);
     }
 }

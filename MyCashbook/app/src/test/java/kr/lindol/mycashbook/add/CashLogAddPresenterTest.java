@@ -26,6 +26,8 @@ public class CashLogAddPresenterTest {
 
     private CashLogAddPresenter presenter;
 
+    private Date mFixedDate = new Date();
+
     @Before
     public void setUp() {
         repository = mock(CashLogRepository.class);
@@ -33,7 +35,7 @@ public class CashLogAddPresenterTest {
 
         argumentCaptor = ArgumentCaptor.forClass(CashLog.class);
 
-        presenter = new CashLogAddPresenter(repository, view);
+        presenter = new CashLogAddPresenter(repository, view, mFixedDate);
     }
 
     private void setRepositorySaveOk() {
@@ -49,7 +51,7 @@ public class CashLogAddPresenterTest {
     public void addAsIncomeThenSuccess() {
         setRepositorySaveOk();
 
-        presenter.addAsIncome("Salary", "1000", new Date(), "description");
+        presenter.addAsIncome("Salary", "1000", "description");
 
         verify(view, times(1)).showSuccess();
     }
@@ -58,7 +60,7 @@ public class CashLogAddPresenterTest {
     public void addAsExpenseThenSuccess() {
         setRepositorySaveOk();
 
-        presenter.addAsExpense("Ice cream", "1000", new Date(), "description");
+        presenter.addAsExpense("Ice cream", "1000", "description");
 
         verify(view, times(1)).showSuccess();
     }
@@ -72,7 +74,8 @@ public class CashLogAddPresenterTest {
 
     @Test
     public void addAsExpenseWithSpecifiedDateThenSave() {
-        presenter.addAsExpense("Ice cream", "1000", date(2021, 1, 1), "description");
+        presenter.setToDate(date(2021, 1, 1));
+        presenter.addAsExpense("Ice cream", "1000", "description");
 
         verify(repository, times(1)).save(argumentCaptor.capture(), any());
         CashLog cashLog = argumentCaptor.getValue();
@@ -87,7 +90,8 @@ public class CashLogAddPresenterTest {
 
     @Test
     public void addAsIncomeWithSpecifiedDateThenSave() {
-        presenter.addAsIncome("Salary", "1000", date(2021, 1, 1), "description");
+        presenter.setToDate(date(2021, 1, 1));
+        presenter.addAsIncome("Salary", "1000", "description");
 
         verify(repository, times(1)).save(argumentCaptor.capture(), any());
         CashLog cashLog = argumentCaptor.getValue();
@@ -104,7 +108,7 @@ public class CashLogAddPresenterTest {
     public void addAsIncomeThenClearForms() {
         setRepositorySaveOk();
 
-        presenter.addAsIncome("Salary", "1000", new Date(), "description");
+        presenter.addAsIncome("Salary", "1000", "description");
 
         verify(view, times(1)).clearForms();
     }
@@ -113,78 +117,107 @@ public class CashLogAddPresenterTest {
     public void addAsExpenseThenClearForms() {
         setRepositorySaveOk();
 
-        presenter.addAsExpense("Ice cream", "1000", new Date(), "description");
+        presenter.addAsExpense("Ice cream", "1000", "description");
 
         verify(view, times(1)).clearForms();
     }
 
     @Test
     public void addAsIncomeWithEmptyItemThenShowItemValueEmptyError() {
-        presenter.addAsIncome("", "1000", new Date(), "description");
+        presenter.addAsIncome("", "1000", "description");
 
         verify(view, times(1)).showItemValueEmptyError();
     }
 
     @Test
     public void addAsIncomeWithEmptyAmountThenShowAmountValueEmptyError() {
-        presenter.addAsIncome("Salary", "", new Date(), "description");
+        presenter.addAsIncome("Salary", "", "description");
 
         verify(view, times(1)).showAmountValueEmptyError();
     }
 
     @Test
     public void addAsIncomeWithZeroAmountThenShowAmountValueSmallError() {
-        presenter.addAsIncome("Salary", "0", new Date(), "description");
+        presenter.addAsIncome("Salary", "0", "description");
 
         verify(view, times(1)).showAmountValueSmallError();
     }
 
     @Test
     public void addAsIncomeWithMinusAmountThenShowAmountValueSmallError() {
-        presenter.addAsIncome("Salary", "-1", new Date(), "description");
+        presenter.addAsIncome("Salary", "-1", "description");
 
         verify(view, times(1)).showAmountValueSmallError();
     }
 
     @Test
     public void addAsIncomeWithNonNumberAmountThenShowAmountValueFormatError() {
-        presenter.addAsIncome("Salary", "10.0", new Date(), "description");
+        presenter.addAsIncome("Salary", "10.0", "description");
 
         verify(view, times(1)).showAmountValueFormatError();
     }
 
     @Test
     public void addAsExpenseWithEmptyItemThenShowItemValueEmptyError() {
-        presenter.addAsExpense("", "1000", new Date(), "description");
+        presenter.addAsExpense("", "1000", "description");
 
         verify(view, times(1)).showItemValueEmptyError();
     }
 
     @Test
     public void addAsExpenseWithEmptyAmountThenShowAmountValueEmptyError() {
-        presenter.addAsExpense("Ice cream", "", new Date(), "description");
+        presenter.addAsExpense("Ice cream", "", "description");
 
         verify(view, times(1)).showAmountValueEmptyError();
     }
 
     @Test
     public void addAsExpenseWithZeroAmountThenShowAmountValueSmallError() {
-        presenter.addAsExpense("Ice cream", "0", new Date(), "description");
+        presenter.addAsExpense("Ice cream", "0", "description");
 
         verify(view, times(1)).showAmountValueSmallError();
     }
 
     @Test
     public void addAsExpenseWithMinusAmountThenShowAmountValueSmallError() {
-        presenter.addAsExpense("Ice cream", "-1", new Date(), "description");
+        presenter.addAsExpense("Ice cream", "-1", "description");
 
         verify(view, times(1)).showAmountValueSmallError();
     }
 
     @Test
     public void addAsExpenseWithNonNumberAmountThenShowAmountValueFormatError() {
-        presenter.addAsExpense("Ice cream", "10.0", new Date(), "description");
+        presenter.addAsExpense("Ice cream", "10.0", "description");
 
         verify(view, times(1)).showAmountValueFormatError();
+    }
+
+    @Test
+    public void setToDateThenShowDate() {
+        Date specifiedDate = new Date();
+        presenter.setToDate(specifiedDate);
+
+        verify(view, times(1)).showDate(specifiedDate);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void setToDateThenThrowNullPointerException() {
+        presenter.setToDate(null);
+
+        verify(view, times(1)).showDate(any(Date.class));
+    }
+
+    @Test
+    public void selectDateThenShowCalender() {
+        presenter.selectDate();
+
+        verify(view, times(1)).showCalendar(mFixedDate);
+    }
+
+    @Test
+    public void startThenShowDate() {
+        presenter.start();
+
+        verify(view, times(1)).showDate(mFixedDate);
     }
 }

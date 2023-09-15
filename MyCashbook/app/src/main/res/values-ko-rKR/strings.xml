@@ -42,4 +42,5 @@
     <string name="tab_text_by_date">일별</string>
     <string name="tab_text_by_month">월별</string>
     <string name="tab_text_by_date_range">기간별</string>
+    <string name="example_date_text">2023-09-13 (수)</string>
 </resources>

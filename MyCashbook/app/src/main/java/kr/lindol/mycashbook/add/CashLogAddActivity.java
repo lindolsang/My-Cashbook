@@ -33,13 +33,14 @@ public class CashLogAddActivity extends AppCompatActivity {
 
         CashLogAddFragment fragment = (CashLogAddFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
         if (fragment == null) {
-            fragment = CashLogAddFragment.newInstance(setDate);
+            fragment = CashLogAddFragment.newInstance();
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), fragment, R.id.contentFrame);
         }
 
         CashLogDatabase db = CashLogDatabase.getInstance(this);
         mPresenter = new CashLogAddPresenter(
                 new CashLogRepository(db.cashLogDao(), AppExecutors.getInstance()),
-                fragment);
+                fragment,
+                setDate);
     }
 }

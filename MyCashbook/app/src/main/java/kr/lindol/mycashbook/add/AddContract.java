@@ -23,17 +23,23 @@ public interface AddContract {
         void showAmountValueSmallError();
 
         void showAmountValueFormatError();
+
+        void showCalendar(@NonNull Date date);
+
+        void showDate(@NonNull Date date);
     }
 
     interface Presenter extends BasePresenter {
         void addAsIncome(@NonNull String item,
                          @NonNull String amount,
-                         @NonNull Date date,
                          @Nullable String description);
 
         void addAsExpense(@NonNull String item,
                           @NonNull String amount,
-                          @NonNull Date date,
                           @Nullable String description);
+
+        void selectDate();
+
+        void setToDate(@NonNull Date date);
     }
 }
