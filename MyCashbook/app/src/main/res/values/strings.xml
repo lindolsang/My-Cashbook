@@ -42,4 +42,5 @@
     <string name="tab_text_by_month">By month</string>
     <string name="tab_text_by_date_range">By date range</string>
     <string name="example_date_text">2023-09-13 (Wed)</string>
+    <string name="example_log_date_text">2023-09-15 (Fri)</string>
 </resources>

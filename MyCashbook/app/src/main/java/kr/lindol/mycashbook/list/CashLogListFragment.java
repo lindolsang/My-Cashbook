@@ -637,7 +637,23 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
             itemView.setAmountColor(mCashLogs.get(position).getType() == 0 ? mColorIncome : mColorExpense);
 
+            int prevPos = position - 1;
+            setDateLabelVisibility(itemView, prevPos, position);
+
             return itemView;
+        }
+
+        private void setDateLabelVisibility(CashLogItemView item, int prevPos, int pos) {
+            if (prevPos == -1 || isNotSameDay(prevPos, pos)) {
+                item.showDate(true);
+                item.setDate(mCashLogs.get(pos).getDate());
+            } else {
+                item.showDate(false);
+            }
+        }
+
+        private boolean isNotSameDay(int pos1, int pos2) {
+            return mCashLogs.get(pos1).getDateTag() != mCashLogs.get(pos2).getDateTag();
         }
 
         @SuppressWarnings("deprecation")

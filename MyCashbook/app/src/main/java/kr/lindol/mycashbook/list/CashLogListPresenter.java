@@ -221,7 +221,7 @@ public class CashLogListPresenter implements ListContract.Presenter {
         });
     }
 
-    //TODO 2023-09-13 needs to implement date for month, date range
+    //TODO 2023-09-13 needs to implement passing input date for month, date range
     @Override
     public void addLog() {
         mView.showAddLog(mCalendar.getTime());

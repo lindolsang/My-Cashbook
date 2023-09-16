@@ -1,5 +1,7 @@
 package kr.lindol.mycashbook.list;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -7,7 +9,11 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import kr.lindol.mycashbook.R;
 
@@ -17,8 +23,10 @@ public class CashLogItemView extends LinearLayout {
     private LinearLayout mLayoutCheckbox;
     private CheckBox mCheck;
     private TextView mMemo;
+    private LinearLayout mLayoutLogDate;
+    private TextView mDate;
+    private final SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd (E)");
 
-    //TODO 2023-07-06 needs refactoring to show date for cash log on top
     public CashLogItemView(Context context) {
         super(context);
 
@@ -40,6 +48,8 @@ public class CashLogItemView extends LinearLayout {
         mCheck = findViewById(R.id.checkBox_list_item);
         mMemo = findViewById(R.id.textView_list_memo);
         mLayoutCheckbox = findViewById(R.id.layout_check);
+        mLayoutLogDate = findViewById(R.id.layout_log_date);
+        mDate = findViewById(R.id.textView_log_date_text);
     }
 
     public void setTitle(@Nullable String title) {
@@ -68,5 +78,15 @@ public class CashLogItemView extends LinearLayout {
 
     public void setAmountColor(int color) {
         mAmount.setTextColor(color);
+    }
+
+    public void showDate(boolean isShow) {
+        mLayoutLogDate.setVisibility(isShow ? VISIBLE : GONE);
+    }
+
+    public void setDate(@NonNull Date date) {
+        checkNotNull(date, "date can not be null");
+
+        mDate.setText(mDateFormat.format(date));
     }
 }
