@@ -54,7 +54,6 @@ public class CashLogRepository implements CashLogDataSource {
         });
     }
 
-    //TODO 2023-09-11 (bug) needs to sort result of data by date
     @Override
     public void loadByMonth(@NonNull Date date, @NonNull LoadCashLogCallback callback) {
         checkNotNull(date, "date can not be null");
@@ -82,7 +81,6 @@ public class CashLogRepository implements CashLogDataSource {
         });
     }
 
-    //TODO 2023-09-11 (bug) needs to sort result of data by date
     @Override
     public void loadByDateRange(@NonNull Date from, @NonNull Date to,
                                 @NonNull LoadCashLogCallback callback) {

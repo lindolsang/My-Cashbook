@@ -12,10 +12,12 @@ public interface CashLogDao {
     @Query("SELECT * FROM cash_logs WHERE day_tag = :dayTag")
     List<CashLog> loadByDate(String dayTag);
 
-    @Query("SELECT * FROM cash_logs WHERE month_tag = :monthTag")
+    @Query("SELECT * FROM cash_logs WHERE month_tag = :monthTag " +
+            "ORDER BY date_tag ASC")
     List<CashLog> loadByMonth(String monthTag);
 
-    @Query("SELECT * FROM cash_logs WHERE date_tag BETWEEN :dateFrom AND :dateTo")
+    @Query("SELECT * FROM cash_logs WHERE date_tag BETWEEN :dateFrom AND :dateTo " +
+            "ORDER BY date_tag ASC")
     List<CashLog> loadByDateRange(int dateFrom, int dateTo);
 
     @Insert
