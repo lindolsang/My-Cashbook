@@ -107,6 +107,7 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="4dp"
             android:background="@color/list_tab_selected"
+            android:padding="2dp"
             android:text="@string/tab_text_by_date" />
 
         <TextView
@@ -114,6 +115,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
+            android:padding="2dp"
             android:text="@string/tab_text_by_month" />
 
         <TextView
@@ -121,6 +123,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
+            android:padding="2dp"
             android:text="@string/tab_text_by_date_range" />
     </LinearLayout>
 

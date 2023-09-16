@@ -5,4 +5,5 @@
     <color name="balance_daily_expenses">#FFD60405</color>
     <color name="balance_monthly_expenses">#FFD60405</color>
     <color name="balance_monthly_balance">#FF5B5E6F</color>
+    <color name="list_tab_selected">#FF171E2B</color>
 </resources>
