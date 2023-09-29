@@ -18,6 +18,7 @@ import java.util.Date;
 import kr.lindol.mycashbook.data.CashLogDataSource;
 import kr.lindol.mycashbook.data.CashLogRepository;
 import kr.lindol.mycashbook.data.db.CashLog;
+import kr.lindol.mycashbook.data.db.CashType;
 
 public class CashLogAddPresenterTest {
     private CashLogRepository repository;
@@ -80,7 +81,7 @@ public class CashLogAddPresenterTest {
         verify(repository, times(1)).save(argumentCaptor.capture(), any());
         CashLog cashLog = argumentCaptor.getValue();
         assertThat(cashLog.item, equalTo("Ice cream"));
-        assertThat(cashLog.type, equalTo(1));
+        assertThat(cashLog.type, equalTo(CashType.EXPENSE));
         assertThat(cashLog.amount, equalTo(1000));
         assertThat(cashLog.dateTag, equalTo(20210101));
         assertThat(cashLog.dayTag, equalTo("20210101"));
@@ -96,7 +97,7 @@ public class CashLogAddPresenterTest {
         verify(repository, times(1)).save(argumentCaptor.capture(), any());
         CashLog cashLog = argumentCaptor.getValue();
         assertThat(cashLog.item, equalTo("Salary"));
-        assertThat(cashLog.type, equalTo(0));
+        assertThat(cashLog.type, equalTo(CashType.INCOME));
         assertThat(cashLog.amount, equalTo(1000));
         assertThat(cashLog.dateTag, equalTo(20210101));
         assertThat(cashLog.dayTag, equalTo("20210101"));

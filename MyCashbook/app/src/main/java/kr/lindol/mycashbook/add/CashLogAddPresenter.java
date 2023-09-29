@@ -11,6 +11,7 @@ import java.util.Date;
 import kr.lindol.mycashbook.data.CashLogDataSource;
 import kr.lindol.mycashbook.data.CashLogRepository;
 import kr.lindol.mycashbook.data.db.CashLog;
+import kr.lindol.mycashbook.data.db.CashType;
 
 public class CashLogAddPresenter implements AddContract.Presenter {
 
@@ -68,11 +69,11 @@ public class CashLogAddPresenter implements AddContract.Presenter {
                             @NonNull String amount,
                             @Nullable String description) {
         if (checkParameters(item, amount, mDate)) {
-            saveCashLog(item, 0, Integer.parseInt(amount), mDate, description);
+            saveCashLog(item, CashType.INCOME, Integer.parseInt(amount), mDate, description);
         }
     }
 
-    private void saveCashLog(String item, int type, int amount, Date date, String description) {
+    private void saveCashLog(String item, CashType type, int amount, Date date, String description) {
         SimpleDateFormat sfMonth = new SimpleDateFormat("yyyyMM");
         SimpleDateFormat sfDay = new SimpleDateFormat("yyyyMMdd");
 
@@ -105,7 +106,7 @@ public class CashLogAddPresenter implements AddContract.Presenter {
                              @NonNull String amount,
                              @Nullable String description) {
         if (checkParameters(item, amount, mDate)) {
-            saveCashLog(item, 1, Integer.parseInt(amount), mDate, description);
+            saveCashLog(item, CashType.EXPENSE, Integer.parseInt(amount), mDate, description);
         }
     }
 

@@ -40,6 +40,7 @@ import java.util.List;
 import kr.lindol.mycashbook.R;
 import kr.lindol.mycashbook.add.CashLogAddActivity;
 import kr.lindol.mycashbook.data.db.CashLog;
+import kr.lindol.mycashbook.data.db.CashType;
 
 public class CashLogListFragment extends Fragment implements ListContract.View {
     private static final String TAG = "CashLogListFragment";
@@ -628,14 +629,16 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
                 itemView = new CashLogItemView(mContext);
             }
 
-            itemView.setTitle(mCashLogs.get(position).getTitle());
-            itemView.setAmount(mAmountFormat.format(mCashLogs.get(position).getAmount()));
+            CashLogItem logItem = mCashLogs.get(position);
+            itemView.setTitle(logItem.getTitle());
+            itemView.setAmount(mAmountFormat.format(logItem.getAmount()));
             itemView.showCheckBox(mShowSelection);
-            itemView.setCheck(mCashLogs.get(position).isChecked());
-            itemView.showMemo(mCashLogs.get(position).isShowMemo());
-            itemView.setMemo(mCashLogs.get(position).getMemo());
+            itemView.setCheck(logItem.isChecked());
+            itemView.showMemo(logItem.isShowMemo());
+            itemView.setMemo(logItem.getMemo());
 
-            itemView.setAmountColor(mCashLogs.get(position).getType() == 0 ? mColorIncome : mColorExpense);
+            itemView.setAmountColor(
+                    logItem.getType() == CashType.INCOME ? mColorIncome : mColorExpense);
 
             int prevPos = position - 1;
             setDateLabelVisibility(itemView, prevPos, position);

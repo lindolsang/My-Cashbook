@@ -8,8 +8,6 @@ import org.junit.Test;
 import java.util.Calendar;
 import java.util.Date;
 
-//TODO 2023-09-15 needs to check to run Robolectric test
-//@RunWith(RobolectricTestRunner.class)
 public class DateUtilsTest {
 
     @Test

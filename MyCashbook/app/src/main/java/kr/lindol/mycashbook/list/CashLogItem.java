@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import java.util.Date;
 
 import kr.lindol.mycashbook.data.db.CashLog;
+import kr.lindol.mycashbook.data.db.CashType;
 import kr.lindol.mycashbook.util.DateUtils;
 
 public class CashLogItem {
@@ -40,7 +41,7 @@ public class CashLogItem {
         return mLog.description;
     }
 
-    public int getType() {
+    public CashType getType() {
         return mLog.type;
     }
 

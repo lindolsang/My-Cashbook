@@ -1,5 +1,6 @@
 package kr.lindol.mycashbook.data.db;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -13,12 +14,8 @@ public class CashLog {
     public String item;
 
     @ColumnInfo(name = "type")
-    /**
-     * 0 - income
-     * 1 - expense
-     */
-    //TODO 2023-07-06 needs to consider that changes to enum class
-    public int type;
+    @NonNull
+    public CashType type;
 
     @ColumnInfo(name = "amount")
     public int amount;
