@@ -15,7 +15,7 @@ public class CashLog {
 
     @ColumnInfo(name = "type")
     @NonNull
-    public CashType type;
+    public CashType type = CashType.EXPENSE; // default value to fix annotation warning
 
     @ColumnInfo(name = "amount")
     public int amount;
