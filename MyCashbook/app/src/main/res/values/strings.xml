@@ -21,9 +21,9 @@
     <string name="button_navi_yesterday">Yesterday</string>
     <string name="button_navi_today">Today</string>
     <string name="button_navi_tomorrow">Tomorrow</string>
-    <string name="button_navi_last_month">Last month</string>
-    <string name="button_navi_this_month">Today</string>
-    <string name="button_navi_next_month">Next month</string>
+    <string name="button_navi_last_month">Previous</string>
+    <string name="button_navi_this_month">This month</string>
+    <string name="button_navi_next_month">Next</string>
     <string name="button_navi_previous">Previous</string>
     <string name="button_navi_current">Start</string>
     <string name="button_navi_next">Next</string>
