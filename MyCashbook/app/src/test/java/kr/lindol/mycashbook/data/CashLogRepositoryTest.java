@@ -28,6 +28,7 @@ public class CashLogRepositoryTest {
     private CashLogDataSource.GetBalanceForDayCallback balanceForDayCallback;
     private CashLogDataSource.GetBalanceCallback balanceCallback;
     private CashLogDataSource.OperationCallback operationCallback;
+    private CashLogDataSource.LoadSingleCashLogCallback loadSingleLogCallback;
 
     @Before
     public void setup() {
@@ -36,6 +37,7 @@ public class CashLogRepositoryTest {
         balanceForDayCallback = mock(CashLogDataSource.GetBalanceForDayCallback.class);
         balanceCallback = mock(CashLogDataSource.GetBalanceCallback.class);
         operationCallback = mock(CashLogDataSource.OperationCallback.class);
+        loadSingleLogCallback = mock(CashLogDataSource.LoadSingleCashLogCallback.class);
     }
 
     @Test(expected = NullPointerException.class)
@@ -152,6 +154,34 @@ public class CashLogRepositoryTest {
     }
 
     @Test(expected = NullPointerException.class)
+    public void loadByIdThenThrowNullPointerExceptionWhenCallbackIsNull() {
+        CashLogRepository repository = new CashLogRepository(dao, new FakeAppExecutors());
+        repository.loadById(1, null);
+    }
+
+    @Test
+    public void loadByIdThenCallOnCashLogLoaded() {
+        when(dao.loadById(1)).thenReturn(new CashLog());
+
+        CashLogRepository repository = new CashLogRepository(dao, new FakeAppExecutors());
+        repository.loadById(1, loadSingleLogCallback);
+
+        verify(loadSingleLogCallback, times(1))
+                .onCashLogLoaded(any(CashLog.class));
+    }
+
+    @Test
+    public void loadByIdThenCallOnDataNotAvailableWhenNoData() {
+        when(dao.loadById(1)).thenReturn(null);
+
+        CashLogRepository repository = new CashLogRepository(dao, new FakeAppExecutors());
+        repository.loadById(1, loadSingleLogCallback);
+
+        verify(loadSingleLogCallback, times(1))
+                .onDataNotAvailable();
+    }
+
+    @Test(expected = NullPointerException.class)
     public void balanceThrowNullPointerExceptionWhenDateIsNull() {
         CashLogRepository repository = new CashLogRepository(dao, new FakeAppExecutors());
         repository.balance(null, balanceForDayCallback);
@@ -258,6 +288,38 @@ public class CashLogRepositoryTest {
 
         CashLogRepository repository = new CashLogRepository(dao, new FakeAppExecutors());
         repository.save(new CashLog(), operationCallback);
+
+        verify(operationCallback, times(1)).onError();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void updateThrowThenNullPointerExceptionWhenLogIsNull() {
+        CashLogRepository repository = new CashLogRepository(dao, new FakeAppExecutors());
+        repository.update(null, operationCallback);
+    }
+
+    @Test
+    public void updateThenUpdateCashLogUsingDao() {
+        CashLogRepository repository = new CashLogRepository(dao, new FakeAppExecutors());
+        repository.update(new CashLog(), null);
+
+        verify(dao, times(1)).updateAll(any(CashLog.class));
+    }
+
+    @Test
+    public void updateCallOnFinishedWhenCallbackIsNotNull() {
+        CashLogRepository repository = new CashLogRepository(dao, new FakeAppExecutors());
+        repository.update(new CashLog(), operationCallback);
+
+        verify(operationCallback, times(1)).onFinished();
+    }
+
+    @Test
+    public void updateCallOnErrorWhenCallbackIsNotNullAndDaoIsFailed() {
+        doThrow(new RuntimeException("update failed!")).when(dao).updateAll(any(CashLog.class));
+
+        CashLogRepository repository = new CashLogRepository(dao, new FakeAppExecutors());
+        repository.update(new CashLog(), operationCallback);
 
         verify(operationCallback, times(1)).onError();
     }

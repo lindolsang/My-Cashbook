@@ -12,6 +12,7 @@ import kr.lindol.mycashbook.data.CashLogDataSource;
 import kr.lindol.mycashbook.data.CashLogRepository;
 import kr.lindol.mycashbook.data.db.CashLog;
 import kr.lindol.mycashbook.data.db.CashType;
+import kr.lindol.mycashbook.util.DateUtils;
 
 public class CashLogAddPresenter implements AddContract.Presenter {
 
@@ -19,20 +20,60 @@ public class CashLogAddPresenter implements AddContract.Presenter {
     private AddContract.View mView;
 
     private Date mDate;
+    private int mLogId;
+    private CashLog mCashLog;
 
     public CashLogAddPresenter(@NonNull CashLogRepository repository,
                                @NonNull AddContract.View view,
-                               @NonNull Date date) {
+                               @NonNull Date date,
+                               int logId) {
         mRepository = checkNotNull(repository, "repository cannot be null");
         mView = checkNotNull(view, "view cannot be null");
         mDate = checkNotNull(date, "date can not be null");
+        mLogId = logId;
 
         view.setPresenter(this);
     }
 
     @Override
     public void start() {
-        mView.showDate(mDate);
+        if (isEditMode()) {
+            if (loadingRequired()) {
+                loadData();
+            }
+        } else {
+            mView.showDate(mDate);
+        }
+    }
+
+    private boolean isEditMode() {
+        return mLogId > 0;
+    }
+
+    private boolean loadingRequired() {
+        return mCashLog == null;
+    }
+
+    private void loadData() {
+        mRepository.loadById(mLogId, new CashLogDataSource.LoadSingleCashLogCallback() {
+            @Override
+            public void onCashLogLoaded(@NonNull CashLog log) {
+                checkNotNull(log, "log can not be null");
+
+                mDate = DateUtils.fromStr(log.dayTag);
+                mView.showDate(mDate);
+                mView.showItem(log.item);
+                mView.showAmount(log.amount);
+                mView.showMemo(log.description);
+
+                mCashLog = log;
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+
+            }
+        });
     }
 
     private boolean checkParameters(String item, String amount, Date date) {
@@ -77,29 +118,45 @@ public class CashLogAddPresenter implements AddContract.Presenter {
         SimpleDateFormat sfMonth = new SimpleDateFormat("yyyyMM");
         SimpleDateFormat sfDay = new SimpleDateFormat("yyyyMMdd");
 
-        CashLog newLog = new CashLog();
-        newLog.item = item;
-        newLog.type = type;
-        newLog.amount = amount;
-        newLog.dateTag = Integer.parseInt(sfDay.format(date));
-        newLog.dayTag = sfDay.format(date);
-        newLog.monthTag = sfMonth.format(date);
-        newLog.createdBy = System.currentTimeMillis();
-        newLog.description = description;
+        CashLog log = new CashLog();
+        log.item = item;
+        log.type = type;
+        log.amount = amount;
+        log.dateTag = Integer.parseInt(sfDay.format(date));
+        log.dayTag = sfDay.format(date);
+        log.monthTag = sfMonth.format(date);
+        log.createdBy = System.currentTimeMillis();
+        log.description = description;
 
-        mRepository.save(newLog, new CashLogDataSource.OperationCallback() {
-            @Override
-            public void onFinished() {
-                mView.clearForms();
-                mView.showSuccess();
-            }
+        if (isEditMode() && mCashLog != null) {
+            log.id = mCashLog.id;
+            log.createdBy = mCashLog.createdBy;
 
-            @Override
-            public void onError() {
-                mView.showFailure();
-            }
-        });
+            mRepository.update(log, opCallBack);
+        } else {
+            mRepository.save(log, opCallBack);
+        }
     }
+
+    private CashLogDataSource.OperationCallback opCallBack =
+            new CashLogDataSource.OperationCallback() {
+                @Override
+                public void onFinished() {
+
+                    if (isEditMode()) {
+                        mView.showSuccessWithEdit();
+                        mView.closeWindow();
+                    } else {
+                        mView.showSuccess();
+                        mView.clearForms();
+                    }
+                }
+
+                @Override
+                public void onError() {
+                    mView.showFailure();
+                }
+            };
 
     @Override
     public void addAsExpense(@NonNull String item,

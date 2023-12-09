@@ -1053,6 +1053,13 @@ public class CashLogListPresenterTest {
                 .showDateRange(any(Date.class), any(Date.class));
     }
 
+    @Test
+    public void editLogThenShowEditLog() {
+        presenter.editLog(1);
+
+        verify(mView, times(1)).showEditLog(1);
+    }
+
     private Date newDate(int year, int month, int dayOfMonth) {
         Calendar c = Calendar.getInstance();
         c.set(Calendar.YEAR, year);

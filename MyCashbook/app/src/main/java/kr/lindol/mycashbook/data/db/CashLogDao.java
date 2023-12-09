@@ -4,6 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -20,8 +21,14 @@ public interface CashLogDao {
             "ORDER BY date_tag ASC")
     List<CashLog> loadByDateRange(int dateFrom, int dateTo);
 
+    @Query("SELECT * FROM cash_logs WHERE id = :id")
+    CashLog loadById(int id);
+
     @Insert
     void insertAll(CashLog... cashLogs);
+
+    @Update
+    void updateAll(CashLog... cashLogs);
 
     @Delete
     void delete(CashLog log);

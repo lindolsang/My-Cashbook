@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">MyCashbook</string>
     <string name="added_item">항목 추가됨</string>
+    <string name="edited_item">항목 수정됨</string>
     <string name="error_item_empty">항목이 비어있습니다.</string>
     <string name="error_amount_empty">금액이 비어있습니다.</string>
     <string name="error_amount_small">금액이 작습니다.</string>
@@ -25,7 +26,7 @@
     <string name="button_navi_last_month">지난달</string>
     <string name="button_navi_this_month">이번 달</string>
     <string name="button_navi_next_month">다음달</string>
-    <string name="button_navi_previous">시작</string>
+    <string name="button_navi_previous">이전</string>
     <string name="button_navi_current">처음</string>
     <string name="button_navi_next">다음</string>
     <string name="button_navi_write">입력</string>

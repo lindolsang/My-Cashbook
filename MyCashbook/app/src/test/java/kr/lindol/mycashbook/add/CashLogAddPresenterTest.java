@@ -3,6 +3,7 @@ package kr.lindol.mycashbook.add;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -36,7 +37,7 @@ public class CashLogAddPresenterTest {
 
         argumentCaptor = ArgumentCaptor.forClass(CashLog.class);
 
-        presenter = new CashLogAddPresenter(repository, view, mFixedDate);
+        presenter = new CashLogAddPresenter(repository, view, mFixedDate, 0);
     }
 
     private void setRepositorySaveOk() {
@@ -58,12 +59,86 @@ public class CashLogAddPresenterTest {
     }
 
     @Test
+    public void addAsIncomeThenSuccessWithEditWhenEditMode() {
+        presenter = new CashLogAddPresenter(
+                repository,
+                view,
+                date(2021, 1, 1),
+                10);
+
+        doAnswer(invocation -> {
+            CashLogDataSource.LoadSingleCashLogCallback cb = invocation.getArgument(1);
+            CashLog cashLog = new CashLog();
+            cashLog.id = 10;
+            cashLog.item = "Salary";
+            cashLog.type = CashType.INCOME;
+            cashLog.amount = 1000;
+            cashLog.dateTag = 20210101;
+            cashLog.dayTag = "20210101";
+            cashLog.monthTag = "202101";
+            cashLog.description = "description";
+
+            cb.onCashLogLoaded(cashLog);
+            return null;
+        }).when(repository)
+                .loadById(anyInt(), any(CashLogDataSource.LoadSingleCashLogCallback.class));
+        doAnswer(invocation -> {
+            CashLogDataSource.OperationCallback cb = invocation.getArgument(1);
+            cb.onFinished();
+            return null;
+        }).when(repository)
+                .update(any(CashLog.class), any(CashLogDataSource.OperationCallback.class));
+        presenter.start();
+
+        presenter.addAsIncome("Salary", "1000", "description");
+
+        verify(view, times(1)).showSuccessWithEdit();
+    }
+
+    @Test
     public void addAsExpenseThenSuccess() {
         setRepositorySaveOk();
 
         presenter.addAsExpense("Ice cream", "1000", "description");
 
         verify(view, times(1)).showSuccess();
+    }
+
+    @Test
+    public void addAsExpenseThenSuccessWithEditWhenEditMode() {
+        presenter = new CashLogAddPresenter(
+                repository,
+                view,
+                date(2021, 1, 1),
+                11);
+        doAnswer(invocation -> {
+            CashLogDataSource.LoadSingleCashLogCallback cb = invocation.getArgument(1);
+
+            CashLog cashLog = new CashLog();
+            cashLog.id = 11;
+            cashLog.item = "Ice cream";
+            cashLog.type = CashType.EXPENSE;
+            cashLog.amount = 1000;
+            cashLog.dateTag = 20210101;
+            cashLog.dayTag = "20210101";
+            cashLog.monthTag = "202101";
+            cashLog.description = "description";
+
+            cb.onCashLogLoaded(cashLog);
+            return null;
+        }).when(repository)
+                .loadById(anyInt(), any(CashLogDataSource.LoadSingleCashLogCallback.class));
+        doAnswer(invocation -> {
+            CashLogDataSource.OperationCallback cb = invocation.getArgument(1);
+            cb.onFinished();
+            return null;
+        }).when(repository)
+                .update(any(CashLog.class), any(CashLogDataSource.OperationCallback.class));
+        presenter.start();
+
+        presenter.addAsExpense("Ice cream", "1000", "description");
+
+        verify(view, times(1)).showSuccessWithEdit();
     }
 
     private Date date(int year, int month, int date) {
@@ -90,6 +165,47 @@ public class CashLogAddPresenterTest {
     }
 
     @Test
+    public void addAsExpenseWithSpecifiedDateThenUpdateWhenCashLogIsLoaded() {
+        presenter = new CashLogAddPresenter(
+                repository,
+                view,
+                date(2021, 1, 1),
+                11);
+        doAnswer(invocation -> {
+            CashLogDataSource.LoadSingleCashLogCallback cb = invocation.getArgument(1);
+
+            CashLog cashLog = new CashLog();
+            cashLog.id = 11;
+            cashLog.item = "Ice cream";
+            cashLog.type = CashType.EXPENSE;
+            cashLog.amount = 1000;
+            cashLog.dateTag = 20210101;
+            cashLog.dayTag = "20210101";
+            cashLog.monthTag = "202101";
+            cashLog.description = "description";
+
+            cb.onCashLogLoaded(cashLog);
+
+            return null;
+        }).when(repository)
+                .loadById(anyInt(), any(CashLogDataSource.LoadSingleCashLogCallback.class));
+        presenter.start();
+
+        presenter.addAsExpense("Ice cream", "1000", "description");
+
+        verify(repository, times(1)).update(argumentCaptor.capture(), any());
+        CashLog cashLog = argumentCaptor.getValue();
+        assertThat(cashLog.id, equalTo(11));
+        assertThat(cashLog.item, equalTo("Ice cream"));
+        assertThat(cashLog.type, equalTo(CashType.EXPENSE));
+        assertThat(cashLog.amount, equalTo(1000));
+        assertThat(cashLog.dateTag, equalTo(20210101));
+        assertThat(cashLog.dayTag, equalTo("20210101"));
+        assertThat(cashLog.monthTag, equalTo("202101"));
+        assertThat(cashLog.description, equalTo("description"));
+    }
+
+    @Test
     public void addAsIncomeWithSpecifiedDateThenSave() {
         presenter.setToDate(date(2021, 1, 1));
         presenter.addAsIncome("Salary", "1000", "description");
@@ -103,6 +219,196 @@ public class CashLogAddPresenterTest {
         assertThat(cashLog.dayTag, equalTo("20210101"));
         assertThat(cashLog.monthTag, equalTo("202101"));
         assertThat(cashLog.description, equalTo("description"));
+    }
+
+    @Test
+    public void addAsIncomeWithSpecifiedDateThenUpdateWhenCashLogIsLoaded() {
+        presenter = new CashLogAddPresenter(
+                repository,
+                view,
+                date(2021, 1, 1),
+                10);
+        doAnswer(invocation -> {
+            CashLogDataSource.LoadSingleCashLogCallback cb = invocation.getArgument(1);
+
+            CashLog cashLog = new CashLog();
+            cashLog.id = 10;
+            cashLog.item = "Salary";
+            cashLog.type = CashType.INCOME;
+            cashLog.amount = 1000;
+            cashLog.dateTag = 20210101;
+            cashLog.dayTag = "20210101";
+            cashLog.monthTag = "202101";
+            cashLog.description = "description";
+
+            cb.onCashLogLoaded(cashLog);
+
+            return null;
+        }).when(repository)
+                .loadById(anyInt(), any(CashLogDataSource.LoadSingleCashLogCallback.class));
+        presenter.start();
+
+        presenter.addAsIncome("Salary", "1000", "description");
+
+        verify(repository, times(1))
+                .update(argumentCaptor.capture(), any());
+        CashLog cashLog = argumentCaptor.getValue();
+        assertThat(cashLog.id, equalTo(10));
+        assertThat(cashLog.item, equalTo("Salary"));
+        assertThat(cashLog.type, equalTo(CashType.INCOME));
+        assertThat(cashLog.amount, equalTo(1000));
+        assertThat(cashLog.dateTag, equalTo(20210101));
+        assertThat(cashLog.dayTag, equalTo("20210101"));
+        assertThat(cashLog.monthTag, equalTo("202101"));
+        assertThat(cashLog.description, equalTo("description"));
+    }
+
+    @Test
+    public void addAsIncomeThenCloseWindowWhenEditMode() {
+        presenter = new CashLogAddPresenter(
+                repository,
+                view,
+                date(2021, 1, 1),
+                10);
+
+        doAnswer(invocation -> {
+            CashLogDataSource.LoadSingleCashLogCallback cb = invocation.getArgument(1);
+            CashLog cashLog = new CashLog();
+            cashLog.id = 10;
+            cashLog.item = "Salary";
+            cashLog.type = CashType.INCOME;
+            cashLog.amount = 1000;
+            cashLog.dateTag = 20210101;
+            cashLog.dayTag = "20210101";
+            cashLog.monthTag = "202101";
+            cashLog.description = "description";
+
+            cb.onCashLogLoaded(cashLog);
+            return null;
+        }).when(repository)
+                .loadById(anyInt(), any(CashLogDataSource.LoadSingleCashLogCallback.class));
+        doAnswer(invocation -> {
+            CashLogDataSource.OperationCallback cb = invocation.getArgument(1);
+            cb.onFinished();
+            return null;
+        }).when(repository)
+                .update(any(CashLog.class), any(CashLogDataSource.OperationCallback.class));
+        presenter.start();
+
+        presenter.addAsIncome("Salary", "1000", "description");
+
+        verify(view, times(1)).closeWindow();
+    }
+
+    @Test
+    public void addAsExpenseThenCloseWindowWhenEditMode() {
+        presenter = new CashLogAddPresenter(
+                repository,
+                view,
+                date(2021, 1, 1),
+                11);
+        doAnswer(invocation -> {
+            CashLogDataSource.LoadSingleCashLogCallback cb = invocation.getArgument(1);
+
+            CashLog cashLog = new CashLog();
+            cashLog.id = 11;
+            cashLog.item = "Ice cream";
+            cashLog.type = CashType.EXPENSE;
+            cashLog.amount = 1000;
+            cashLog.dateTag = 20210101;
+            cashLog.dayTag = "20210101";
+            cashLog.monthTag = "202101";
+            cashLog.description = "description";
+
+            cb.onCashLogLoaded(cashLog);
+            return null;
+        }).when(repository)
+                .loadById(anyInt(), any(CashLogDataSource.LoadSingleCashLogCallback.class));
+        doAnswer(invocation -> {
+            CashLogDataSource.OperationCallback cb = invocation.getArgument(1);
+            cb.onFinished();
+            return null;
+        }).when(repository)
+                .update(any(CashLog.class), any(CashLogDataSource.OperationCallback.class));
+        presenter.start();
+
+        presenter.addAsExpense("Ice cream", "1000", "description");
+
+        verify(view, times(1)).closeWindow();
+    }
+
+    @Test
+    public void addAsIncomeThenNotToClearFormsWhenEditMode() {
+        presenter = new CashLogAddPresenter(
+                repository,
+                view,
+                date(2021, 1, 1),
+                10);
+
+        doAnswer(invocation -> {
+            CashLogDataSource.LoadSingleCashLogCallback cb = invocation.getArgument(1);
+            CashLog cashLog = new CashLog();
+            cashLog.id = 10;
+            cashLog.item = "Salary";
+            cashLog.type = CashType.INCOME;
+            cashLog.amount = 1000;
+            cashLog.dateTag = 20210101;
+            cashLog.dayTag = "20210101";
+            cashLog.monthTag = "202101";
+            cashLog.description = "description";
+
+            cb.onCashLogLoaded(cashLog);
+            return null;
+        }).when(repository)
+                .loadById(anyInt(), any(CashLogDataSource.LoadSingleCashLogCallback.class));
+        doAnswer(invocation -> {
+            CashLogDataSource.OperationCallback cb = invocation.getArgument(1);
+            cb.onFinished();
+            return null;
+        }).when(repository)
+                .update(any(CashLog.class), any(CashLogDataSource.OperationCallback.class));
+        presenter.start();
+
+        presenter.addAsIncome("Salary", "1000", "description");
+
+        verify(view, times(0)).clearForms();
+    }
+
+    @Test
+    public void addAsExpenseThenNotToClearFormsWhenEditMode() {
+        presenter = new CashLogAddPresenter(
+                repository,
+                view,
+                date(2021, 1, 1),
+                11);
+        doAnswer(invocation -> {
+            CashLogDataSource.LoadSingleCashLogCallback cb = invocation.getArgument(1);
+
+            CashLog cashLog = new CashLog();
+            cashLog.id = 11;
+            cashLog.item = "Ice cream";
+            cashLog.type = CashType.EXPENSE;
+            cashLog.amount = 1000;
+            cashLog.dateTag = 20210101;
+            cashLog.dayTag = "20210101";
+            cashLog.monthTag = "202101";
+            cashLog.description = "description";
+
+            cb.onCashLogLoaded(cashLog);
+            return null;
+        }).when(repository)
+                .loadById(anyInt(), any(CashLogDataSource.LoadSingleCashLogCallback.class));
+        doAnswer(invocation -> {
+            CashLogDataSource.OperationCallback cb = invocation.getArgument(1);
+            cb.onFinished();
+            return null;
+        }).when(repository)
+                .update(any(CashLog.class), any(CashLogDataSource.OperationCallback.class));
+        presenter.start();
+
+        presenter.addAsExpense("Ice cream", "1000", "description");
+
+        verify(view, times(0)).clearForms();
     }
 
     @Test
@@ -220,5 +526,66 @@ public class CashLogAddPresenterTest {
         presenter.start();
 
         verify(view, times(1)).showDate(mFixedDate);
+    }
+
+    @Test
+    public void startThenLoadDataByIdWhenEditMode() {
+        presenter = new CashLogAddPresenter(
+                repository,
+                view,
+                date(2021, 1, 1),
+                10);
+        doAnswer(invocation -> {
+            CashLogDataSource.LoadSingleCashLogCallback cb = invocation.getArgument(1);
+            CashLog cashLog = new CashLog();
+            cashLog.id = 10;
+            cashLog.item = "Salary";
+            cashLog.type = CashType.INCOME;
+            cashLog.amount = 1000;
+            cashLog.dateTag = 20210101;
+            cashLog.dayTag = "20210101";
+            cashLog.monthTag = "202101";
+            cashLog.description = "description";
+
+            cb.onCashLogLoaded(cashLog);
+            return null;
+        }).when(repository)
+                .loadById(anyInt(), any(CashLogDataSource.LoadSingleCashLogCallback.class));
+
+        presenter.start();
+
+        verify(repository, times(1))
+                .loadById(anyInt(), any(CashLogDataSource.LoadSingleCashLogCallback.class));
+    }
+
+    @Test
+    public void startThenSkipLoadDataByIdWhenEditModeDataLoaded() {
+        presenter = new CashLogAddPresenter(
+                repository,
+                view,
+                date(2021, 1, 1),
+                10);
+        doAnswer(invocation -> {
+            CashLogDataSource.LoadSingleCashLogCallback cb = invocation.getArgument(1);
+            CashLog cashLog = new CashLog();
+            cashLog.id = 10;
+            cashLog.item = "Salary";
+            cashLog.type = CashType.INCOME;
+            cashLog.amount = 1000;
+            cashLog.dateTag = 20210101;
+            cashLog.dayTag = "20210101";
+            cashLog.monthTag = "202101";
+            cashLog.description = "description";
+
+            cb.onCashLogLoaded(cashLog);
+            return null;
+        }).when(repository)
+                .loadById(anyInt(), any(CashLogDataSource.LoadSingleCashLogCallback.class));
+
+        presenter.start();
+        presenter.start();
+
+        verify(repository, times(1))
+                .loadById(anyInt(), any(CashLogDataSource.LoadSingleCashLogCallback.class));
     }
 }

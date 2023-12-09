@@ -15,6 +15,12 @@ public interface CashLogDataSource {
         void onDataNotAvailable();
     }
 
+    interface LoadSingleCashLogCallback {
+        void onCashLogLoaded(@NonNull CashLog log);
+
+        void onDataNotAvailable();
+    }
+
     interface OperationCallback {
         void onFinished();
 
@@ -40,7 +46,11 @@ public interface CashLogDataSource {
     void loadByDateRange(@NonNull Date from, @NonNull Date to,
                          @NonNull LoadCashLogCallback callback);
 
+    void loadById(int logId, @NonNull LoadSingleCashLogCallback callback);
+
     void save(@NonNull CashLog log, @Nullable OperationCallback callback);
+
+    void update(@NonNull CashLog log, @Nullable OperationCallback callback);
 
     void delete(@NonNull List<CashLog> logs, @Nullable OperationCallback callback);
 

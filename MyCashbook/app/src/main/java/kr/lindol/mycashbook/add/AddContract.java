@@ -14,6 +14,8 @@ public interface AddContract {
 
         void showSuccess();
 
+        void showSuccessWithEdit();
+
         void showFailure();
 
         void showItemValueEmptyError();
@@ -27,6 +29,14 @@ public interface AddContract {
         void showCalendar(@NonNull Date date);
 
         void showDate(@NonNull Date date);
+
+        void showItem(@NonNull String item);
+
+        void showAmount(int amount);
+
+        void showMemo(@NonNull String memo);
+
+        void closeWindow();
     }
 
     interface Presenter extends BasePresenter {

@@ -79,9 +79,7 @@ public class CashLogAddFragment extends Fragment implements AddContract.View {
 
         Button closeButton = view.findViewById(R.id.button_close);
         closeButton.setOnClickListener((v) -> {
-                    if (getActivity() != null) {
-                        getActivity().finish();
-                    }
+                    closeWindow();
                 }
         );
 
@@ -106,6 +104,12 @@ public class CashLogAddFragment extends Fragment implements AddContract.View {
         Toast.makeText(getContext(), R.string.added_item, Toast.LENGTH_SHORT).show();
 
         mEditTextItem.requestFocus();
+    }
+
+    @Override
+    public void showSuccessWithEdit() {
+        Log.i(TAG, "CashLog was updated");
+        Toast.makeText(getContext(), R.string.edited_item, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -168,5 +172,31 @@ public class CashLogAddFragment extends Fragment implements AddContract.View {
         checkNotNull(date, "date can not be null");
 
         mTextViewInputDate.setText(mDateFormat.format(date));
+    }
+
+    @Override
+    public void showItem(@NonNull String item) {
+        checkNotNull(item, "item can not be null");
+
+        mEditTextItem.setText(item);
+    }
+
+    @Override
+    public void showAmount(int amount) {
+        mEditTextAmount.setText(String.valueOf(amount));
+    }
+
+    @Override
+    public void showMemo(@NonNull String memo) {
+        checkNotNull(memo, "memo can not be null");
+
+        mEditTextDescription.setText(memo);
+    }
+
+    @Override
+    public void closeWindow() {
+        if (getActivity() != null) {
+            getActivity().finish();
+        }
     }
 }

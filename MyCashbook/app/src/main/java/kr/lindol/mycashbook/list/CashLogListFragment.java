@@ -174,6 +174,14 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
                 }
             }
         });
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                CashLogItem item = (CashLogItem) mListAdapter.getItem(position);
+                mPresenter.editLog(item.getLog().id);
+                return true;
+            }
+        });
 
         mButtonYesterday = fragment.findViewById(R.id.button_yesterday);
         mButtonYesterday.setOnClickListener((v) -> {
@@ -344,7 +352,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-                    // TODO 2023-08-16 (improve) needs to reload when data was added only.
+                    //TODO: 2023-08-16 (improvement) needs to reload when data was added only.
                 }
             });
 
@@ -357,8 +365,17 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
     }
 
     @Override
+    public void showEditLog(int logId) {
+        Intent i = new Intent(getActivity(), CashLogAddActivity.class);
+        i.putExtra(CashLogAddActivity.EXTRA_LOG_ID, logId);
+
+        mStartForResult.launch(i);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
+
         mPresenter.start();
     }
 
@@ -381,7 +398,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         dialog.show();
     }
 
-    //TODO 2023-08-27 (improve) needs to improve to pick Year and Month
+    //TODO: 2023-08-27 (improvement) needs to improve to pick Year and Month
     @Override
     public void showCalendarForMonth(@NonNull Date date) {
         checkNotNull(date, "date can not be null");

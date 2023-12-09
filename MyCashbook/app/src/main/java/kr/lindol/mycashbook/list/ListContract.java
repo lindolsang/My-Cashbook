@@ -23,6 +23,8 @@ public interface ListContract {
 
         void showAddLog(@NonNull Date date);
 
+        void showEditLog(int logId);
+
         void showCalendar(@NonNull Date date);
 
         void showCalendarForMonth(@NonNull Date date);
@@ -73,6 +75,8 @@ public interface ListContract {
         void setToDateRange(@NonNull Date from, @NonNull Date to);
 
         void addLog();
+
+        void editLog(int logId);
 
         void selectDate();
 

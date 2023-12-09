@@ -221,10 +221,15 @@ public class CashLogListPresenter implements ListContract.Presenter {
         });
     }
 
-    //TODO 2023-09-13 needs to implement passing input date for month, date range
+    //TODO: 2023-09-13 (improvement) passing input date for month, date range
     @Override
     public void addLog() {
         mView.showAddLog(mCalendar.getTime());
+    }
+
+    @Override
+    public void editLog(int logId) {
+        mView.showEditLog(logId);
     }
 
     @Override
@@ -312,7 +317,7 @@ public class CashLogListPresenter implements ListContract.Presenter {
     @Override
     public void reload() {
         if (mListType == ListType.FOR_DATE_RANGE) {
-            //TODO 2023-08-20 needs to review that mark today behavior
+            //TODO: 2023-08-20 (improvement) needs to review that mark today behavior
             setToDateRange(mCalendarFrom.getTime(), mCalendar.getTime());
         } else {
             setToDate(mCalendar.getTime());

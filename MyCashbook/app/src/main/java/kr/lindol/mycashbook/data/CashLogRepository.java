@@ -143,6 +143,38 @@ public class CashLogRepository implements CashLogDataSource {
     }
 
     @Override
+    public void update(@NonNull CashLog log, @Nullable OperationCallback callback) {
+        checkNotNull(log, "log cannot be null");
+
+        mExecutors.diskIo().execute(new Runnable() {
+            @Override
+            public void run() {
+                boolean success;
+                try {
+                    mDao.updateAll(log);
+                    success = true;
+                } catch (Exception e) {
+                    success = false;
+                }
+
+                final boolean opSuccess = success;
+                if (callback != null) {
+                    mExecutors.mainThread().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (opSuccess) {
+                                callback.onFinished();
+                            } else {
+                                callback.onError();
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    @Override
     public void delete(@NonNull List<CashLog> logs, @Nullable OperationCallback callback) {
         checkNotNull(logs, "logs cannot be null");
 
@@ -248,6 +280,29 @@ public class CashLogRepository implements CashLogDataSource {
                     @Override
                     public void run() {
                         callback.onBalanceLoaded(income, outlay, balance);
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
+    public void loadById(int logId, @NonNull LoadSingleCashLogCallback callback) {
+        checkNotNull(callback, "callback can not be null");
+
+        mExecutors.diskIo().execute(new Runnable() {
+            @Override
+            public void run() {
+                CashLog log = mDao.loadById(logId);
+
+                mExecutors.mainThread().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (log == null) {
+                            callback.onDataNotAvailable();
+                        } else {
+                            callback.onCashLogLoaded(log);
+                        }
                     }
                 });
             }
