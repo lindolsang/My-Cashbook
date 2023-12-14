@@ -4,15 +4,21 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import androidx.annotation.NonNull;
 
+import java.util.Date;
+
 import kr.lindol.mycashbook.data.db.CashLog;
+import kr.lindol.mycashbook.data.db.CashType;
+import kr.lindol.mycashbook.util.DateUtils;
 
 public class CashLogItem {
     private final CashLog mLog;
     private boolean mShowMemo;
     private boolean mChecked;
+    private Date mDate;
 
     public CashLogItem(@NonNull CashLog log) {
         mLog = checkNotNull(log, "log cannot be null");
+        mDate = DateUtils.fromStr(log.dayTag);
     }
 
     public String getTitle() {
@@ -35,7 +41,7 @@ public class CashLogItem {
         return mLog.description;
     }
 
-    public int getType() {
+    public CashType getType() {
         return mLog.type;
     }
 
@@ -49,5 +55,13 @@ public class CashLogItem {
 
     public CashLog getLog() {
         return mLog;
+    }
+
+    public Date getDate() {
+        return mDate;
+    }
+
+    public int getDateTag() {
+        return mLog.dateTag;
     }
 }

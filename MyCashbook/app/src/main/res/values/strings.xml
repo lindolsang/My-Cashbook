@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">MyCashbook</string>
     <string name="added_item">Added your item</string>
+    <string name="edited_item">Edited your item</string>
     <string name="error_item_empty">Item is empty</string>
     <string name="error_amount_empty">Amount is empty</string>
     <string name="error_amount_small">Amount is small</string>
@@ -15,9 +16,18 @@
     <string name="balance_title_monthly_income">%1$s Income</string>
     <string name="balance_title_monthly_expenses">%1$s Expenses</string>
     <string name="balance_title_monthly_balance">%1$s Balance</string>
+    <string name="balance_title_income">Income</string>
+    <string name="balance_title_expenses">Expenses</string>
+    <string name="balance_title_balance">Balance</string>
     <string name="button_navi_yesterday">Yesterday</string>
     <string name="button_navi_today">Today</string>
     <string name="button_navi_tomorrow">Tomorrow</string>
+    <string name="button_navi_last_month">Previous</string>
+    <string name="button_navi_this_month">This month</string>
+    <string name="button_navi_next_month">Next</string>
+    <string name="button_navi_previous">Previous</string>
+    <string name="button_navi_current">Start</string>
+    <string name="button_navi_next">Next</string>
     <string name="button_navi_write">Input</string>
     <string name="button_navi_close">Close</string>
     <string name="add_item_title_text">Item</string>
@@ -29,4 +39,9 @@
     <string name="button_add_as_income">Input as income</string>
     <string name="button_add_as_expense">Input as expense</string>
     <string name="button_add_close">Close</string>
+    <string name="tab_text_by_date">By date</string>
+    <string name="tab_text_by_month">By month</string>
+    <string name="tab_text_by_date_range">By date range</string>
+    <string name="example_date_text">2023-09-13 (Wed)</string>
+    <string name="example_log_date_text">2023-09-15 (Fri)</string>
 </resources>

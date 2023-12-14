@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -39,6 +40,7 @@ import java.util.List;
 import kr.lindol.mycashbook.R;
 import kr.lindol.mycashbook.add.CashLogAddActivity;
 import kr.lindol.mycashbook.data.db.CashLog;
+import kr.lindol.mycashbook.data.db.CashType;
 
 public class CashLogListFragment extends Fragment implements ListContract.View {
     private static final String TAG = "CashLogListFragment";
@@ -48,6 +50,8 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
     private boolean mShowSelection = false;
 
     private TextView mTextViewCurrentDate;
+    private TextView mTextViewFromDate;
+    private TextView mTextViewToDate;
     private TextView mTextViewDailyExpenses;
     private TextView mTextViewTitleMonthlyIncome;
     private TextView mTextViewMonthlyIncome;
@@ -56,7 +60,20 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
     private TextView mTextViewTitleMonthlyBalance;
     private TextView mTextViewMonthlyBalance;
 
+    private LinearLayout mLayoutCurrentDate;
+    private LinearLayout mLayoutCurrentDateRange;
+
+    private LinearLayout mLayoutDateStatus;
+
     private Button mButtonDelete;
+
+    private Button mButtonYesterday;
+    private Button mButtonToday;
+    private Button mButtonTomorrow;
+
+    private TextView mTextViewTabByDate;
+    private TextView mTextViewTabByMonth;
+    private TextView mTextViewTabByDateRange;
 
     private final DecimalFormat mAmountFormat = new DecimalFormat("###,###");
     private final SimpleDateFormat mBalanceTitleDateFormat = new SimpleDateFormat("MMM");
@@ -86,8 +103,49 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         mTextViewTitleMonthlyBalance = fragment.findViewById(R.id.textView_title_monthly_balance);
         mTextViewMonthlyBalance = fragment.findViewById(R.id.textView_monthly_balance);
 
+        mLayoutCurrentDate = fragment.findViewById(R.id.layout_current_date);
+        mLayoutCurrentDateRange = fragment.findViewById(R.id.layout_current_date_range);
+        mLayoutDateStatus = fragment.findViewById(R.id.layout_date_status);
+
         mTextViewCurrentDate = fragment.findViewById(R.id.textView_currentDate);
-        mTextViewCurrentDate.setOnClickListener((v) -> mPresenter.selectDate());
+        mTextViewCurrentDate.setOnClickListener((v) -> {
+            if (mPresenter.getListType() == ListType.FOR_DATE) {
+                mPresenter.selectDate();
+            } else {
+                mPresenter.selectMonth();
+            }
+        });
+
+        mTextViewFromDate = fragment.findViewById(R.id.textView_from_currentDate);
+        mTextViewFromDate.setOnClickListener((v) -> mPresenter.selectFromDate());
+
+        mTextViewToDate = fragment.findViewById(R.id.textView_to_currentDate);
+        mTextViewToDate.setOnClickListener(((v) -> mPresenter.selectToDate()));
+
+        mTextViewTabByDate = fragment.findViewById(R.id.textView_tabByDate);
+        mTextViewTabByDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.setListType(ListType.FOR_DATE);
+                mPresenter.reload();
+            }
+        });
+        mTextViewTabByMonth = fragment.findViewById(R.id.textView_tabByMonth);
+        mTextViewTabByMonth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.setListType(ListType.FOR_MONTH);
+                mPresenter.reload();
+            }
+        });
+        mTextViewTabByDateRange = fragment.findViewById(R.id.textView_tabByDateRange);
+        mTextViewTabByDateRange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.setListType(ListType.FOR_DATE_RANGE);
+                mPresenter.reload();
+            }
+        });
 
         mButtonDelete = fragment.findViewById(R.id.button_delete);
         mButtonDelete.setOnClickListener((v) -> {
@@ -116,26 +174,34 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
                 }
             }
         });
-
-        Button buttonYesterday = fragment.findViewById(R.id.button_yesterday);
-        buttonYesterday.setOnClickListener((v) -> {
-            Log.d(TAG, "Yesterday button");
-
-            mPresenter.yesterday();
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                CashLogItem item = (CashLogItem) mListAdapter.getItem(position);
+                mPresenter.editLog(item.getLog().id);
+                return true;
+            }
         });
 
-        Button buttonToday = fragment.findViewById(R.id.button_today);
-        buttonToday.setOnClickListener((v) -> {
+        mButtonYesterday = fragment.findViewById(R.id.button_yesterday);
+        mButtonYesterday.setOnClickListener((v) -> {
+            Log.d(TAG, "Yesterday button");
+
+            mPresenter.previous();
+        });
+
+        mButtonToday = fragment.findViewById(R.id.button_today);
+        mButtonToday.setOnClickListener((v) -> {
             Log.d(TAG, "Today button");
 
             mPresenter.today();
         });
 
-        Button buttonTomorrow = fragment.findViewById(R.id.button_tomorrow);
-        buttonTomorrow.setOnClickListener((v) -> {
+        mButtonTomorrow = fragment.findViewById(R.id.button_tomorrow);
+        mButtonTomorrow.setOnClickListener((v) -> {
             Log.d(TAG, "Tomorrow button");
 
-            mPresenter.tomorrow();
+            mPresenter.next();
         });
 
         Button buttonInput = fragment.findViewById(R.id.button_input);
@@ -192,6 +258,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         Log.d(TAG, "Show date: " + date);
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd (E)");
         mTextViewCurrentDate.setText(sf.format(date));
+
     }
 
     private void showSelectionBox() {
@@ -285,7 +352,7 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-                    // TODO: improve to reload when data was added only.
+                    //TODO: 2023-08-16 (improvement) needs to reload when data was added only.
                 }
             });
 
@@ -298,8 +365,17 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
     }
 
     @Override
+    public void showEditLog(int logId) {
+        Intent i = new Intent(getActivity(), CashLogAddActivity.class);
+        i.putExtra(CashLogAddActivity.EXTRA_LOG_ID, logId);
+
+        mStartForResult.launch(i);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
+
         mPresenter.start();
     }
 
@@ -322,6 +398,66 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
         dialog.show();
     }
 
+    //TODO: 2023-08-27 (improvement) needs to improve to pick Year and Month
+    @Override
+    public void showCalendarForMonth(@NonNull Date date) {
+        checkNotNull(date, "date can not be null");
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+
+        DatePickerDialog dialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                Calendar setCal = Calendar.getInstance();
+                setCal.set(year, month, dayOfMonth);
+
+                mPresenter.setToDate(setCal.getTime());
+            }
+        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+        dialog.show();
+    }
+
+    @Override
+    public void showCalendarForFromDate(@NonNull Date fromDate, @NonNull Date toDate) {
+        checkNotNull(fromDate, "fromDate can not be null");
+        checkNotNull(toDate, "toDate can not be null");
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(fromDate);
+
+        DatePickerDialog dialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                Calendar setCal = Calendar.getInstance();
+                setCal.set(year, month, dayOfMonth);
+
+                mPresenter.setToDateRange(setCal.getTime(), toDate);
+            }
+        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+        dialog.show();
+    }
+
+    @Override
+    public void showCalendarForToDate(@NonNull Date fromDate, @NonNull Date toDate) {
+        checkNotNull(fromDate, "fromDate can not be null");
+        checkNotNull(toDate, "toDate can not be null");
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(toDate);
+
+        DatePickerDialog dialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                Calendar setCal = Calendar.getInstance();
+                setCal.set(year, month, dayOfMonth);
+
+                mPresenter.setToDateRange(fromDate, setCal.getTime());
+            }
+        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+        dialog.show();
+    }
+
     @Override
     public void showSuccessfullyDeletedLog() {
         Log.d(TAG, "successfully deleted log");
@@ -338,6 +474,8 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
 
         String month = mBalanceTitleDateFormat.format(date);
 
+        mLayoutDateStatus.setVisibility(View.VISIBLE);
+
         mTextViewDailyExpenses.setText(mAmountFormat.format(dailyExpenses));
         mTextViewTitleMonthlyIncome.setText(getString(R.string.balance_title_monthly_income, month));
         mTextViewMonthlyIncome.setText(mAmountFormat.format(monthlyIncome));
@@ -348,8 +486,107 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
     }
 
     @Override
+    public void showBalanceForMonth(@NonNull Date date, long income, long expense, long balance) {
+        checkNotNull(date, "date can not be null");
+
+        String month = mBalanceTitleDateFormat.format(date);
+
+        mLayoutDateStatus.setVisibility(View.GONE);
+
+        mTextViewTitleMonthlyIncome.setText(getString(R.string.balance_title_monthly_income, month));
+        mTextViewMonthlyIncome.setText(mAmountFormat.format(income));
+        mTextViewTitleMonthlyExpenses.setText(getString(R.string.balance_title_monthly_expenses, month));
+        mTextViewMonthlyExpenses.setText(mAmountFormat.format(expense));
+        mTextViewTitleMonthlyBalance.setText(getString(R.string.balance_title_monthly_balance, month));
+        mTextViewMonthlyBalance.setText(mAmountFormat.format(balance));
+    }
+
+    @Override
+    public void showBalanceForDateRange(@NonNull Date from, @NonNull Date to, long income, long expense, long balance) {
+        checkNotNull(from, "from can not be null");
+        checkNotNull(to, "to can not be null");
+
+        mLayoutDateStatus.setVisibility(View.GONE);
+
+        mTextViewTitleMonthlyIncome.setText(getString(R.string.balance_title_income));
+        mTextViewMonthlyIncome.setText(mAmountFormat.format(income));
+        mTextViewTitleMonthlyExpenses.setText(getString(R.string.balance_title_expenses));
+        mTextViewMonthlyExpenses.setText(mAmountFormat.format(expense));
+        mTextViewTitleMonthlyBalance.setText(getString(R.string.balance_title_balance));
+        mTextViewMonthlyBalance.setText(mAmountFormat.format(balance));
+    }
+
+    @Override
     public void showErrorBalanceLoad() {
         Log.w(TAG, "Can't show state");
+    }
+
+    @Override
+    public void showListType(@NonNull ListType type) {
+        checkNotNull(type, "type can not be null");
+
+        int selectedColor = getResources().getColor(R.color.list_tab_selected);
+        switch (type) {
+            case FOR_DATE:
+                mLayoutCurrentDate.setVisibility(View.VISIBLE);
+                mLayoutCurrentDateRange.setVisibility(View.GONE);
+
+                mTextViewTabByDate.setBackgroundColor(selectedColor);
+                mTextViewTabByMonth.setBackground(null);
+                mTextViewTabByDateRange.setBackground(null);
+
+                mButtonYesterday.setText(R.string.button_navi_yesterday);
+                mButtonToday.setText(R.string.button_navi_today);
+                mButtonTomorrow.setText(R.string.button_navi_tomorrow);
+                break;
+            case FOR_MONTH:
+                mLayoutCurrentDate.setVisibility(View.VISIBLE);
+                mLayoutCurrentDateRange.setVisibility(View.GONE);
+
+                mTextViewTabByDate.setBackground(null);
+                mTextViewTabByMonth.setBackgroundColor(selectedColor);
+                mTextViewTabByDateRange.setBackground(null);
+
+                mButtonYesterday.setText(R.string.button_navi_last_month);
+                mButtonToday.setText(R.string.button_navi_this_month);
+                mButtonTomorrow.setText(R.string.button_navi_next_month);
+                break;
+            case FOR_DATE_RANGE:
+                mLayoutCurrentDate.setVisibility(View.GONE);
+                mLayoutCurrentDateRange.setVisibility(View.VISIBLE);
+
+                mTextViewTabByDate.setBackground(null);
+                mTextViewTabByMonth.setBackground(null);
+                mTextViewTabByDateRange.setBackgroundColor(selectedColor);
+
+                mButtonYesterday.setText(R.string.button_navi_previous);
+                mButtonToday.setText(R.string.button_navi_current);
+                mButtonTomorrow.setText(R.string.button_navi_next);
+                break;
+        }
+    }
+
+    @Override
+    public void showMonth(@NonNull Date date) {
+        checkNotNull(date, "date can not be null");
+
+        Log.d(TAG, "showMonth date = " + date);
+
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM");
+        mTextViewCurrentDate.setText(sf.format(date));
+    }
+
+    @Override
+    public void showDateRange(@NonNull Date from, @NonNull Date to) {
+        checkNotNull(from, "from can not be null");
+        checkNotNull(to, "to can not be null");
+
+        Log.d(TAG, "showDateRange from = " + from);
+        Log.d(TAG, "showDateRange to = " + to);
+
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd (E)");
+        mTextViewFromDate.setText(sf.format(from));
+        mTextViewToDate.setText(sf.format(to));
     }
 
     private class CashLogListAdapter extends BaseAdapter {
@@ -409,16 +646,34 @@ public class CashLogListFragment extends Fragment implements ListContract.View {
                 itemView = new CashLogItemView(mContext);
             }
 
-            itemView.setTitle(mCashLogs.get(position).getTitle());
-            itemView.setAmount(mAmountFormat.format(mCashLogs.get(position).getAmount()));
+            CashLogItem logItem = mCashLogs.get(position);
+            itemView.setTitle(logItem.getTitle());
+            itemView.setAmount(mAmountFormat.format(logItem.getAmount()));
             itemView.showCheckBox(mShowSelection);
-            itemView.setCheck(mCashLogs.get(position).isChecked());
-            itemView.showMemo(mCashLogs.get(position).isShowMemo());
-            itemView.setMemo(mCashLogs.get(position).getMemo());
+            itemView.setCheck(logItem.isChecked());
+            itemView.showMemo(logItem.isShowMemo());
+            itemView.setMemo(logItem.getMemo());
 
-            itemView.setAmountColor(mCashLogs.get(position).getType() == 0 ? mColorIncome : mColorExpense);
+            itemView.setAmountColor(
+                    logItem.getType() == CashType.INCOME ? mColorIncome : mColorExpense);
+
+            int prevPos = position - 1;
+            setDateLabelVisibility(itemView, prevPos, position);
 
             return itemView;
+        }
+
+        private void setDateLabelVisibility(CashLogItemView item, int prevPos, int pos) {
+            if (prevPos == -1 || isNotSameDay(prevPos, pos)) {
+                item.showDate(true);
+                item.setDate(mCashLogs.get(pos).getDate());
+            } else {
+                item.showDate(false);
+            }
+        }
+
+        private boolean isNotSameDay(int pos1, int pos2) {
+            return mCashLogs.get(pos1).getDateTag() != mCashLogs.get(pos2).getDateTag();
         }
 
         @SuppressWarnings("deprecation")

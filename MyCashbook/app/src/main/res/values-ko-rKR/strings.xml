@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">MyCashbook</string>
     <string name="added_item">항목 추가됨</string>
+    <string name="edited_item">항목 수정됨</string>
     <string name="error_item_empty">항목이 비어있습니다.</string>
     <string name="error_amount_empty">금액이 비어있습니다.</string>
     <string name="error_amount_small">금액이 작습니다.</string>
@@ -16,9 +17,18 @@
     <string name="balance_title_monthly_income">%1$s 수입</string>
     <string name="balance_title_monthly_expenses">%1$s 지출</string>
     <string name="balance_title_monthly_balance">%1$s 잔액</string>
+    <string name="balance_title_income">수입</string>
+    <string name="balance_title_expenses">지출</string>
+    <string name="balance_title_balance">잔액</string>
     <string name="button_navi_yesterday">어제</string>
     <string name="button_navi_today">오늘</string>
     <string name="button_navi_tomorrow">내일</string>
+    <string name="button_navi_last_month">지난달</string>
+    <string name="button_navi_this_month">이번 달</string>
+    <string name="button_navi_next_month">다음달</string>
+    <string name="button_navi_previous">이전</string>
+    <string name="button_navi_current">처음</string>
+    <string name="button_navi_next">다음</string>
     <string name="button_navi_write">입력</string>
     <string name="button_navi_close">닫기</string>
     <string name="add_item_title_text">항 목</string>
@@ -30,4 +40,9 @@
     <string name="button_add_as_income">수입으로 입력</string>
     <string name="button_add_as_expense">지출로 입력</string>
     <string name="button_add_close">닫기</string>
+    <string name="tab_text_by_date">일별</string>
+    <string name="tab_text_by_month">월별</string>
+    <string name="tab_text_by_date_range">기간별</string>
+    <string name="example_date_text">2023-09-13 (수)</string>
+    <string name="example_log_date_text">2023-09-15 (금)</string>
 </resources>

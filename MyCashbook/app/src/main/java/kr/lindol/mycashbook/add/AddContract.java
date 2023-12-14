@@ -14,6 +14,8 @@ public interface AddContract {
 
         void showSuccess();
 
+        void showSuccessWithEdit();
+
         void showFailure();
 
         void showItemValueEmptyError();
@@ -23,17 +25,31 @@ public interface AddContract {
         void showAmountValueSmallError();
 
         void showAmountValueFormatError();
+
+        void showCalendar(@NonNull Date date);
+
+        void showDate(@NonNull Date date);
+
+        void showItem(@NonNull String item);
+
+        void showAmount(int amount);
+
+        void showMemo(@NonNull String memo);
+
+        void closeWindow();
     }
 
     interface Presenter extends BasePresenter {
         void addAsIncome(@NonNull String item,
                          @NonNull String amount,
-                         @NonNull Date date,
                          @Nullable String description);
 
-        void addAsOutlay(@NonNull String item,
-                         @NonNull String amount,
-                         @NonNull Date date,
-                         @Nullable String description);
+        void addAsExpense(@NonNull String item,
+                          @NonNull String amount,
+                          @Nullable String description);
+
+        void selectDate();
+
+        void setToDate(@NonNull Date date);
     }
 }

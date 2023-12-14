@@ -15,14 +15,48 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textView_currentDate"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:text="2021년 2월 25일"
-            android:textSize="@dimen/date_text_size" />
+            android:layout_centerVertical="true">
+
+            <LinearLayout
+                android:id="@+id/layout_current_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/textView_currentDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2021년 2월 25일"
+                    android:textSize="@dimen/date_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_current_date_range"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/textView_from_currentDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2023년 7월 20일"
+                    android:textSize="@dimen/date_from_text_size" />
+
+                <TextView
+                    android:id="@+id/textView_to_currentDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="24dp"
+                    android:text="2023년 8월 20일"
+                    android:textSize="@dimen/date_to_text_size" />
+            </LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -53,10 +87,45 @@
         android:layout_height="0dp"
         android:layout_margin="4dp"
         android:background="@color/list_background"
-        app:layout_constraintBottom_toTopOf="@+id/layout_status"
+        app:layout_constraintBottom_toTopOf="@+id/layout_buttons_date"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layout_top" />
+
+    <LinearLayout
+        android:id="@+id/layout_buttons_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/layout_status"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <TextView
+            android:id="@+id/textView_tabByDate"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="4dp"
+            android:background="@color/list_tab_selected"
+            android:padding="2dp"
+            android:text="@string/tab_text_by_date" />
+
+        <TextView
+            android:id="@+id/textView_tabByMonth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:padding="2dp"
+            android:text="@string/tab_text_by_month" />
+
+        <TextView
+            android:id="@+id/textView_tabByDateRange"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:padding="2dp"
+            android:text="@string/tab_text_by_date_range" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/layout_status"
@@ -70,6 +139,7 @@
         app:layout_constraintRight_toRightOf="parent">
 
         <LinearLayout
+            android:id="@+id/layout_date_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">

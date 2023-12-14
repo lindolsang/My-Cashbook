@@ -1,5 +1,6 @@
 package kr.lindol.mycashbook.data.db;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -13,14 +14,14 @@ public class CashLog {
     public String item;
 
     @ColumnInfo(name = "type")
-    /**
-     * 0 - income
-     * 1 - expense
-     */
-    public int type;
+    @NonNull
+    public CashType type = CashType.EXPENSE; // default value to fix annotation warning
 
     @ColumnInfo(name = "amount")
     public int amount;
+
+    @ColumnInfo(name = "date_tag")
+    public int dateTag;
 
     @ColumnInfo(name = "day_tag")
     public String dayTag;

@@ -1,17 +1,20 @@
 package kr.lindol.mycashbook.list;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -29,6 +32,9 @@ public class CashLogListPresenterTest {
     private Date mToday;
     private Date mYesterday;
     private Date mTomorrow;
+
+    private Date mLastMonth;
+    private Date mNextMonth;
 
     private CashLogListPresenter presenter;
 
@@ -52,10 +58,14 @@ public class CashLogListPresenterTest {
         cal.setTime(mToday);
         cal.add(Calendar.DAY_OF_MONTH, 1);
         mTomorrow = cal.getTime();
-    }
 
-    @After
-    public void tearDown() {
+        cal.setTime(mToday);
+        cal.add(Calendar.MONTH, -1);
+        mLastMonth = cal.getTime();
+
+        cal.setTime(mToday);
+        cal.add(Calendar.MONTH, 1);
+        mNextMonth = cal.getTime();
     }
 
     private void mockOnCashLogLoaded() {
@@ -94,8 +104,6 @@ public class CashLogListPresenterTest {
 
     @Test
     public void todayThenShowDateAsToday() {
-        mockOnCashLogLoaded();
-
         presenter.setFixedDate(mToday);
         presenter.today();
 
@@ -103,107 +111,61 @@ public class CashLogListPresenterTest {
     }
 
     @Test
-    public void todayThenShowDateAsTodayWhenNoData() {
-        mockOnDataNotAvailable();
-
+    public void previousThenShowDateAsYesterday() {
         presenter.setFixedDate(mToday);
-        presenter.today();
-
-        verify(mView, times(1)).showDate(mToday);
-    }
-
-    @Test
-    public void yesterdayThenShowDateAsYesterday() {
-        mockOnCashLogLoaded();
-
-        presenter.setFixedDate(mToday);
-        presenter.yesterday();
+        presenter.previous();
 
         verify(mView, times(1)).showDate(mYesterday);
     }
 
     @Test
-    public void yesterdayThenShowDateAsYesterdayWhenNoData() {
-        mockOnDataNotAvailable();
-
+    public void nextThenShowDateAsTomorrow() {
         presenter.setFixedDate(mToday);
-        presenter.yesterday();
-
-        verify(mView, times(1)).showDate(mYesterday);
-    }
-
-    @Test
-    public void tomorrowThenShowDateAsTomorrow() {
-        mockOnCashLogLoaded();
-
-        presenter.setFixedDate(mToday);
-        presenter.tomorrow();
-
-        verify(mView, times(1)).showDate(mTomorrow);
-    }
-
-    @Test
-    public void tomorrowThenShowDateAsTomorrowWhenNoData() {
-        mockOnDataNotAvailable();
-
-        presenter.setFixedDate(mToday);
-        presenter.tomorrow();
+        presenter.next();
 
         verify(mView, times(1)).showDate(mTomorrow);
     }
 
     @Test
     public void setToDateThenShowDateAsPassedDate() {
-        mockOnCashLogLoaded();
-
-        Date specifiedDate = Date.from(Instant.parse("2021-01-02T03:04:05.00Z"));
+        Date specifiedDate = newDate(2021, 1, 2);
         presenter.setToDate(specifiedDate);
 
         verify(mView, times(1)).showDate(specifiedDate);
     }
 
     @Test
-    public void setToDateThenShowDateAsPassedDateWhenNoData() {
-        mockOnDataNotAvailable();
-
-        Date specifiedDate = Date.from(Instant.parse("2021-01-02T03:04:05.00Z"));
-        presenter.setToDate(specifiedDate);
-
-        verify(mView, times(1)).showDate(specifiedDate);
-    }
-
-    @Test
-    public void yesterdayThenShowList() {
+    public void previousThenShowList() {
         mockOnCashLogLoaded();
 
-        presenter.yesterday();
+        presenter.previous();
 
         verify(mView, times(1)).showList(any());
     }
 
     @Test
-    public void yesterdayThenShowNoListDataWhenNoData() {
+    public void previousThenShowNoListDataWhenNoData() {
         mockOnDataNotAvailable();
 
-        presenter.yesterday();
+        presenter.previous();
 
         verify(mView, times(1)).showNoListData();
     }
 
     @Test
-    public void tomorrowThenShowList() {
+    public void nextThenShowList() {
         mockOnCashLogLoaded();
 
-        presenter.tomorrow();
+        presenter.next();
 
         verify(mView, times(1)).showList(any());
     }
 
     @Test
-    public void tomorrowThenShowNoListDataWhenNoData() {
+    public void nextThenShowNoListDataWhenNoData() {
         mockOnDataNotAvailable();
 
-        presenter.tomorrow();
+        presenter.next();
 
         verify(mView, times(1)).showNoListData();
     }
@@ -224,6 +186,38 @@ public class CashLogListPresenterTest {
         presenter.setToDate(new Date());
 
         verify(mView, times(1)).showNoListData();
+    }
+
+    @Test
+    public void setToDateThenShowListForMonth() {
+        doAnswer(invocation -> {
+            CashLogDataSource.LoadCashLogCallback cb = invocation.getArgument(1);
+            cb.onCashLogLoaded(new ArrayList<>());
+            return null;
+        }).when(mRepository)
+                .loadByMonth(any(Date.class), any(CashLogDataSource.LoadCashLogCallback.class));
+
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.setToDate(newDate(2023, 7, 1));
+
+        verify(mView, times(1))
+                .showList(anyList());
+    }
+
+    @Test
+    public void setToDateThenShowNoListDataForMonthWhenNoData() {
+        doAnswer(invocation -> {
+            CashLogDataSource.LoadCashLogCallback cb = invocation.getArgument(1);
+            cb.onDataNotAvailable();
+            return null;
+        }).when(mRepository)
+                .loadByMonth(any(Date.class), any(CashLogDataSource.LoadCashLogCallback.class));
+
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.setToDate(newDate(2023, 7, 1));
+
+        verify(mView, times(1))
+                .showNoListData();
     }
 
     @Test
@@ -288,10 +282,107 @@ public class CashLogListPresenterTest {
     }
 
     @Test
-    public void selectCalendarThenShowCalendar() {
+    public void selectDateThenShowCalendar() {
+        presenter.setListType(ListType.FOR_DATE);
         presenter.selectDate();
 
         verify(mView, times(1)).showCalendar(any(Date.class));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void selectDateThenThrowIllegalStateExceptionWhenListTypeIsForMonth() {
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.selectDate();
+
+        verify(mView, times(1)).showCalendarForMonth(any(Date.class));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void selectDateThenThrowIllegalStateExceptionWhenListTypeIsForDateRange() {
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.selectDate();
+
+        verify(mView, times(1)).showCalendar(any(Date.class));
+    }
+
+    @Test
+    public void selectMonthThenShowCalendarForMonth() {
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.selectMonth();
+
+        verify(mView, times(1)).showCalendarForMonth(any(Date.class));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void selectMonthThenThrowIllegalStateExceptionWhenListTypeIsForDate() {
+        presenter.setListType(ListType.FOR_DATE);
+        presenter.selectMonth();
+
+        verify(mView, times(1)).showCalendarForMonth(any(Date.class));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void selectMonthThenThrowIllegalStateExceptionWhenListTypeIsForDateRange() {
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.selectMonth();
+
+        verify(mView, times(1)).showCalendarForMonth(any(Date.class));
+    }
+
+    @Test
+    public void selectFromDateThenShowCalendarForFromDate() {
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setToDateRange(mYesterday, mToday);
+        presenter.selectFromDate();
+
+        verify(mView, times(1))
+                .showCalendarForFromDate(mYesterday, mToday);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void selectFromDateThenThrowIllegalStateExceptionWhenListTypeIsForDate() {
+        presenter.setListType(ListType.FOR_DATE);
+        presenter.selectFromDate();
+
+        verify(mView, times(1))
+                .showCalendarForFromDate(any(Date.class), any(Date.class));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void selectFromDateThenThrowIllegalStateExceptionWhenListTypeIsForMonth() {
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.selectFromDate();
+
+        verify(mView, times(1))
+                .showCalendarForFromDate(any(Date.class), any(Date.class));
+    }
+
+    @Test
+    public void selectToDateThenShowCalendarForToDate() {
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setToDateRange(mYesterday, mToday);
+        presenter.selectToDate();
+
+        verify(mView, times(1))
+                .showCalendarForToDate(mYesterday, mToday);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void selectToDateThenThrowIllegalStateExceptionWhenListTypeIsForDate() {
+        presenter.setListType(ListType.FOR_DATE);
+        presenter.selectToDate();
+
+        verify(mView, times(1))
+                .showCalendarForToDate(any(Date.class), any(Date.class));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void selectToDateThenThrowIllegalStateExceptionWhenListTypeIsForMonth() {
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.selectToDate();
+
+        verify(mView, times(1))
+                .showCalendarForToDate(any(Date.class), any(Date.class));
     }
 
     private void mockDeletedSuccessfully() {
@@ -350,7 +441,7 @@ public class CashLogListPresenterTest {
 
     private void mockBalanceLoaded() {
         doAnswer(invocation -> {
-            CashLogDataSource.BalanceLoadCallback cb = invocation.getArgument(1);
+            CashLogDataSource.GetBalanceForDayCallback cb = invocation.getArgument(1);
             cb.onBalanceLoaded(1, 0, 0, 0);
             return null;
         }).when(mRepository).balance(any(Date.class), any());
@@ -358,7 +449,7 @@ public class CashLogListPresenterTest {
 
     private void mockBalanceLoadFailed() {
         doAnswer(invocation -> {
-            CashLogDataSource.BalanceLoadCallback cb = invocation.getArgument(1);
+            CashLogDataSource.GetBalanceForDayCallback cb = invocation.getArgument(1);
             cb.onError();
             return null;
         }).when(mRepository).balance(any(Date.class), any());
@@ -370,7 +461,8 @@ public class CashLogListPresenterTest {
 
         presenter.setToDate(new Date());
 
-        verify(mView, times(1)).showBalance(any(Date.class), anyLong(), anyLong(), anyLong(), anyLong());
+        verify(mView, times(1))
+                .showBalance(any(Date.class), anyLong(), anyLong(), anyLong(), anyLong());
     }
 
     @Test
@@ -383,19 +475,51 @@ public class CashLogListPresenterTest {
     }
 
     @Test
-    public void yesterdayThenShowBalance() {
+    public void previousThenShowBalance() {
         mockBalanceLoaded();
 
-        presenter.yesterday();
+        presenter.previous();
 
-        verify(mView, times(1)).showBalance(any(Date.class), anyLong(), anyLong(), anyLong(), anyLong());
+        verify(mView, times(1))
+                .showBalance(any(Date.class), anyLong(), anyLong(), anyLong(), anyLong());
     }
 
     @Test
-    public void yesterdayThenShowErrorBalanceLoadWhenBalanceLoadFailed() {
+    public void previousThenShowBalanceForMonthWhenListTypeIsForMonth() {
+        doAnswer(invocation -> {
+            CashLogDataSource.GetBalanceCallback callback = invocation.getArgument(1);
+            callback.onBalanceLoaded(3, 2, 1);
+            return null;
+        }).when(mRepository).balanceByMonth(any(Date.class), any());
+
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.previous();
+
+        verify(mView, times(1))
+                .showBalanceForMonth(any(Date.class), anyLong(), anyLong(), anyLong());
+    }
+
+    @Test
+    public void previousThenShowBalanceForDateRangeWhenListTypeIsDateRange() {
+        doAnswer(invocation -> {
+            CashLogDataSource.GetBalanceCallback callback = invocation.getArgument(2);
+            callback.onBalanceLoaded(3, 2, 1);
+            return null;
+        }).when(mRepository).balanceByDateRange(any(Date.class), any(Date.class), any());
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.previous();
+
+        verify(mView, times(1))
+                .showBalanceForDateRange(
+                        any(Date.class), any(Date.class), anyLong(), anyLong(), anyLong());
+    }
+
+    @Test
+    public void previousThenShowErrorBalanceLoadWhenBalanceLoadFailed() {
         mockBalanceLoadFailed();
 
-        presenter.yesterday();
+        presenter.previous();
 
         verify(mView, times(1)).showErrorBalanceLoad();
     }
@@ -406,7 +530,39 @@ public class CashLogListPresenterTest {
 
         presenter.today();
 
-        verify(mView, times(1)).showBalance(any(Date.class), anyLong(), anyLong(), anyLong(), anyLong());
+        verify(mView, times(1))
+                .showBalance(any(Date.class), anyLong(), anyLong(), anyLong(), anyLong());
+    }
+
+    @Test
+    public void todayThenShowBalanceForMonthWhenListTypeIsForMonth() {
+        doAnswer(invocation -> {
+            CashLogDataSource.GetBalanceCallback callback = invocation.getArgument(1);
+            callback.onBalanceLoaded(3, 2, 1);
+            return null;
+        }).when(mRepository).balanceByMonth(any(Date.class), any());
+
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.today();
+
+        verify(mView, times(1))
+                .showBalanceForMonth(any(Date.class), anyLong(), anyLong(), anyLong());
+    }
+
+    @Test
+    public void todayThenShowBalanceForDateRangeWheListTypeIsForDateRange() {
+        doAnswer(invocation -> {
+            CashLogDataSource.GetBalanceCallback callback = invocation.getArgument(2);
+            callback.onBalanceLoaded(3, 2, 1);
+            return null;
+        }).when(mRepository).balanceByDateRange(any(Date.class), any(Date.class), any());
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.today();
+
+        verify(mView, times(1))
+                .showBalanceForDateRange(
+                        any(Date.class), any(Date.class), anyLong(), anyLong(), anyLong());
     }
 
     @Test
@@ -419,20 +575,505 @@ public class CashLogListPresenterTest {
     }
 
     @Test
-    public void tomorrowThenShowBalance() {
+    public void nextThenShowBalance() {
         mockBalanceLoaded();
 
-        presenter.tomorrow();
+        presenter.next();
 
-        verify(mView, times(1)).showBalance(any(Date.class), anyLong(), anyLong(), anyLong(), anyLong());
+        verify(mView, times(1))
+                .showBalance(any(Date.class), anyLong(), anyLong(), anyLong(), anyLong());
     }
 
     @Test
-    public void tomorrowThenShowErrorBalanceLoadWhenBalanceLoadFailed() {
+    public void nextThenShowBalanceForMonthWhenListTypeIsForMonth() {
+        doAnswer(invocation -> {
+            CashLogDataSource.GetBalanceCallback callback = invocation.getArgument(1);
+            callback.onBalanceLoaded(3, 2, 1);
+            return null;
+        }).when(mRepository).balanceByMonth(any(Date.class), any());
+
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.next();
+
+        verify(mView, times(1))
+                .showBalanceForMonth(any(Date.class), anyLong(), anyLong(), anyLong());
+    }
+
+    @Test
+    public void nextThenShowBalanceForDateRangeWhenListTypeIsForDateRange() {
+        doAnswer(invocation -> {
+            CashLogDataSource.GetBalanceCallback callback = invocation.getArgument(2);
+            callback.onBalanceLoaded(3, 2, 1);
+            return null;
+        }).when(mRepository).balanceByDateRange(any(Date.class), any(Date.class), any());
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.next();
+
+        verify(mView, times(1))
+                .showBalanceForDateRange(
+                        any(Date.class), any(Date.class), anyLong(), anyLong(), anyLong());
+    }
+
+    @Test
+    public void nextThenShowErrorBalanceLoadWhenBalanceLoadFailed() {
         mockBalanceLoadFailed();
 
-        presenter.tomorrow();
+        presenter.next();
 
         verify(mView, times(1)).showErrorBalanceLoad();
+    }
+
+    @Test
+    public void getListTypeThenReturnDefaultTypeForDate() {
+        assertThat(presenter.getListType(), equalTo(ListType.FOR_DATE));
+    }
+
+    @Test
+    public void setListTypeForDate() {
+        presenter.setListType(ListType.FOR_DATE);
+
+        assertThat(presenter.getListType(), equalTo(ListType.FOR_DATE));
+    }
+
+    @Test
+    public void setListTypeForMonth() {
+        presenter.setListType(ListType.FOR_MONTH);
+
+        assertThat(presenter.getListType(), equalTo(ListType.FOR_MONTH));
+    }
+
+    @Test
+    public void setListTypeForDateRange() {
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+
+        assertThat(presenter.getListType(), equalTo(ListType.FOR_DATE_RANGE));
+    }
+
+    @Test
+    public void setListTypeWithForDayThenShowListTypeWithForDate() {
+        presenter.setListType(ListType.FOR_DATE);
+
+        verify(mView, times(1)).showListType(ListType.FOR_DATE);
+    }
+
+    @Test
+    public void setListTypeWithForMonthThenShowListTypeWithForMonth() {
+        presenter.setListType(ListType.FOR_MONTH);
+
+        verify(mView, times(1)).showListType(ListType.FOR_MONTH);
+    }
+
+    @Test
+    public void setListTypeWithForDateRangeThenShowListTypeWithForDateRange() {
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+
+        verify(mView, times(1)).showListType(ListType.FOR_DATE_RANGE);
+    }
+
+    @Test
+    public void todayThenShowMonthAsThisMonth() {
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.setFixedDate(mToday);
+        presenter.today();
+
+        verify(mView, times(1)).showMonth(mToday);
+    }
+
+    @Test
+    public void previousThenShowMonthAsLastMonth() {
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.setFixedDate(mToday);
+        presenter.previous();
+
+        verify(mView, times(1)).showMonth(mLastMonth);
+    }
+
+    @Test
+    public void nextThenShowMonthAsNextMonth() {
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.setFixedDate(mToday);
+        presenter.next();
+
+        verify(mView, times(1)).showMonth(mNextMonth);
+    }
+
+    @Test
+    public void setToDateThenShowMonthAsPassedDate() {
+        Date specifiedDate = newDate(2021, 1, 2);
+
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.setToDate(specifiedDate);
+
+        verify(mView, times(1)).showMonth(specifiedDate);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void setToDateThenThrowIllegalStateExceptionWhenListTypeIsForDateRange() {
+        Date specifiedDate = newDate(2021, 1, 2);
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setToDate(specifiedDate);
+    }
+
+    @Test
+    public void setToDateThenShowBalanceInMonth() {
+        Date specifiedDate = newDate(2023, 7, 23);
+
+        doAnswer(invocation -> {
+            CashLogDataSource.GetBalanceCallback cb = invocation.getArgument(1);
+            cb.onBalanceLoaded(1, 0, 1);
+            return null;
+        }).when(mRepository)
+                .balanceByMonth(any(Date.class), any(CashLogDataSource.GetBalanceCallback.class));
+
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.setToDate(specifiedDate);
+
+        verify(mView, times(1))
+                .showBalanceForMonth(any(Date.class), anyLong(), anyLong(), anyLong());
+
+    }
+
+    @Test
+    public void todayThenShowDateRangeAsTodayWhenNotToSetDateRange() {
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setFixedDate(mToday);
+        presenter.today();
+
+        verify(mView, times(1)).showDateRange(mToday, mToday);
+    }
+
+    @Test
+    public void todayThenShowDateRangeAsTodayWhenNotToCallPreviousOrNext() {
+        Date fromDate = newDate(2022, 11, 30);
+        Date toDate = newDate(2022, 12, 31);
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setFixedDate(mToday);
+        presenter.setToDateRange(fromDate, toDate);
+        presenter.today();
+
+        InOrder inOrder = Mockito.inOrder(mView);
+        inOrder.verify(mView).showDateRange(fromDate, toDate);
+        inOrder.verify(mView).showDateRange(mToday, mToday);
+    }
+
+    @Test
+    public void todayThenShowDateRangeAsPassedDateAfterPrevious() {
+        Date fromDate = newDate(2022, 11, 30);
+        Date toDate = newDate(2022, 12, 1);
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setToDateRange(fromDate, toDate); // 1
+        presenter.previous();
+        presenter.today(); // 2
+
+        Date previousFrom = addDays(-2, fromDate);
+        Date previousTo = addDays(-2, toDate);
+
+        InOrder inOrder = Mockito.inOrder(mView);
+        inOrder.verify(mView).showDateRange(fromDate, toDate);
+        inOrder.verify(mView).showDateRange(previousFrom, previousTo);
+        inOrder.verify(mView).showDateRange(fromDate, toDate);
+    }
+
+    @Test
+    public void todayThenShowDateRangeAsPassedDateAfterNext() {
+        Date fromDate = newDate(2022, 11, 30);
+        Date toDate = newDate(2022, 12, 1);
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setToDateRange(fromDate, toDate); // 1
+        presenter.next();
+        presenter.today(); // 2
+
+        Date nextFrom = addDays(2, fromDate);
+        Date nextTo = addDays(2, toDate);
+
+        InOrder inOrder = Mockito.inOrder(mView);
+        inOrder.verify(mView).showDateRange(fromDate, toDate);
+        inOrder.verify(mView).showDateRange(nextFrom, nextTo);
+        inOrder.verify(mView).showDateRange(fromDate, toDate);
+    }
+
+    @Test
+    public void previousThenShowDateRangeAsYesterdayWhenNotToSetDateRange() {
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setFixedDate(mToday);
+        presenter.previous();
+
+        verify(mView, times(1)).showDateRange(mYesterday, mYesterday);
+    }
+
+    @Test
+    public void previousThenShowDateRangeAsPreviousDateRange() {
+        Date fromDate = newDate(2022, 11, 30);
+        Date toDate = newDate(2022, 12, 1);
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setToDateRange(fromDate, toDate);
+        presenter.previous();
+
+        Date previousFrom = addDays(-2, fromDate);
+        Date previousTo = addDays(-2, toDate);
+        verify(mView, times(1)).showDateRange(previousFrom, previousTo);
+    }
+
+    @Test
+    public void nextThenShowDateRangeAsTomorrowWhenNotToSetDateRange() {
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setFixedDate(mToday);
+        presenter.next();
+
+        verify(mView, times(1)).showDateRange(mTomorrow, mTomorrow);
+    }
+
+    @Test
+    public void nextThenShowDateRangeAsNextDateRange() {
+        Date fromDate = newDate(2022, 11, 30);
+        Date toDate = newDate(2022, 12, 1);
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setToDateRange(fromDate, toDate);
+        presenter.next();
+
+        Date nextFrom = addDays(2, fromDate);
+        Date nextTo = addDays(2, toDate);
+        verify(mView, times(1)).showDateRange(nextFrom, nextTo);
+    }
+
+    @Test
+    public void setToDateRangeThenShowDateRangeAsPassedDate() {
+        Date fromDate = newDate(2022, 11, 30);
+        Date toDate = newDate(2022, 12, 1);
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setToDateRange(fromDate, toDate);
+
+        verify(mView, times(1)).showDateRange(fromDate, toDate);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void setToDateRangeThenThrowIllegalStateExceptionWhenListTypeIsNotForDateRange() {
+        Date fromDate = newDate(2022, 11, 30);
+        Date toDate = newDate(2022, 12, 1);
+
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.setToDateRange(fromDate, toDate);
+    }
+
+    @Test
+    public void setToDateRangeThenShowList() {
+        Date fromDate = newDate(2022, 11, 30);
+        Date toDate = newDate(2022, 12, 1);
+
+        doAnswer(invocation -> {
+            CashLogDataSource.LoadCashLogCallback cb = invocation.getArgument(2);
+            cb.onCashLogLoaded(new ArrayList<>());
+            return null;
+        }).when(mRepository).loadByDateRange(
+                any(Date.class),
+                any(Date.class),
+                any(CashLogDataSource.LoadCashLogCallback.class));
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setToDateRange(fromDate, toDate);
+
+        verify(mView, times(1)).showList(anyList());
+    }
+
+    @Test
+    public void setToDateRangeThenShowNoListDataWhenNoData() {
+        Date fromDate = newDate(2022, 11, 30);
+        Date toDate = newDate(2022, 12, 1);
+
+        doAnswer(invocation -> {
+            CashLogDataSource.LoadCashLogCallback cb = invocation.getArgument(2);
+            cb.onDataNotAvailable();
+            return null;
+        }).when(mRepository).loadByDateRange(
+                any(Date.class),
+                any(Date.class),
+                any(CashLogDataSource.LoadCashLogCallback.class));
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setToDateRange(fromDate, toDate);
+
+        verify(mView, times(1)).showNoListData();
+    }
+
+    @Test
+    public void setToDateRangeThenShowBalanceInRange() {
+        Date fromDate = newDate(2022, 11, 30);
+        Date toDate = newDate(2022, 12, 1);
+
+        doAnswer(invocation -> {
+            CashLogDataSource.GetBalanceCallback cb = invocation.getArgument(2);
+            cb.onBalanceLoaded(1, 0, 1);
+            return null;
+        }).when(mRepository).balanceByDateRange(
+                any(Date.class),
+                any(Date.class),
+                any(CashLogDataSource.GetBalanceCallback.class));
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setToDateRange(fromDate, toDate);
+
+        verify(mView, times(1))
+                .showBalanceForDateRange(
+                        any(Date.class),
+                        any(Date.class),
+                        anyLong(),
+                        anyLong(),
+                        anyLong());
+    }
+
+    @Test
+    public void reloadThenShowList() {
+        mockOnCashLogLoaded();
+
+        presenter.reload();
+
+        verify(mView, times(1)).showList(anyList());
+    }
+
+    @Test
+    public void reloadThenShowNoListDataWhenDataReadingFailed() {
+        mockOnDataNotAvailable();
+
+        presenter.reload();
+
+        verify(mView, times(1)).showNoListData();
+    }
+
+    @Test
+    public void reloadThenShowBalance() {
+        mockBalanceLoaded();
+
+        presenter.reload();
+
+        verify(mView, times(1))
+                .showBalance(any(Date.class), anyLong(), anyLong(), anyLong(), anyLong());
+    }
+
+    @Test
+    public void reloadThenShowBalanceForMonthWhenListTypeIsForMonth() {
+        doAnswer(invocation -> {
+            CashLogDataSource.GetBalanceCallback callback = invocation.getArgument(1);
+            callback.onBalanceLoaded(3, 2, 1);
+            return null;
+        }).when(mRepository).balanceByMonth(any(Date.class), any());
+
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.reload();
+
+        verify(mView, times(1))
+                .showBalanceForMonth(any(Date.class), anyLong(), anyLong(), anyLong());
+    }
+
+    @Test
+    public void reloadThenShowBalanceForDateRangeWhenListTypeIsDateRange() {
+        doAnswer(invocation -> {
+            CashLogDataSource.GetBalanceCallback callback = invocation.getArgument(2);
+            callback.onBalanceLoaded(3, 2, 1);
+            return null;
+        }).when(mRepository).balanceByDateRange(any(Date.class), any(Date.class), any());
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.reload();
+
+        verify(mView, times(1)).showBalanceForDateRange(
+                any(Date.class), any(Date.class), anyLong(), anyLong(), anyLong());
+    }
+
+    @Test
+    public void reloadThenShowErrorBalanceLoad() {
+        doAnswer(invocation -> {
+            CashLogDataSource.GetBalanceForDayCallback callback = invocation.getArgument(1);
+            callback.onError();
+            return null;
+        }).when(mRepository).balance(any(Date.class), any());
+
+        presenter.reload();
+
+        verify(mView, times(1)).showErrorBalanceLoad();
+    }
+
+    @Test
+    public void reloadThenShowErrorBalanceLoadWhenListTypeIsForMonth() {
+        doAnswer(invocation -> {
+            CashLogDataSource.GetBalanceCallback callback = invocation.getArgument(1);
+            callback.onError();
+            return null;
+        }).when(mRepository).balanceByMonth(any(Date.class), any());
+
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.reload();
+
+        verify(mView, times(1)).showErrorBalanceLoad();
+    }
+
+    @Test
+    public void reloadThenShowErrorBalanceLoadWhenListTypeIsDateRange() {
+        doAnswer(invocation -> {
+            CashLogDataSource.GetBalanceCallback callback = invocation.getArgument(2);
+            callback.onError();
+            return null;
+        }).when(mRepository).balanceByDateRange(any(Date.class), any(Date.class), any());
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.reload();
+
+        verify(mView, times(1)).showErrorBalanceLoad();
+    }
+
+    @Test
+    public void reloadThenShowDate() {
+        presenter.reload();
+
+        verify(mView, times(1)).showDate(any(Date.class));
+    }
+
+    @Test
+    public void reloadThenShowMonthWhenListTypeIsForMonth() {
+        presenter.setListType(ListType.FOR_MONTH);
+        presenter.reload();
+
+        verify(mView, times(1))
+                .showMonth(any(Date.class));
+    }
+
+    @Test
+    public void reloadThenShowDateRangeWhenListTypeIsForDateRange() {
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.reload();
+
+        verify(mView, times(1))
+                .showDateRange(any(Date.class), any(Date.class));
+    }
+
+    @Test
+    public void editLogThenShowEditLog() {
+        presenter.editLog(1);
+
+        verify(mView, times(1)).showEditLog(1);
+    }
+
+    private Date newDate(int year, int month, int dayOfMonth) {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.YEAR, year);
+        c.set(Calendar.MONTH, month - 1);
+        c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+        return c.getTime();
+    }
+
+    private Date addDays(int plus, Date from) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(from);
+        cal.add(Calendar.DAY_OF_MONTH, plus);
+
+        return cal.getTime();
     }
 }
