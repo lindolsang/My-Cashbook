@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk 34
 
     defaultConfig {
         applicationId "kr.lindol.mycashbook"
         minSdk 16
-        targetSdk 32
+        targetSdk 34
         multiDexEnabled true
         versionCode 1002000
         versionName "1.2.0"
