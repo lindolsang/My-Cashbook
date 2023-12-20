@@ -466,6 +466,15 @@ public class CashLogListPresenterTest {
     }
 
     @Test
+    public void setToDateThenSelectedCashLogChangesToCancel() {
+        presenter.setToDate(new Date());
+        presenter.selectCashLog(1);
+        presenter.setToDate(new Date());
+
+        assertThat(presenter.getSelectedCashLogId(), equalTo(-1));
+    }
+
+    @Test
     public void setToDateThenShowErrorBalanceLoadWhenBalanceLoadFailed() {
         mockBalanceLoadFailed();
 
@@ -927,6 +936,19 @@ public class CashLogListPresenterTest {
                         anyLong(),
                         anyLong(),
                         anyLong());
+    }
+
+    @Test
+    public void setToDateRangeThenSelectedCashLogChangesToCancel() {
+        Date fromDate = newDate(2022, 11, 30);
+        Date toDate = newDate(2022, 12, 1);
+
+        presenter.setListType(ListType.FOR_DATE_RANGE);
+        presenter.setToDateRange(fromDate, toDate);
+        presenter.selectCashLog(1);
+        presenter.setToDateRange(fromDate, toDate);
+
+        assertThat(presenter.getSelectedCashLogId(), equalTo(-1));
     }
 
     @Test

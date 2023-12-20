@@ -123,6 +123,8 @@ public class CashLogListPresenter implements ListContract.Presenter {
             throw new IllegalStateException(msg);
         }
 
+        cancelSelection();
+
         if (mListType == ListType.FOR_DATE) {
             mRepository.loadByDate(date, new CashLogDataSource.LoadCashLogCallback() {
                 @Override
@@ -194,6 +196,8 @@ public class CashLogListPresenter implements ListContract.Presenter {
     private void setToDateRangeInternal(Date from, Date to) {
         mCalendarFrom.setTime(from);
         mCalendar.setTime(to);
+
+        cancelSelection();
 
         mView.showDateRange(from, to);
         mRepository.loadByDateRange(from, to, new CashLogDataSource.LoadCashLogCallback() {
@@ -270,17 +274,29 @@ public class CashLogListPresenter implements ListContract.Presenter {
 
     @Override
     public void selectCashLog(int id) {
-        if (mSelectedCashLogId == id) {
-            mSelectedCashLogId = -1;
+        if (getSelectedCashLogId() == id) {
+            cancelSelection();
             mView.hideMemo(id);
         } else {
 
-            if (mSelectedCashLogId > -1) {
-                mView.hideMemo(mSelectedCashLogId);
+            if (getSelectedCashLogId() > -1) {
+                mView.hideMemo(getSelectedCashLogId());
             }
-            mSelectedCashLogId = id;
+            setSelection(id);
             mView.showMemo(id);
         }
+    }
+
+    private void cancelSelection() {
+        this.mSelectedCashLogId = -1;
+    }
+
+    private void setSelection(int logId) {
+        this.mSelectedCashLogId = logId;
+    }
+
+    public int getSelectedCashLogId() {
+        return mSelectedCashLogId;
     }
 
     @Override
